@@ -14,6 +14,8 @@ gh auth status
 
 ## Publish checkpoints between phases
 
+The setup script includes the standard user `uv` install directory in PATH for noninteractive WSL shells. It uses `UV_LINK_MODE=symlink` so the project-local venv links packages from the D: cache instead of duplicating large CUDA libraries on C:. Keep that cache available; deleting it would break those links.
+
 Every phase may create publishable manifests, reports or README changes. Before running the next phase, review the files, commit and push them and verify the remote SHA. `occam publish --source` mirrors the current source snapshot to the single Hugging Face collection; retained training and pilots require that receipt for the exact current Git commit. `git add` should name intended files; never include `.env`, caches or raw weights.
 
 ```bash

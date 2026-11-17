@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Build only the published llama.cpp commit; caches live on the approved data drive.
 set -euo pipefail
+export PATH="$HOME/.local/bin:$PATH"
 cd "$(dirname "$0")/.."
 revision=$(uv run --frozen python -c 'import json; print(json.load(open("manifests/revisions.json"))["llama_cpp_commit"])')
 target=/mnt/d/AI/occam-rl/llama.cpp
