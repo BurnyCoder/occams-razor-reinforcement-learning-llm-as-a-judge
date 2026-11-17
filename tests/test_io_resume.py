@@ -29,6 +29,20 @@ def test_only_unterminated_final_record_can_be_ignored(tmp_path):
         read_jsonl(path, tolerate_tail=True)
 
 
+def test_local_frozen_splits_match_their_manifest():
+    """When installed, validate every real split without altering the frozen bytes."""
+    from pathlib import Path
+    from occam_rl.data import load_tasks
+    from occam_rl.io import ROOT, config, data_dir, file_hash, read_json
+    config()
+    manifest = read_json(ROOT / "manifests/data.json")["files"]
+    if not all((data_dir() / name).exists() for name in manifest):
+        pytest.skip("Frozen data are not installed in this checkout")
+    for name, expected in manifest.items():
+        assert file_hash(data_dir() / name) == expected["sha256"]
+        assert len(load_tasks(Path(name).stem)) == expected["count"]
+
+
 @pytest.mark.parametrize("event", ["phase_failed", "llm_prompt", "rollout", "group", "optimizer_step"])
 def test_missing_checkpoint_retry_cannot_discard_rollouts(tmp_path, event):
     """Only a startup failure can restart from the seed without a full checkpoint."""

@@ -12,7 +12,7 @@ from pathlib import Path
 
 from .data import load_tasks
 from .gpu import MemoryMonitor
-from .io import ROOT, data_dir, digest, read_json, runs_dir, write_json
+from .io import ROOT, data_dir, digest, read_json, read_jsonl, runs_dir, write_json
 from .models import QwenJudge, clear_gpu, generate, load_policy, parked_policy
 from .prompts import policy_messages
 from .publication import require_data_manifest, require_first_occam, require_hf_publication
@@ -36,10 +36,19 @@ def require_qualification(role: str, cfg: dict, *, allow_unqualified=False) -> d
     return result
 
 
+def assert_unstarted_run(output: Path) -> None:
+    """A startup retry may reset the seed only if no rollout or optimizer work exists."""
+    events = read_jsonl(output / "events.jsonl", tolerate_tail=True)
+    if any(row.get("event") in {"llm_prompt", "rollout", "group", "optimizer_step"} for row in events):
+        raise RuntimeError("No full checkpoint exists, but rollout/optimizer work was recorded")
+
+
 def train(cfg: dict, log, commit: str, arm: str, seed: int, *, pilot=False, resume=False) -> Path:
     """Train one run; every dependent artifact must already be published."""
     require_hf_publication(commit)
     require_data_manifest(data_dir() / "train.jsonl")
+    # Validate task deserialization before spending time loading GPU libraries/weights.
+    tasks = load_tasks("train")
     judge_audit = require_qualification("qwen", cfg,
         allow_unqualified=cfg.get("allow_unqualified_training_judge", False))
     if not judge_audit["passed"]:
@@ -66,6 +75,8 @@ def train(cfg: dict, log, commit: str, arm: str, seed: int, *, pilot=False, resu
         if not resume or previous["fingerprint"] != digest(fingerprint):
             raise RuntimeError("Existing run: use --resume only with unchanged scientific configuration")
     else:
+        if resume:
+            raise RuntimeError("Cannot resume a run without its identity manifest")
         write_json(marker, {"name": name, "git_commit": commit, "fingerprint": digest(fingerprint), **fingerprint})
 
     # Import Unsloth before Transformers/TRL so its documented patches are applied.
@@ -77,7 +88,6 @@ def train(cfg: dict, log, commit: str, arm: str, seed: int, *, pilot=False, resu
     from trl import GRPOConfig, GRPOTrainer
 
     set_seed(seed)
-    tasks = load_tasks("train")
     per_domain = {d: [t for t in tasks if t.domain == d] for d in DOMAINS}
     if len({len(v) for v in per_domain.values()}) != 1:
         raise RuntimeError("Equal-domain training counts are required; fix and publish the data")
@@ -172,7 +182,9 @@ def train(cfg: dict, log, commit: str, arm: str, seed: int, *, pilot=False, resu
                           reward_funcs=occam_reward, rollout_func=rollout, callbacks=[LogCallback()])
     checkpoint = get_last_checkpoint(str(output)) if resume else None
     if resume and checkpoint is None:
-        raise RuntimeError("No full trainer checkpoint to resume")
+        assert_unstarted_run(output)
+        log.emit("restart_before_first_rollout", run=name, seed=seed,
+                 reason="Previous attempt failed during startup; no checkpoint or rollout exists")
     start = time.monotonic()
     trainable_before = {n: p.detach().cpu().clone() for n,p in model.named_parameters() if p.requires_grad}
     try:

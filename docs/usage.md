@@ -74,6 +74,8 @@ uv run --frozen occam publish --run occam-seed17
 
 Full state is saved at optimizer boundaries, periodically and on a clean signal. An abrupt restart resumes from the latest completed checkpoint; any work since it is repeated. Preserve raw logs, including repeated attempts, rather than treating them as independent evaluation samples. Resume checks reject changed scientific configuration. The first pilot is excluded from retained comparisons.
 
+If startup failed before the first model prompt or rollout, `--resume` can restart from the original seed while preserving the failed log. It requires the same run identity. If any rollout or optimizer work exists, a full checkpoint is required; the command will not silently reset training. Frozen tasks are parsed before loading model weights.
+
 ## Prompt-only and trained baselines
 
 ```bash

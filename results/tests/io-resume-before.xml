@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="9" skipped="0" tests="9" time="37.853" timestamp="2026-11-17T07:00:51.931156+01:00" hostname="burny"><testcase classname="tests.test_io_resume" name="test_jsonl_preserves_unicode_inside_strings[\u2028]" time="0.010"><failure message="json.decoder.JSONDecodeError: Unterminated string starting at: line 1 column 14 (char 13)">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-5/test_jsonl_preserves_unicode_i0')
+separator = '\u2028'
+
+    @pytest.mark.parametrize("separator", ["\u2028", "\u2029", "\u0085"])
+    def test_jsonl_preserves_unicode_inside_strings(tmp_path, separator):
+        """JSON Lines uses LF records; Unicode separators remain valid string data."""
+        path = tmp_path / "tasks.jsonl"
+        record = {"question": "first" + separator + "second"}
+        path.write_bytes((json.dumps(record, ensure_ascii=False) + "\r\n").encode())
+&gt;       assert read_jsonl(path) == [record]
+               ^^^^^^^^^^^^^^^^
+
+tests/test_io_resume.py:17: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/occam_rl/io.py:56: in read_jsonl
+    rows.append(json.loads(line))
+                ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/json/decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;json.decoder.JSONDecoder object at 0x7d58c716d4c0&gt;
+s = '{"question": "first', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+&gt;           obj, end = self.scan_once(s, idx)
+                       ^^^^^^^^^^^^^^^^^^^^^^
+E           json.decoder.JSONDecodeError: Unterminated string starting at: line 1 column 14 (char 13)
+
+/usr/lib/python3.12/json/decoder.py:353: JSONDecodeError</failure></testcase><testcase classname="tests.test_io_resume" name="test_jsonl_preserves_unicode_inside_strings[\u2029]" time="0.005"><failure message="json.decoder.JSONDecodeError: Unterminated string starting at: line 1 column 14 (char 13)">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-5/test_jsonl_preserves_unicode_i1')
+separator = '\u2029'
+
+    @pytest.mark.parametrize("separator", ["\u2028", "\u2029", "\u0085"])
+    def test_jsonl_preserves_unicode_inside_strings(tmp_path, separator):
+        """JSON Lines uses LF records; Unicode separators remain valid string data."""
+        path = tmp_path / "tasks.jsonl"
+        record = {"question": "first" + separator + "second"}
+        path.write_bytes((json.dumps(record, ensure_ascii=False) + "\r\n").encode())
+&gt;       assert read_jsonl(path) == [record]
+               ^^^^^^^^^^^^^^^^
+
+tests/test_io_resume.py:17: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/occam_rl/io.py:56: in read_jsonl
+    rows.append(json.loads(line))
+                ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/json/decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;json.decoder.JSONDecoder object at 0x7d58c716d4c0&gt;
+s = '{"question": "first', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+&gt;           obj, end = self.scan_once(s, idx)
+                       ^^^^^^^^^^^^^^^^^^^^^^
+E           json.decoder.JSONDecodeError: Unterminated string starting at: line 1 column 14 (char 13)
+
+/usr/lib/python3.12/json/decoder.py:353: JSONDecodeError</failure></testcase><testcase classname="tests.test_io_resume" name="test_jsonl_preserves_unicode_inside_strings[\x85]" time="0.002"><failure message="json.decoder.JSONDecodeError: Unterminated string starting at: line 1 column 14 (char 13)">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-5/test_jsonl_preserves_unicode_i2')
+separator = '\x85'
+
+    @pytest.mark.parametrize("separator", ["\u2028", "\u2029", "\u0085"])
+    def test_jsonl_preserves_unicode_inside_strings(tmp_path, separator):
+        """JSON Lines uses LF records; Unicode separators remain valid string data."""
+        path = tmp_path / "tasks.jsonl"
+        record = {"question": "first" + separator + "second"}
+        path.write_bytes((json.dumps(record, ensure_ascii=False) + "\r\n").encode())
+&gt;       assert read_jsonl(path) == [record]
+               ^^^^^^^^^^^^^^^^
+
+tests/test_io_resume.py:17: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/occam_rl/io.py:56: in read_jsonl
+    rows.append(json.loads(line))
+                ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/json/decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;json.decoder.JSONDecoder object at 0x7d58c716d4c0&gt;
+s = '{"question": "first', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+&gt;           obj, end = self.scan_once(s, idx)
+                       ^^^^^^^^^^^^^^^^^^^^^^
+E           json.decoder.JSONDecodeError: Unterminated string starting at: line 1 column 14 (char 13)
+
+/usr/lib/python3.12/json/decoder.py:353: JSONDecodeError</failure></testcase><testcase classname="tests.test_io_resume" name="test_only_unterminated_final_record_can_be_ignored" time="0.005"><failure message="Failed: DID NOT RAISE JSONDecodeError">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-5/test_only_unterminated_final_r0')
+
+    def test_only_unterminated_final_record_can_be_ignored(tmp_path):
+        """Live logging may end mid-write; complete corrupt records must still raise."""
+        path = tmp_path / "events.jsonl"
+        path.write_text('{"event":"ok"}\n{"event":', encoding="utf-8")
+        assert read_jsonl(path, tolerate_tail=True) == [{"event": "ok"}]
+        with pytest.raises(json.JSONDecodeError):
+            read_jsonl(path)
+        path.write_text('{"event":"ok"}\n{"event":\n', encoding="utf-8")
+&gt;       with pytest.raises(json.JSONDecodeError):
+E       Failed: DID NOT RAISE JSONDecodeError
+
+tests/test_io_resume.py:28: Failed</failure></testcase><testcase classname="tests.test_io_resume" name="test_missing_checkpoint_retry_cannot_discard_rollouts[phase_failed]" time="0.002"><failure message="AttributeError: module 'occam_rl.training' has no attribute 'assert_unstarted_run'">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-5/test_missing_checkpoint_retry_0')
+event = 'phase_failed'
+
+    @pytest.mark.parametrize("event", ["phase_failed", "llm_prompt", "rollout", "group", "optimizer_step"])
+    def test_missing_checkpoint_retry_cannot_discard_rollouts(tmp_path, event):
+        """Only a startup failure can restart from the seed without a full checkpoint."""
+        (tmp_path / "events.jsonl").write_text(json.dumps({"event": event}) + "\n", encoding="utf-8")
+        if event == "phase_failed":
+&gt;           training.assert_unstarted_run(tmp_path)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'occam_rl.training' has no attribute 'assert_unstarted_run'
+
+tests/test_io_resume.py:37: AttributeError</failure></testcase><testcase classname="tests.test_io_resume" name="test_missing_checkpoint_retry_cannot_discard_rollouts[llm_prompt]" time="0.003"><failure message="AttributeError: module 'occam_rl.training' has no attribute 'assert_unstarted_run'">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-5/test_missing_checkpoint_retry_1')
+event = 'llm_prompt'
+
+    @pytest.mark.parametrize("event", ["phase_failed", "llm_prompt", "rollout", "group", "optimizer_step"])
+    def test_missing_checkpoint_retry_cannot_discard_rollouts(tmp_path, event):
+        """Only a startup failure can restart from the seed without a full checkpoint."""
+        (tmp_path / "events.jsonl").write_text(json.dumps({"event": event}) + "\n", encoding="utf-8")
+        if event == "phase_failed":
+            training.assert_unstarted_run(tmp_path)
+        else:
+            with pytest.raises(RuntimeError):
+&gt;               training.assert_unstarted_run(tmp_path)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AttributeError: module 'occam_rl.training' has no attribute 'assert_unstarted_run'
+
+tests/test_io_resume.py:40: AttributeError</failure></testcase><testcase classname="tests.test_io_resume" name="test_missing_checkpoint_retry_cannot_discard_rollouts[rollout]" time="0.003"><failure message="AttributeError: module 'occam_rl.training' has no attribute 'assert_unstarted_run'">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-5/test_missing_checkpoint_retry_2')
+event = 'rollout'
+
+    @pytest.mark.parametrize("event", ["phase_failed", "llm_prompt", "rollout", "group", "optimizer_step"])
+    def test_missing_checkpoint_retry_cannot_discard_rollouts(tmp_path, event):
+        """Only a startup failure can restart from the seed without a full checkpoint."""
+        (tmp_path / "events.jsonl").write_text(json.dumps({"event": event}) + "\n", encoding="utf-8")
+        if event == "phase_failed":
+            training.assert_unstarted_run(tmp_path)
+        else:
+            with pytest.raises(RuntimeError):
+&gt;               training.assert_unstarted_run(tmp_path)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AttributeError: module 'occam_rl.training' has no attribute 'assert_unstarted_run'
+
+tests/test_io_resume.py:40: AttributeError</failure></testcase><testcase classname="tests.test_io_resume" name="test_missing_checkpoint_retry_cannot_discard_rollouts[group]" time="0.002"><failure message="AttributeError: module 'occam_rl.training' has no attribute 'assert_unstarted_run'">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-5/test_missing_checkpoint_retry_3')
+event = 'group'
+
+    @pytest.mark.parametrize("event", ["phase_failed", "llm_prompt", "rollout", "group", "optimizer_step"])
+    def test_missing_checkpoint_retry_cannot_discard_rollouts(tmp_path, event):
+        """Only a startup failure can restart from the seed without a full checkpoint."""
+        (tmp_path / "events.jsonl").write_text(json.dumps({"event": event}) + "\n", encoding="utf-8")
+        if event == "phase_failed":
+            training.assert_unstarted_run(tmp_path)
+        else:
+            with pytest.raises(RuntimeError):
+&gt;               training.assert_unstarted_run(tmp_path)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AttributeError: module 'occam_rl.training' has no attribute 'assert_unstarted_run'
+
+tests/test_io_resume.py:40: AttributeError</failure></testcase><testcase classname="tests.test_io_resume" name="test_missing_checkpoint_retry_cannot_discard_rollouts[optimizer_step]" time="0.003"><failure message="AttributeError: module 'occam_rl.training' has no attribute 'assert_unstarted_run'">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-5/test_missing_checkpoint_retry_4')
+event = 'optimizer_step'
+
+    @pytest.mark.parametrize("event", ["phase_failed", "llm_prompt", "rollout", "group", "optimizer_step"])
+    def test_missing_checkpoint_retry_cannot_discard_rollouts(tmp_path, event):
+        """Only a startup failure can restart from the seed without a full checkpoint."""
+        (tmp_path / "events.jsonl").write_text(json.dumps({"event": event}) + "\n", encoding="utf-8")
+        if event == "phase_failed":
+            training.assert_unstarted_run(tmp_path)
+        else:
+            with pytest.raises(RuntimeError):
+&gt;               training.assert_unstarted_run(tmp_path)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AttributeError: module 'occam_rl.training' has no attribute 'assert_unstarted_run'
+
+tests/test_io_resume.py:40: AttributeError</failure></testcase></testsuite></testsuites>
