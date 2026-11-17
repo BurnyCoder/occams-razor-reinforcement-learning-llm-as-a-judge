@@ -12,6 +12,8 @@ gh auth status
 
 `.env.example` contains paths, not credentials. `.env` is ignored. Keep model caches, run outputs and checkpoints on D: to avoid filling the system drive. The local venv remains in this checkout. Do not enable hosted inference services. The compatible dependency set is in `uv.lock`; upstream Unsloth version bounds intentionally constrain Torch, Transformers and TRL.
 
+Setup applies a hash-checked backport of the upstream lazy package-metadata lookup to the pinned Transformers. The original file is a uv-cache symlink; only the venv link is replaced, leaving the cache intact. Publish `manifests/runtime-patch.json` after first setup. This avoids repeated whole-wheel filesystem scans on Python/WSL and changes no model computation. If reinstalling dependencies separately, run `.venv/bin/python scripts/backport_transformers.py` again from a published checkout.
+
 ## Publish checkpoints between phases
 
 The setup script includes the standard user `uv` install directory in PATH for noninteractive WSL shells. It uses `UV_LINK_MODE=symlink` so the project-local venv links packages from the D: cache instead of duplicating large CUDA libraries on C:. Keep that cache available; deleting it would break those links.

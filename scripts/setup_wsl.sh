@@ -9,5 +9,6 @@ export UV_LINK_MODE="${UV_LINK_MODE:-symlink}"
 mkdir -p "$UV_CACHE_DIR" "$HF_HOME"
 uv venv --python 3.12 .venv
 uv sync --frozen --all-extras
+.venv/bin/python scripts/backport_transformers.py
 if [[ ! -f .env ]]; then cp .env.example .env; fi
 docker build -t occam-verifier:1 docker
