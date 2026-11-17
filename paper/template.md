@@ -18,6 +18,8 @@ DeepSeekMath introduced GRPO with grouped reward estimates rather than a separat
 
 ## Method
 
+ConciseRL already combines semantic conciseness judging, correctness gating and instructions against answer-only traces [15]. Our claim is limited to evaluating this explicit gate and rubric under the registered controls.
+
 The reward is R=C(1+0.2 A S): binary verified correctness C, a binary adequacy judgment A, and semantic simplicity S in [0,1]. S averages assumption economy, conceptual economy, reasoning economy, and clarity, each scored from zero to four. The judge reads all generated thinking and final text. A correct final answer with essential omissions receives no simplicity bonus. Necessary conditions, units, boundary cases, and useful checks must remain.
 
 The token and formal-length arms use the same adequacy gate and S=k/(k+L). Length normalizers are fixed by calibration after the first Occam run and before length-arm training. Correctness-only uses C. The shuffled control permutes eligible simplicity scores within each question group. Prompt-only controls leave model weights unchanged and use ordinary, concise-but-complete, or full Occam instructions. Decoding, task IDs, and output budgets are held constant.
@@ -83,5 +85,7 @@ The repository preregistration specifies the primary metric, falsification crite
 [14] EvalPlus. https://github.com/evalplus/evalplus
 
 ## AI statement
+
+[15] Dumitru et al., ConciseRL. https://aclanthology.org/2025.findings-emnlp.927/
 
 Codex wrote this codebase and paper from the exact specification provided by a human. Human cleanup and rewriting are in progress.

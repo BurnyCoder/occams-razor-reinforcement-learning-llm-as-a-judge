@@ -24,6 +24,8 @@ Updated 2026-11-17. Preserve the preregistration; record deviations separately. 
 
 ## Planned roadmap beyond the minimum experiment
 
+Add a matched local replication of ConciseRL before making comparisons against semantic-reward prior work. The present matched length/prompt experiment cannot establish superiority over that paper's method.
+
 **Bigger models:** profile larger Qwen3.5 policies and stronger local judges. Keep matched compute/data and report resource differences; larger models are not automatically feasible on this GPU. Domain-specialist policies can follow the shared-policy experiment.
 
 **Programmatic Lean complexity:** pin Lean/mathlib and theorem statements, check proofs with the kernel, reject `sorry` and unapproved axioms, and collect elaborated proof-term tree/DAG nodes, depth, shared subterms, dependency graph size and axiom usage. A short tactic call may hide a large elaborated proof. First compare these diagnostics with judge and script-length scores on fixed statements; only then consider a structural reward. Relevant APIs: [Lean.Expr](https://lean-lang.org/doc/api/Lean/Expr.html), [validation](https://lean-lang.org/doc/reference/latest/ValidatingProofs/), [axioms](https://lean-lang.org/doc/reference/latest/Axioms/).

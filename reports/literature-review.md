@@ -17,6 +17,8 @@ Our synthesis: **prefer the least unnecessarily complicated solution among solut
 
 ## Closest technical work
 
+[ConciseRL](https://aclanthology.org/2025.findings-emnlp.927/) is particularly close prior art: it uses an LLM conciseness reward, correctness gating, and explicitly discourages answer-only traces. Our separately audited binary sufficiency gate and multidimensional protocol are experimental design differences, not claims to invent semantic conciseness or reasoning completeness. Its [repository](https://github.com/RazvanDu/ConciseRL) is Apache-2.0.
+
 | Source | Method and evidence relevant here | Reuse / difference |
 |---|---|---|
 | [DeepSeekMath](https://arxiv.org/abs/2402.03300) | GRPO uses groups of outputs and relative rewards, avoiding a separate learned critic. | Reuse maintained GRPO machinery, with explicitly documented objective changes. Its original experiments do not validate our judges or GPU configuration. |

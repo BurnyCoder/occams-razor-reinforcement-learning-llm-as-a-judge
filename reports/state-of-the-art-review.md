@@ -1,5 +1,7 @@
 # State of the art and gap
 
+Update before model results: [ConciseRL](https://aclanthology.org/2025.findings-emnlp.927/) already combines judged semantic conciseness with correctness and discourages missing reasoning. Treat this project as a controlled extension and evaluation study; direct replication is additional roadmap work.
+
 2026-11-17. This is a scoped review of efficient reasoning and local implementation, not a leaderboard claiming coverage of every publication.
 
 Existing work establishes several relevant approaches: sampled optimal length ([ShorterBetter](https://arxiv.org/abs/2504.21370)), length harmonization ([O1-Pruner](https://arxiv.org/abs/2501.12570)), step-level pruning ([StepPruner](https://arxiv.org/abs/2510.03805)), and changes to normalization in the RL objective ([Dr. GRPO](https://arxiv.org/abs/2503.20783)). Their training budgets, models, prompts, and metrics differ, so cross-paper score rankings would be misleading.
