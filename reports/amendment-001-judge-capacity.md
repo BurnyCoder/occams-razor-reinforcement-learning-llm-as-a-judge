@@ -1,0 +1,13 @@
+# Amendment: qualify a larger local training judge
+
+2026-11-17. Published after the initial constructed judge audit and before any policy training or benchmark inference. The original preregistration remains unchanged in the record.
+
+The initial Qwen3.5-2B NF4 configuration fails both registered qualification criteria. Its [complete audit artifact](../results/judge-audits/qwen-initial-2b.json) is retained. Counts and intervals are generated into [readiness](readiness.md) and the paper. Invalid outputs include contradictory adequacy/missing-step fields. Some valid outputs reverse the intended score direction despite a favorable rationale. The injection example also receives an unwarranted adequacy pass. These observations reject this particular judge configuration as a reward source; they do not test whether Occam training helps a policy.
+
+The next candidate is [Qwen/Qwen3.5-4B](https://huggingface.co/Qwen/Qwen3.5-4B), frozen to the published revision, using the same NF4 scheme, deterministic nonthinking generation, rubric, JSON validation and qualification thresholds. No failed response is repaired into a positive score. The larger candidate must independently satisfy the existing GPU headroom criterion. The policy stays Qwen3.5-0.8B and the held-out evaluator remains Gemma 4.
+
+The [new constructed audit](../configs/judge-audit-v2.json) uses fresh questions and implementations across the same domains and failure types. It is frozen before any response from the new candidate. Similar conceptual categories are intentional, so this is specification checking rather than a statistically independent estimate of all possible judging errors. The original Gemma audit remains frozen and unused. Neither audit enters policy training or the held-out benchmark.
+
+The runtime also adds the existing FLA Triton kernels following the official implementation guidance. Since model capacity and kernel implementation both change, a better audit would not isolate the causal effect of capacity alone. This is a readiness correction, not a causal ablation or evidence of superiority over a prior method. Primary hypotheses, metrics, analysis, data, policy sampling, reward weights and Occam-first ordering are unchanged. Any further prompt/model revision must retain this attempt and define another fresh audit.
+
+A regression check additionally binds qualification to the selected model and audit hash, so an old judge's passing result cannot authorize a replacement. The first post-fix test invocation was blocked before tests ran when concurrent data preparation created an unpublished manifest; that manifest was then published. The publication guard was preserved.

@@ -1,6 +1,7 @@
 {
   "policy": "Qwen/Qwen3.5-0.8B",
-  "judge": "Qwen/Qwen3.5-2B",
+  "judge": "Qwen/Qwen3.5-4B",
+  "qwen_audit": "configs/judge-audit-v2.json",
   "gemma_primary": "google/gemma-4-E4B-it-qat-q4_0-gguf",
   "gemma_fallback": "google/gemma-4-E2B-it-qat-q4_0-gguf",
   "headroom_mib": 750,
