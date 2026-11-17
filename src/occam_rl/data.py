@@ -274,7 +274,7 @@ def prepare(cfg: dict, log, *, public: bool = True) -> None:
                     key = question_hash(task.question)
                     # Use the longest prompt treatment for eligibility across all arms.
                     ids = tokenizer.apply_chat_template(policy_messages(task, "prompt_occam"), tokenize=True,
-                                                        add_generation_prompt=True, enable_thinking=True)
+                                                        add_generation_prompt=True, enable_thinking=True, return_dict=False)
                     if key in hashes or len(ids) > cfg["max_prompt_tokens"]:
                         log.emit("exclude", id=task.id, reason="duplicate or prompt budget", prompt_tokens=len(ids))
                         continue

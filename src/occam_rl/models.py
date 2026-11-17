@@ -84,9 +84,7 @@ def generate(model, tokenizer, messages: list[dict], cfg: dict, log, *, role="po
     import torch
     assert_gpu_model(model)
     ids = tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True,
-                                        enable_thinking=thinking, return_tensors="pt")
-    if isinstance(ids, dict):
-        ids = ids["input_ids"]
+                                        enable_thinking=thinking, return_tensors="pt", return_dict=False)
     limit = cfg["max_prompt_tokens"] if role == "policy" else cfg["judge_context"] - cfg["judge_max_new_tokens"]
     if ids.shape[-1] > limit:
         raise ValueError(f"Full {role} input exceeds context; refusing silent truncation: {ids.shape[-1]}>{limit}")
