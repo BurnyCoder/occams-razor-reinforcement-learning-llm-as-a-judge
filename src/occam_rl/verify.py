@@ -23,7 +23,7 @@ NUMBER = r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?"
 
 # The runner reads only candidate code, function arguments, or benchmark assertions.
 # Resource limits and the read-only filesystem are imposed by Docker, outside Python.
-RUNNER = '''import contextlib, io, json, sys
+RUNNER = '''import contextlib, copy, io, json, sys
 p = json.load(sys.stdin)
 ns = {}
 with contextlib.redirect_stdout(io.StringIO()):
@@ -33,7 +33,12 @@ with contextlib.redirect_stdout(io.StringIO()):
             exec(compile(test, "test", "exec"), ns)
         result = True
     else:
-        result = [ns[p["entrypoint"]](*args) for args in p["inputs"]]
+        result = []
+        for args in p["inputs"]:
+            before = copy.deepcopy(args)
+            result.append(ns[p["entrypoint"]](*args))
+            if p.get("preserve_inputs") and args != before:
+                raise ValueError("Candidate mutated inputs against the task contract")
 print(json.dumps(result, allow_nan=False))
 '''
 
@@ -55,14 +60,16 @@ def numeric(answer: str) -> tuple[Fraction, str]:
 
 
 def run_code(code: str, *, entrypoint: str = "", inputs: list | None = None,
-             tests: list[str] | None = None, image: str = "occam-verifier:1", timeout: int = 8):
+             tests: list[str] | None = None, preserve_inputs: bool = False,
+             image: str = "occam-verifier:1", timeout: int = 8):
     """Run under a nonroot user, no network/mounts/capabilities, bounded resources."""
     name = "occam-" + uuid.uuid4().hex
     command = ["docker", "run", "--rm", "--name", name, "--network", "none", "--read-only",
                "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--pids-limit", "32",
                "--memory", "256m", "--memory-swap", "256m", "--cpus", "1", "--user", "65534:65534",
                "--tmpfs", "/tmp:rw,noexec,nosuid,size=8m", "-i", image, "python", "-I", "-c", RUNNER]
-    payload = json.dumps({"code": code, "entrypoint": entrypoint, "inputs": inputs or [], "tests": tests or []})
+    payload = json.dumps({"code": code, "entrypoint": entrypoint, "inputs": inputs or [], "tests": tests or [],
+                          "preserve_inputs": preserve_inputs})
     # Limit regular-file output outside the container. communicate(capture_output=True)
     # would otherwise let a noisy candidate allocate unbounded host RAM.
     with tempfile.TemporaryFile() as stdout, tempfile.TemporaryFile() as stderr:
@@ -96,7 +103,8 @@ def verify(task: Task, trace: str, image: str = "occam-verifier:1") -> Verificat
             if len(blocks) != 1:
                 return Verification(correct=False, reason="Expected exactly one code submission")
             extracted = blocks[0]
-            result = run_code(extracted, entrypoint=task.entrypoint, inputs=task.inputs, tests=task.tests, image=image)
+            result = run_code(extracted, entrypoint=task.entrypoint, inputs=task.inputs, tests=task.tests,
+                              preserve_inputs=task.preserve_inputs, image=image)
             correct = result is True if task.tests else result == task.expected
             return Verification(correct=correct, reason="tests_passed" if correct else "hidden_case_failed",
                                 extracted=extracted)

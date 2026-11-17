@@ -30,6 +30,7 @@ class Task(BaseModel):
     entrypoint: str = ""
     inputs: list = Field(default_factory=list)
     expected: list = Field(default_factory=list)
+    preserve_inputs: bool = False
     source: str = "procedural-v1"
     license: str = "Apache-2.0"
     rtol: float = 0.0
