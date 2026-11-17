@@ -1,5 +1,9 @@
 # Environment setup record
 
+CUDA inspection succeeded and is recorded in [the runtime manifest](../manifests/runtime.json), including actual library versions, compute capability, available VRAM and the verifier image digest. The first Torch import was slow while reading the new environment through WSL's Windows filesystem mount; this was initialization latency, not a model run. GPU model fit remains unmeasured.
+
+The core pull request was merged and GitHub Pages deployed successfully. Browser inspection confirmed the published empty-state display and domain filter. The in-app browser skill backend was unavailable, so the connected Chrome computer-use surface was used for this check.
+
 The retried setup completed, including the CUDA Python dependencies and isolated verifier image. The first CPU contract checks and Docker verifier checks passed on the published implementation. Container testing included correct code, an edge-case failure and a nonterminating candidate. No policy or judge model has run yet. Follow-up publication/reporting regression checks are recorded separately as machine-readable pytest artifacts.
 
 The WSL environment has CMake but no CUDA compiler. The source now supports official llama.cpp CUDA release binaries, with release commit and SHA-256 asset digests frozen in the revisions manifest. This avoids installing a full compiler toolchain on the nearly full system drive. The source-build option remains documented. Static review also added dimensionless physics tolerances and explicit Gemma prompt-token budget checks before requests.

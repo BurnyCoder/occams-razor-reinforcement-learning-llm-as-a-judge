@@ -212,7 +212,7 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
     if ai_statement:
         story.extend([Spacer(1, 12), Paragraph("AI statement", styles["Heading2"]),
                       Paragraph(escape(ai_statement.strip()), styles["BodyText"])])
-    destination = ROOT / "paper/paper.pdf"
+    destination = ROOT / "output/pdf/paper.pdf"
     destination.parent.mkdir(parents=True, exist_ok=True)
     SimpleDocTemplate(str(destination), pagesize=(8.5*inch, 11*inch), rightMargin=.6*inch,
                       leftMargin=.6*inch, topMargin=.6*inch, bottomMargin=.6*inch,

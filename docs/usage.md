@@ -96,3 +96,5 @@ uv run --frozen occam report
 ```
 
 The live view polls saved events and labels training accuracy as training accuracy. Static GitHub Pages uses generated `site/data.json`, with no remote model computation. The report command creates every measured table, plot, example list, aggregate report, per-run report, Markdown paper and PDF. Investigator notes belong in each run's `notes.md`; include what failed, why a fix was chosen, and whether an analysis was planned or post hoc. Inspect the rendered PDF before publication. No fabricated benchmark scores, sample outputs, uncertainty bars or training curves are included.
+
+The generated PDF is `output/pdf/paper.pdf`; the editable report and template are in `paper/`.
