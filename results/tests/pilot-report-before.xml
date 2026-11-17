@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="22.613" timestamp="2026-11-17T07:47:37.160418+01:00" hostname="burny"><testcase classname="tests.test_publication_reporting" name="test_pilot_report_distinguishes_no_learning_from_missing_state[False-\u2014]" time="0.012"><failure message="AttributeError: module 'occam_rl.reporting' has no attribute 'training_table'">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-7/test_pilot_report_distinguishe0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7176fe8848c0&gt;
+finished = False, changed = '—'
+
+    @pytest.mark.parametrize("finished,changed", [(False, "—"), (True, "0")])
+    def test_pilot_report_distinguishes_no_learning_from_missing_state(tmp_path, monkeypatch, finished, changed):
+        """A completed zero-reward pilot is evidence; an unsaved adapter comparison is missing."""
+        import json
+        directory = tmp_path / "occam-seed17-pilot"
+        directory.mkdir()
+        events = [
+            {"event": "rollout", "time": "now", "step": 0, "correct": 0, "reward": 0,
+             "tokens": 2048, "truncated": True},
+            {"event": "group", "time": "now", "step": 0, "reward_spread": 0},
+            {"event": "training_metrics", "time": "now", "step": 1, "loss": 0},
+        ]
+        (directory / "events.jsonl").write_text("\n".join(json.dumps(row) for row in events) + "\n")
+        if finished:
+            write_json(directory / "status.json", {"steps": 1, "complete": True, "pilot": True,
+                                                    "changed_parameter_tensors": 0})
+        monkeypatch.setattr(reporting, "runs_dir", lambda: tmp_path)
+        monkeypatch.setattr(reporting, "collect", lambda: {})
+        data = reporting.snapshot()
+        assert data["evaluations"] == []
+        state = "complete pilot" if finished else "in progress"
+&gt;       assert f"| occam-seed17-pilot | 1 | 0 / 1 | 1 | 0 / 1 | {changed} | {state} |" in reporting.training_table(data["runs"])
+                                                                                          ^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'occam_rl.reporting' has no attribute 'training_table'
+
+tests/test_publication_reporting.py:99: AttributeError</failure></testcase><testcase classname="tests.test_publication_reporting" name="test_pilot_report_distinguishes_no_learning_from_missing_state[True-0]" time="0.006"><failure message="AttributeError: module 'occam_rl.reporting' has no attribute 'training_table'">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-7/test_pilot_report_distinguishe1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7177285e9ac0&gt;
+finished = True, changed = '0'
+
+    @pytest.mark.parametrize("finished,changed", [(False, "—"), (True, "0")])
+    def test_pilot_report_distinguishes_no_learning_from_missing_state(tmp_path, monkeypatch, finished, changed):
+        """A completed zero-reward pilot is evidence; an unsaved adapter comparison is missing."""
+        import json
+        directory = tmp_path / "occam-seed17-pilot"
+        directory.mkdir()
+        events = [
+            {"event": "rollout", "time": "now", "step": 0, "correct": 0, "reward": 0,
+             "tokens": 2048, "truncated": True},
+            {"event": "group", "time": "now", "step": 0, "reward_spread": 0},
+            {"event": "training_metrics", "time": "now", "step": 1, "loss": 0},
+        ]
+        (directory / "events.jsonl").write_text("\n".join(json.dumps(row) for row in events) + "\n")
+        if finished:
+            write_json(directory / "status.json", {"steps": 1, "complete": True, "pilot": True,
+                                                    "changed_parameter_tensors": 0})
+        monkeypatch.setattr(reporting, "runs_dir", lambda: tmp_path)
+        monkeypatch.setattr(reporting, "collect", lambda: {})
+        data = reporting.snapshot()
+        assert data["evaluations"] == []
+        state = "complete pilot" if finished else "in progress"
+&gt;       assert f"| occam-seed17-pilot | 1 | 0 / 1 | 1 | 0 / 1 | {changed} | {state} |" in reporting.training_table(data["runs"])
+                                                                                          ^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'occam_rl.reporting' has no attribute 'training_table'
+
+tests/test_publication_reporting.py:99: AttributeError</failure></testcase></testsuite></testsuites>

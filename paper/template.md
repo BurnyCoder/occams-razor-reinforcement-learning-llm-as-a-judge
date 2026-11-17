@@ -40,6 +40,12 @@ Judge qualification uses constructed dominance and omission examples, including 
 
 These are constructed specification checks, not policy benchmark results. Under amendment 002, the user authorized exploratory training despite residual training-judge quality failures after mechanical corrections. The failed audit remains visible, and current model/prompt identity, GPU fit and verifier checks remain required. Independent Gemma evaluation still requires qualification. Individual reports retain labels and Wilson intervals; small constructed sets cannot establish general validity.
 
+### Training diagnostics
+
+{{TRAINING}}
+
+These are sampled training traces, not independent benchmark observations. Reward variation within a group is required for a nonzero GRPO task-reward advantage. Completed optimizer steps alone do not demonstrate learning; the saved-run parameter comparison checks whether trainable tensors changed. Missing final-state measurements remain missing. Pilot runs are excluded from retained policy comparisons.
+
 ### Policy comparisons
 
 {{RESULTS}}
