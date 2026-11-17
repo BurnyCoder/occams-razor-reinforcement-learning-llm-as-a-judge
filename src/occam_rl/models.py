@@ -78,6 +78,20 @@ def stream_logger(tokenizer, log, role: str):
     return LoggedStreamer(tokenizer, skip_prompt=True, skip_special_tokens=False)
 
 
+def generation_eos_ids(model, tokenizer) -> list[int]:
+    """Honor both declared terminators using Transformers' documented EOS-list API.
+
+    https://huggingface.co/docs/transformers/main_classes/text_generation
+    Qwen's base config ends documents; its chat tokenizer also ends assistant turns.
+    """
+    configured = model.generation_config.eos_token_id
+    configured = configured if isinstance(configured, list) else [configured]
+    ids = list(dict.fromkeys(x for x in [*configured, tokenizer.eos_token_id] if x is not None))
+    if not ids:
+        raise ValueError("No declared model or chat end token")
+    return ids
+
+
 def generate(model, tokenizer, messages: list[dict], cfg: dict, log, *, role="policy", thinking=True,
              max_new_tokens: int | None = None, prefix_allowed_tokens_fn=None) -> dict:
     """Serial generation preserves all emitted tokens and never truncates input."""
@@ -90,7 +104,9 @@ def generate(model, tokenizer, messages: list[dict], cfg: dict, log, *, role="po
         raise ValueError(f"Full {role} input exceeds context; refusing silent truncation: {ids.shape[-1]}>{limit}")
     ids = ids.to("cuda")
     new_tokens = max_new_tokens or (cfg["max_completion_tokens"] if role == "policy" else cfg["judge_max_new_tokens"])
-    log.emit("llm_prompt", role=role, messages=messages, prompt_tokens=ids.shape[-1], thinking=thinking)
+    eos = generation_eos_ids(model, tokenizer)
+    log.emit("llm_prompt", role=role, messages=messages, prompt_tokens=ids.shape[-1], thinking=thinking,
+             eos_token_ids=eos, constrained=prefix_allowed_tokens_fn is not None)
     start = time.monotonic()
     sampling = {"do_sample": True, "temperature": cfg["temperature"], "top_p": cfg["top_p"], "top_k": cfg["top_k"],
                 "min_p": 0.0, "repetition_penalty": 1.0} if role == "policy" else {"do_sample": False}
@@ -99,13 +115,11 @@ def generate(model, tokenizer, messages: list[dict], cfg: dict, log, *, role="po
     try:
         with torch.inference_mode(), MemoryMonitor(cfg["headroom_mib"], log, role):
             outputs = model.generate(input_ids=ids, attention_mask=torch.ones_like(ids), max_new_tokens=new_tokens,
-                                     pad_token_id=tokenizer.pad_token_id, use_cache=True,
+                                     pad_token_id=tokenizer.pad_token_id, eos_token_id=eos, use_cache=True,
                                      streamer=stream_logger(tokenizer, log, role),
                                      prefix_allowed_tokens_fn=prefix_allowed_tokens_fn, **sampling)
         completion = outputs[0, ids.shape[-1]:].tolist()
         trace = tokenizer.decode(completion, skip_special_tokens=False)
-        eos = model.generation_config.eos_token_id
-        eos = eos if isinstance(eos, list) else [eos]
         result = {"prompt_ids": ids[0].tolist(), "completion_ids": completion, "trace": trace,
                   "tokens": len(completion), "truncated": not completion or completion[-1] not in eos,
                   "seconds": time.monotonic()-start}
