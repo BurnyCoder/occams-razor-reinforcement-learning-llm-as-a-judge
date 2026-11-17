@@ -73,3 +73,27 @@ def test_exploratory_evidence_cannot_satisfy_confirmatory_claim(tmp_path, monkey
     result = reporting.comparisons({"seeds": seeds, "bootstrap_replicates": 10, "bootstrap_seed": 1})
     assert result["status"] == expected
     assert result["confirmatory_seed_target_met"] == (seeds == [17])
+
+
+@pytest.mark.parametrize("finished,changed", [(False, "—"), (True, "0")])
+def test_pilot_report_distinguishes_no_learning_from_missing_state(tmp_path, monkeypatch, finished, changed):
+    """A completed zero-reward pilot is evidence; an unsaved adapter comparison is missing."""
+    import json
+    directory = tmp_path / "occam-seed17-pilot"
+    directory.mkdir()
+    events = [
+        {"event": "rollout", "time": "now", "step": 0, "correct": 0, "reward": 0,
+         "tokens": 2048, "truncated": True},
+        {"event": "group", "time": "now", "step": 0, "reward_spread": 0},
+        {"event": "training_metrics", "time": "now", "step": 1, "loss": 0},
+    ]
+    (directory / "events.jsonl").write_text("\n".join(json.dumps(row) for row in events) + "\n")
+    if finished:
+        write_json(directory / "status.json", {"steps": 1, "complete": True, "pilot": True,
+                                                "changed_parameter_tensors": 0})
+    monkeypatch.setattr(reporting, "runs_dir", lambda: tmp_path)
+    monkeypatch.setattr(reporting, "collect", lambda: {})
+    data = reporting.snapshot()
+    assert data["evaluations"] == []
+    state = "complete pilot" if finished else "in progress"
+    assert f"| occam-seed17-pilot | 1 | 0 / 1 | 1 | 0 / 1 | {changed} | {state} |" in reporting.training_table(data["runs"])
