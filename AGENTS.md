@@ -8,6 +8,7 @@ Follow the user's complete scientific and execution-order instructions supplied 
 - Train and publish Occam seed 17 before standalone baseline inference or training. Baselines include ordinary, concise, and full-rubric prompt-only unchanged-model controls.
 - Use only local GPU models: Qwen3.5 policy/judge and newest suitable Gemma 4 independent judge. No hosted inference, implicit CPU model computation, hidden context truncation, or silent model swaps.
 - Preserve necessary reasoning. A correct final answer alone does not qualify for the simplicity bonus.
+- User amendment: after fixing mechanical judge-output issues, try exploratory training despite residual judge-quality failures. Preserve the failed current audit and identity checks; the training-only override does not waive runtime, verifier, or independent-evaluator checks. Reuse compatible upstream implementations when fixing remaining pipeline issues.
 - Use meaningful commits and feature PRs; merge authorized PRs. Never commit secrets or add assistant attribution to commits/README.
 - Save resumable checkpoints for long training. Log complete timestamped prompts, outputs, scores, failures, and metrics.
 - Regenerate measured numbers and plots from artifacts. Keep docs, reports, README, paper, model cards, and site consistent; no invented results.

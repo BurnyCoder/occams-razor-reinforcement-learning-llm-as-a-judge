@@ -28,6 +28,7 @@ def evaluate(cfg: dict, log, commit: str, arm: str, seed: int, split: str, limit
     output = runs_dir() / f"{arm}-seed{seed}" / f"eval-{split}{suffix}"
     output.mkdir(parents=True, exist_ok=True)
     manifest = {"arm": arm, "seed": seed, "split": split, "limit_per_domain": limit, "tasks": [t.id for t in tasks],
+                "exploratory_judge_override": cfg.get("allow_unqualified_training_judge", False),
                 "config_hash": digest(cfg), "data": read_json(ROOT / "manifests/data.json")["files"][f"{split}.jsonl"]}
     if (output / "manifest.json").exists() and read_json(output / "manifest.json") != manifest:
         raise RuntimeError("Evaluation resume mismatch")

@@ -79,7 +79,7 @@ def stream_logger(tokenizer, log, role: str):
 
 
 def generate(model, tokenizer, messages: list[dict], cfg: dict, log, *, role="policy", thinking=True,
-             max_new_tokens: int | None = None) -> dict:
+             max_new_tokens: int | None = None, prefix_allowed_tokens_fn=None) -> dict:
     """Serial generation preserves all emitted tokens and never truncates input."""
     import torch
     assert_gpu_model(model)
@@ -100,7 +100,8 @@ def generate(model, tokenizer, messages: list[dict], cfg: dict, log, *, role="po
         with torch.inference_mode(), MemoryMonitor(cfg["headroom_mib"], log, role):
             outputs = model.generate(input_ids=ids, attention_mask=torch.ones_like(ids), max_new_tokens=new_tokens,
                                      pad_token_id=tokenizer.pad_token_id, use_cache=True,
-                                     streamer=stream_logger(tokenizer, log, role), **sampling)
+                                     streamer=stream_logger(tokenizer, log, role),
+                                     prefix_allowed_tokens_fn=prefix_allowed_tokens_fn, **sampling)
         completion = outputs[0, ids.shape[-1]:].tolist()
         trace = tokenizer.decode(completion, skip_special_tokens=False)
         eos = model.generation_config.eos_token_id
@@ -147,6 +148,9 @@ class QwenJudge:
         from transformers import AutoTokenizer, BitsAndBytesConfig, Qwen3_5ForCausalLM
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.cfg["judge"], revision=revision(self.cfg["judge"]))
+        # Reuse the library's public Transformers integration, not a custom decoder.
+        from lmformatenforcer.integrations.transformers import build_token_enforcer_tokenizer_data
+        self.tokenizer_data = build_token_enforcer_tokenizer_data(self.tokenizer)
         with MemoryMonitor(self.cfg["headroom_mib"], self.log, "judge_load"):
             self.model = Qwen3_5ForCausalLM.from_pretrained(self.cfg["judge"], revision=revision(self.cfg["judge"]),
                 dtype=torch.bfloat16, device_map={"": 0}, trust_remote_code=False,
@@ -159,12 +163,14 @@ class QwenJudge:
 
     def assess(self, task: Task, trace: str) -> Judgment | None:
         """Invalid JSON receives no adequacy bonus, with the complete failure retained."""
+        from .structured import judgment_prefix
         raw = generate(self.model, self.tokenizer, judge_messages(task, trace), self.cfg, self.log,
-                       role="judge", thinking=False)["trace"]
+                       role="judge", thinking=False,
+                       prefix_allowed_tokens_fn=judgment_prefix(self.tokenizer_data))["trace"]
         return parse_judgment(raw, self.log, task.id)
 
     def __exit__(self, *args):
-        del self.model, self.tokenizer
+        del self.model, self.tokenizer, self.tokenizer_data
         clear_gpu()
 
 

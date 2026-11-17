@@ -19,7 +19,8 @@ train = [
     "unsloth==2026.11.5", "unsloth-zoo==2026.11.5",
     "torch>=2.10,<2.15", "transformers==5.17.0", "trl==1.15.0",
     "peft==0.21.3", "bitsandbytes==0.50.2",
-    "fla-core==0.6.0", "lm-format-enforcer==0.11.3",
+    "fla-core==0.6.0",
+    "lm-format-enforcer @ git+https://github.com/noamgat/lm-format-enforcer.git@817f944fcc8851917c40300a47f62d1defc3ffc3",
 ]
 eval = ["evalplus==0.3.1"]
 
