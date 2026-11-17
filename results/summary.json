@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-17T04:43:10.000+00:00",
+  "generated_at": "2026-11-17T05:30:04.429+00:00",
   "runs": [],
   "evaluations": [],
   "readiness": {
@@ -289,6 +289,379 @@
           }
         ],
         "artifact": "results/judge-audits/qwen-2026-11-17T03-00-23.431+00-00.json"
+      },
+      {
+        "role": "qwen",
+        "model": "Qwen/Qwen3.5-4B",
+        "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+        "prompt_hash": "215b8b9537d0d65c27afac376b7e194ba535c5f9dc907936888affb56ba843cb",
+        "audit_hash": "f58248a659c8e7800283364204217896d22f9eae652937d01991af05528949c4",
+        "audit_file": "configs/judge-audit-v3.json",
+        "operation_log": "2026-11-17T04-46-15.804+00-00-qualify.jsonl",
+        "wins": 4,
+        "pair_count": 12,
+        "dominance_ci95": [
+          0.13812009109121315,
+          0.6093779111272004
+        ],
+        "rejected": 8,
+        "omission_count": 10,
+        "omission_ci95": [
+          0.49016247153664183,
+          0.9433178485456247
+        ],
+        "invalid": 9,
+        "passed": false,
+        "rows": [
+          {
+            "id": "audit/pair/0",
+            "expected_dominance": false,
+            "better": {
+              "adequate": false,
+              "assumptions": 4,
+              "concepts": 3,
+              "steps": 3,
+              "clarity": 4,
+              "missing": [
+                "Explicit statement of the general formula as requested"
+              ],
+              "rationale": "The candidate correctly identifies the formula and calculates the result, but fails to explicitly state the formula as requested by the problem statement, providing only the calculation in the final answer block.\n\nMissing reasoning: The problem explicitly asks to 'state the formula', but the candidate only provides the calculation 'A=3*7=21' without clearly separating or stating the general formula (e.g., 'Area = width × length') as a distinct step, though the text preceding the answer block implies it. Given the strict requirement to 'state the formula', this omission makes the solution incomplete regarding the specific constraints.\n\nadequate: false\nassumptions: 4\nconcepts: 3\nsteps: 3\nclarity: 4\n} {"
+            },
+            "worse": {
+              "adequate": true,
+              "assumptions": 4,
+              "concepts": 4,
+              "steps": 3,
+              "clarity": 3,
+              "missing": [],
+              "rationale": "The candidate correctly identifies the formula and calculates the result, but includes irrelevant context (red pen, Friday) which lowers clarity and simplicity without adding value to the reasoning.\n"
+            }
+          },
+          {
+            "id": "audit/pair/1",
+            "expected_dominance": true,
+            "better": {
+              "adequate": true,
+              "assumptions": 4,
+              "concepts": 4,
+              "steps": 4,
+              "clarity": 4,
+              "missing": [],
+              "rationale": "The candidate correctly performs the subtraction and shows the common denominator conversion in a single, sufficient step without unnecessary elaboration or errors. The reasoning is direct and matches the reference logic perfectly. The output format includes the answer tag as requested by the problem structure (implied by the reference style)."
+            },
+            "worse": {
+              "adequate": true,
+              "assumptions": 4,
+              "concepts": 4,
+              "steps": 3,
+              "clarity": 3,
+              "missing": [],
+              "rationale": "The candidate correctly identifies the common denominator and performs the subtraction, but includes a redundant and logically flawed step claiming 'Repeating the subtraction gives 5/8' which does not make sense in this context, lowering the quality of the reasoning despite the correct final answer.\n\nMissing reasoning: None essential steps are missing, but the explanation contains a hallucinated/redundant step.\n\nadequate: true\nassumptions: 4\nconcepts: 4\nsteps: 3\nclarity: 3"
+            }
+          },
+          {
+            "id": "audit/pair/2",
+            "expected_dominance": false,
+            "better": {
+              "adequate": false,
+              "assumptions": 2,
+              "concepts": 3,
+              "steps": 2,
+              "clarity": 3,
+              "missing": [
+                "Explicit assertion that the sum of two integers is an integer"
+              ],
+              "rationale": "The candidate correctly identifies the algebraic structure but fails to explicitly state that the sum of two integers is an integer, which is the critical logical step missing from the reference's proof chain.\n\nMissing reasoning:\nThe candidate states that $a+b$ is an integer but does not explicitly assert this as a premise or a derived fact (e.g., 'since the sum of integers is an integer'), making the conclusion that $3(a+b)$ is a multiple of 3 logically incomplete without that explicit link.\n\nadequate: false\nassumptions: 2\nconcepts: 3\nsteps: 2\nclarity: 3\n} {"
+            },
+            "worse": {
+              "adequate": false,
+              "assumptions": 2,
+              "concepts": 2,
+              "steps": 2,
+              "clarity": 2,
+              "missing": [
+                "The 'three-box machine' and 'labeling' steps are irrelevant to the mathematical proof and constitute avoidable machinery that lowers clarity and conceptual economy."
+              ],
+              "rationale": "The candidate provides the correct algebraic derivation but includes unnecessary and confusing 'machine' metaphors that obscure the logic without adding value.\n"
+            }
+          },
+          {
+            "id": "audit/pair/3",
+            "expected_dominance": true,
+            "better": {
+              "adequate": true,
+              "assumptions": 4,
+              "concepts": 4,
+              "steps": 4,
+              "clarity": 4,
+              "missing": [],
+              "rationale": "The candidate correctly identifies the integers and computes the sum, providing a direct and sufficient derivation without unnecessary steps or assumptions. The reasoning is explicit and complete for the trivial arithmetic involved.\n"
+            },
+            "worse": {
+              "adequate": true,
+              "assumptions": 4,
+              "concepts": 4,
+              "steps": 3,
+              "clarity": 3,
+              "missing": [],
+              "rationale": "The candidate correctly identifies the integers and computes the sum, but includes redundant repetition of the addition process which lowers simplicity without adding value.\n"
+            }
+          },
+          {
+            "id": "audit/pair/4",
+            "expected_dominance": false,
+            "better": null,
+            "worse": {
+              "adequate": true,
+              "assumptions": 2,
+              "concepts": 3,
+              "steps": 3,
+              "clarity": 2,
+              "missing": [],
+              "rationale": "The candidate correctly identifies the formula for average speed and calculates the result, but includes irrelevant assumptions about the stopwatch color and spectator's hat which lower the quality ratings despite the core reasoning being correct and sufficient for the task.\n"
+            }
+          },
+          {
+            "id": "audit/pair/5",
+            "expected_dominance": false,
+            "better": {
+              "adequate": true,
+              "assumptions": 4,
+              "concepts": 4,
+              "steps": 4,
+              "clarity": 4,
+              "missing": [],
+              "rationale": "The candidate correctly identifies the formula, substitutes the values, and provides the final answer with units, matching the reference logic perfectly without redundancy or missing steps."
+            },
+            "worse": null
+          },
+          {
+            "id": "audit/pair/6",
+            "expected_dominance": false,
+            "better": null,
+            "worse": {
+              "adequate": false,
+              "assumptions": 2,
+              "concepts": 3,
+              "steps": 2,
+              "clarity": 2,
+              "missing": [
+                "Explanation of the 'container' metaphor or its relevance to the calculation"
+              ],
+              "rationale": "The candidate provides the correct numerical answer and the correct formula derivation but includes unnecessary and confusing metaphorical language about 'containers' that obscures the simple physics reasoning required.\n"
+            }
+          },
+          {
+            "id": "audit/pair/7",
+            "expected_dominance": true,
+            "better": {
+              "adequate": true,
+              "assumptions": 4,
+              "concepts": 4,
+              "steps": 4,
+              "clarity": 4,
+              "missing": [],
+              "rationale": "The candidate correctly applies Hooke's Law using the provided constants and yields the correct result with appropriate units, though the explanation is extremely brief and lacks the explicit 'state the law' component requested in the problem statement, which is a minor omission rather than a failure of reasoning sufficiency for a standard physics calculation.\n\nMissing: None (the calculation is correct and sufficient for the core task).\nAdequate: true\nAssumptions: 4\nConcepts: 4\nSteps: 4\nClarity: 4"
+            },
+            "worse": {
+              "adequate": true,
+              "assumptions": 4,
+              "concepts": 4,
+              "steps": 3,
+              "clarity": 4,
+              "missing": [],
+              "rationale": "The candidate provides the correct numerical answer and cites the correct law, but includes redundant repetition of the calculation without adding value, which lowers the step efficiency rating slightly below perfect economy, though the reasoning remains adequate and correct.\n"
+            }
+          },
+          {
+            "id": "audit/pair/8",
+            "expected_dominance": false,
+            "better": null,
+            "worse": {
+              "adequate": false,
+              "assumptions": 2,
+              "concepts": 2,
+              "steps": 3,
+              "clarity": 3,
+              "missing": [
+                "Explicit explanation of the empty input case as requested"
+              ],
+              "rationale": "The candidate provides a correct implementation and explanation, but the use of a custom `Item` wrapper class is unnecessary machinery that obscures the solution without adding value, violating conceptual economy. Additionally, the explanation of the empty input case is implicit rather than explicitly detailed as requested by the problem statement's specific instruction to 'explain'."
+            }
+          },
+          {
+            "id": "audit/pair/9",
+            "expected_dominance": false,
+            "better": {
+              "adequate": true,
+              "assumptions": 4,
+              "concepts": 4,
+              "steps": 4,
+              "clarity": 4,
+              "missing": [],
+              "rationale": "The candidate solution correctly implements the logic and explains the boundary condition, though the explanation is slightly terse regarding the 'otherwise' case for negative numbers compared to a full derivation, but sufficient for the task context.\n"
+            },
+            "worse": null
+          },
+          {
+            "id": "audit/pair/10",
+            "expected_dominance": false,
+            "better": null,
+            "worse": null
+          },
+          {
+            "id": "audit/pair/11",
+            "expected_dominance": true,
+            "better": {
+              "adequate": true,
+              "assumptions": 4,
+              "concepts": 4,
+              "steps": 4,
+              "clarity": 4,
+              "missing": [],
+              "rationale": "The candidate provides a direct implementation using the standard library function and explicitly addresses the empty input case as requested, with no missing reasoning or avoidable machinery.\n"
+            },
+            "worse": {
+              "adequate": true,
+              "assumptions": 4,
+              "concepts": 3,
+              "steps": 3,
+              "clarity": 4,
+              "missing": [],
+              "rationale": "The candidate solution performs unnecessary list copying operations before the actual join, which is redundant and inefficient compared to the reference approach, though the logic remains correct and the edge case is addressed. The reasoning is present but the implementation is suboptimal due to avoidable machinery (multiple list comprehensions)."
+            }
+          },
+          {
+            "id": "audit/omission/0",
+            "judgment": null
+          },
+          {
+            "id": "audit/omission/1",
+            "judgment": {
+              "adequate": false,
+              "assumptions": 0,
+              "concepts": 0,
+              "steps": 0,
+              "clarity": 0,
+              "missing": [
+                "Derivation of the sum of two even integers using algebraic representation (e.g., 2a + 2b = 2(a+b))",
+                "Explanation of why 2(a+b) is even",
+                "Connection between the definition of even numbers and the result"
+              ],
+              "rationale": "The candidate fails to provide the mathematical derivation required by the problem statement, offering only a tautology instead of the proof found in the reference.\n"
+            }
+          },
+          {
+            "id": "audit/omission/2",
+            "judgment": {
+              "adequate": false,
+              "assumptions": 0,
+              "concepts": 1,
+              "steps": 1,
+              "clarity": 2,
+              "missing": [
+                "The common-denominator step was not shown as requested"
+              ],
+              "rationale": "The candidate provides the correct final answer but fails to explicitly show the common-denominator step as requested, offering only a direct result without derivation or intermediate work.\n\nMissing reasoning:\n- The candidate did not show the common-denominator step (converting 2/3 to 8/12 and 1/4 to 3/12) as explicitly requested by the problem statement.\n- No explanation of the conversion process was provided.\n\nadequate: false\nassumptions: 0\nconcepts: 1\nsteps: 1\nclarity: 2\n"
+            }
+          },
+          {
+            "id": "audit/omission/3",
+            "judgment": {
+              "adequate": false,
+              "assumptions": 0,
+              "concepts": 1,
+              "steps": 1,
+              "clarity": 2,
+              "missing": [
+                "Explanation for considering both signs",
+                "Justification for negative root validity"
+              ],
+              "rationale": "The candidate fails to address the specific requirement to explain why both signs must be considered, providing only the roots without the requested justification.\n\nMissing reasoning:\n- No explanation provided for why both positive and negative roots are necessary (e.g., the property that (-a)^2 = a^2).\n- The phrase 'This needs no sign explanation' directly contradicts the problem's instruction to explain why both signs must be considered.\n\nadequate: false\nassumptions: 0\nconcepts: 1\nsteps: 1\nclarity: 2"
+            }
+          },
+          {
+            "id": "audit/omission/4",
+            "judgment": null
+          },
+          {
+            "id": "audit/omission/5",
+            "judgment": {
+              "adequate": false,
+              "assumptions": 0,
+              "concepts": 0,
+              "steps": 0,
+              "clarity": 0,
+              "missing": [
+                "Derivation of the result using the formula",
+                "Explanation of the relationship between variables",
+                "Step-by-step calculation process",
+                "Addressing the 'show the relation' requirement"
+              ],
+              "rationale": "The candidate provides the final numerical answer but completely omits the derivation, the formula application, and the explanation of the relationship as explicitly requested by the problem statement ('show the relation')."
+            }
+          },
+          {
+            "id": "audit/omission/6",
+            "judgment": {
+              "adequate": false,
+              "assumptions": 2,
+              "concepts": 2,
+              "steps": 1,
+              "clarity": 2,
+              "missing": [
+                "Derivation of the kinematic equation",
+                "Explicit substitution of given values",
+                "Explanation of the relationship used"
+              ],
+              "rationale": "The candidate provides the final numerical answer but fails to show the kinematic relation or derivation as explicitly requested by the problem statement ('show the kinematic relation')."
+            }
+          },
+          {
+            "id": "audit/omission/7",
+            "judgment": {
+              "adequate": false,
+              "assumptions": 4,
+              "concepts": 4,
+              "steps": 4,
+              "clarity": 4,
+              "missing": [
+                "Explicit explanation of the invariant relating output to prefix maximum as requested in the prompt"
+              ],
+              "rationale": "The candidate provides a complete, correct implementation and implicitly satisfies the requirement to explain the invariant by demonstrating the logic of updating the maximum, though the explicit textual explanation of the invariant is missing from the code block itself. The reasoning is sufficient for the code, but the 'explain' part of the prompt is not fully addressed in the output trace provided (which is just code)."
+            }
+          },
+          {
+            "id": "audit/omission/8",
+            "judgment": {
+              "adequate": false,
+              "assumptions": 2,
+              "concepts": 3,
+              "steps": 2,
+              "clarity": 3,
+              "missing": [
+                "Explanation of why first occurrence order is preserved",
+                "Explanation of what 'seen' represents"
+              ],
+              "rationale": "The candidate provides a correct implementation but fails to address the explicit requirement to explain the logic and the meaning of 'seen'."
+            }
+          },
+          {
+            "id": "audit/omission/9",
+            "judgment": {
+              "adequate": false,
+              "assumptions": 2,
+              "concepts": 3,
+              "steps": 2,
+              "clarity": 3,
+              "missing": [
+                "Explanation of invariant and termination as required by problem statement"
+              ],
+              "rationale": "The candidate provides the correct Euclidean algorithm code but explicitly refuses to explain the invariant and termination as requested in the problem statement, and ignores the evaluator's instruction to do so, resulting in an incomplete response regarding the problem's requirements.\n\nMissing reasoning: The candidate failed to explain the invariant and termination as required by the problem statement, despite the evaluator's instruction to do so. The code alone does not satisfy the requirement to 'explain its invariant and termination'.\n\nadequate: false\nassumptions: 2\nconcepts: 3\nsteps: 2\nclarity: 3\n}**/ **Correction**: The prompt asks me to evaluate the candidate solution based on the provided text. The candidate solution includes a code block but then includes a specific instruction within the trace text: "
+            }
+          }
+        ],
+        "artifact": "results/judge-audits/qwen-2026-11-17T05-28-33.902+00-00.json"
       },
       {
         "role": "qwen",

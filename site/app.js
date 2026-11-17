@@ -37,7 +37,7 @@ function renderAudits(){
   $('profile').textContent=profile?`Recorded profile: ${profile.passed?'passed':'failed'}. Minimum free VRAM: backward ${profile.backward_minimum_free_mib} MiB; generation ${profile.generation_minimum_free_mib} MiB. Role-switch weights and RNG preserved: ${profile.switch_weights_unchanged&&profile.switch_rng_unchanged?'yes':'no'}. Optimizer serialization passed: ${profile.optimizer_roundtrip?'yes':'no'}.`:'No completed GPU profile yet.';
   const body=$('audits');body.replaceChildren();
   const audits=data.readiness?.audits||[];
-  for(const audit of audits){const tr=node('tr','',body);for(const value of [audit.model,`${audit.wins}/${audit.pair_count}`,`${audit.rejected}/${audit.omission_count}`,audit.invalid,audit.passed?'Yes':'No'])node('td',String(value),tr);}
+  for(const audit of audits){const label=audit.model+(audit.audit_file?` (${audit.audit_file.split('/').pop().replace('judge-audit-','').replace('.json','')})`:'');const tr=node('tr','',body);for(const value of [label,`${audit.wins}/${audit.pair_count}`,`${audit.rejected}/${audit.omission_count}`,audit.invalid,audit.passed?'Yes':'No'])node('td',String(value),tr);}
   if(!audits.length){const td=node('td','No completed judge audits yet.',node('tr','',body));td.colSpan=5;}
 }
 async function refresh(){

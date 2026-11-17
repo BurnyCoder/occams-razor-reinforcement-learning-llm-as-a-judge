@@ -1,6 +1,6 @@
 # Experiment summary
 
-Generated from run artifacts at 2026-11-17T04:43:10.000+00:00.
+Generated from run artifacts at 2026-11-17T05:30:04.429+00:00.
 
 | Run | Split | N | Accuracy | Adequacy | C × A × S | Tokens | Status |
 |---|---|---:|---:|---:|---:|---:|---|
@@ -21,7 +21,8 @@ Primary analysis status: `pending`. See results/summary.json for paired interval
 
 | Judge | Dominance | Omission rejection | Invalid JSON | Qualified |
 |---|---:|---:|---:|---|
-| Qwen3.5-4B | 0/12 | 5/10 | 18 | No |
+| Qwen3.5-4B (v2) | 0/12 | 5/10 | 18 | No |
+| Qwen3.5-4B (v3) | 4/12 | 8/10 | 9 | No |
 | Qwen3.5-2B | 1/12 | 7/10 | 16 | No |
 
 GPU/state prerequisite measurements (synthetic inputs; not learning results):
