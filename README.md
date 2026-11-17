@@ -38,7 +38,7 @@ The training reward is `C * (1 + 0.2 * A * S)`. `C` is binary verified correctne
 
 | Arm | Training or prompting | Status |
 |---|---|---|
-| Occam | Verified correctness + sufficient-reasoning-gated semantic simplicity | Planned first |
+| Occam | Verified correctness + sufficient-reasoning-gated semantic simplicity | Pilot completed without learning; retained run pending |
 | Accuracy | Verified correctness only | Pending |
 | Token length | Same adequacy gate; decreasing token-length reward | Pending |
 | Formal length | Same adequacy gate; decreasing math-symbol / code-length reward | Pending |
@@ -111,6 +111,14 @@ Project code is Apache-2.0. See [source and license notes](docs/sources.md). Res
 ## Generated results
 
 <!-- RESULTS:START -->
+
+### Training diagnostics
+
+| Run | Updates | Correct / traces | Truncated | Groups with reward spread | Changed tensors | State |
+|---|---:|---:|---:|---:|---:|---|
+| occam-seed17-pilot | 4 | 0 / 16 | 16 | 0 / 4 | 0 | complete pilot |
+
+### Held-out evaluation
 
 | Run | Split | N | Accuracy | Adequacy | C × A × S | Tokens | Status |
 |---|---|---:|---:|---:|---:|---:|---|

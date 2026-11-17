@@ -49,3 +49,7 @@ Add a matched local replication of ConciseRL before making comparisons against s
 - The retry completed the pilot and saved its full checkpoint, but all traces were truncated and incorrect, with zero reward spread, gradients and parameter changes. Generated training diagnostics and the immutable raw trace disclose this negative result. No retained budget is selected. The next controlled candidate is Qwen's default non-thinking mode with explicit necessary reasoning still required; publish an amendment and give the new pilot a distinct identity before executing it. Larger policies and sampling changes remain later candidates if this controlled change fails.
 
 During runs, inspect progress according to expected run duration: five minutes for >10-minute runs, fifteen for >30-minute runs, thirty for >one-hour runs. Report meaningful changes and active implementation progress promptly. Never install an automation just to watch this task.
+
+## Current stopping point
+
+The user requested a wrap-up after the completed pilot, near the weekly usage reserve. No new experiment should start during wrap-up. See [resume instructions](resume.md) for the preserved state, interpretation and next implementation steps. The original research objective and uncompleted phases remain pending.

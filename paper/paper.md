@@ -2,7 +2,7 @@
 
 Libor “Burny” Burian
 
-2026-11-17. Living preregistered research report. Artifact regeneration: 2026-11-17T06:07:25.289+00:00.
+2026-11-17. Living preregistered research report. Artifact regeneration: 2026-11-17T06:55:02.245+00:00.
 
 ## Abstract
 
@@ -55,6 +55,16 @@ GPU/state prerequisite measurements (synthetic inputs; not learning results):
 
 
 These are constructed specification checks, not policy benchmark results. Under amendment 002, the user authorized exploratory training despite residual training-judge quality failures after mechanical corrections. The failed audit remains visible, and current model/prompt identity, GPU fit and verifier checks remain required. Independent Gemma evaluation still requires qualification. Individual reports retain labels and Wilson intervals; small constructed sets cannot establish general validity.
+
+### Training diagnostics
+
+| Run | Updates | Correct / traces | Truncated | Groups with reward spread | Changed tensors | State |
+|---|---:|---:|---:|---:|---:|---|
+| occam-seed17-pilot | 4 | 0 / 16 | 16 | 0 / 4 | 0 | complete pilot |
+
+These are sampled training traces, not independent benchmark observations. Reward variation within a group is required for a nonzero GRPO task-reward advantage. Completed optimizer steps alone do not demonstrate learning; the saved-run parameter comparison checks whether trainable tensors changed. Missing final-state measurements remain missing. Pilot runs are excluded from retained policy comparisons.
+
+The completed initial pilot produced no verified correct trace and no changed trainable tensors. Its outputs exhausted the completion cap before finishing. Consequently the training judge was never called on an eligible solution: this pilot cannot test the proposed semantic reward. Qwen documents thinking-loop susceptibility in this policy and defaults it to non-thinking mode (https://huggingface.co/Qwen/Qwen3.5-0.8B#thinking-mode). This is a candidate explanation requiring a controlled follow-up, not a proven cause. Full traces and the failed startup preceding this completed attempt are retained in the runtime artifacts.
 
 ### Policy comparisons
 
