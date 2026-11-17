@@ -44,6 +44,11 @@ def publish_source(cfg: dict, log, commit: str) -> None:
         for name in files:
             require_data_manifest(data_dir() / name)
             operations.append(CommitOperationAdd(path_in_repo=f"frozen-data/{name}", path_or_fileobj=str(data_dir() / name)))
+    # Publish finished audit/profile/failure traces, excluding this active upload log.
+    for path in sorted((runs_dir() / "operations").glob("*.jsonl")):
+        events = read_jsonl(path, tolerate_tail=True)
+        if events and events[-1].get("event") in ("phase_complete", "phase_failed"):
+            operations.append(CommitOperationAdd(path_in_repo=f"operations/{path.name}", path_or_fileobj=str(path)))
     operations.append(CommitOperationAdd(path_in_repo="README.md", path_or_fileobj=str(ROOT / "docs/hf-artifacts.md")))
     result = api.create_commit(repo_id=repo, repo_type="dataset", operations=operations,
                                commit_message=f"Research source and frozen data snapshot {commit}")

@@ -37,5 +37,6 @@ Add a matched local replication of ConciseRL before making comparisons against s
 - Initial modular implementation, counterexample tests, dependency lock, site, paper template and command guide written; implementation push precedes the first test.
 - WSL dependencies and the isolated Docker verifier installed successfully. Initial CPU and container checks passed after publication. Model/data readiness and training remain outstanding.
 - Added artifact-only publication for unchanged-model prompt controls and a hard exploratory label for incomplete seed sets. Source publication includes hash-verified frozen data when available, preserving source-specific licenses.
+- Core implementation PR merged; GitHub Pages deployed and inspected. Exact revisions and actual CUDA runtime published. Initial paper rendered and visually checked; source, reports and paper uploaded to the single Hugging Face collection. Data preparation is active, with model fit and judge audits still pending. Completed readiness logs, including failures, join subsequent source snapshots.
 
 During runs, inspect progress according to expected run duration: five minutes for >10-minute runs, fifteen for >30-minute runs, thirty for >one-hour runs. Report meaningful changes and active implementation progress promptly. Never install an automation just to watch this task.

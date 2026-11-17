@@ -23,6 +23,7 @@ def test_source_upload_uses_exact_tracked_paths(tmp_path, monkeypatch):
             pass
     monkeypatch.setattr(publishing, "ROOT", tmp_path)
     monkeypatch.setattr(publishing, "git", lambda *a: "README.md\ndocs/hf-artifacts.md")
+    monkeypatch.setattr(publishing, "runs_dir", lambda: tmp_path / "runs")
     monkeypatch.setattr(publishing, "hub", lambda cfg: (API(), "collection"))
     publishing.publish_source({"hf_artifacts_repo": "owner/artifacts"}, SimpleNamespace(emit=lambda *a, **k: None), "commit")
     assert set(calls) == {"research-README.md", "docs/hf-artifacts.md", "README.md"}

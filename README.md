@@ -6,6 +6,10 @@ Can a local language-model judge reward **simpler, fully justified solutions** b
 
 The proposed contribution is the controlled comparison of an adequacy-gated semantic simplicity reward against adequacy-gated token and formal-length rewards. Short-reasoning RL already exists: see [ShorterBetter](https://arxiv.org/abs/2504.21370), [StepPruner](https://arxiv.org/abs/2510.03805), and [Dr. GRPO](https://arxiv.org/abs/2503.20783). This project does not claim to invent concise reasoning, compute Kolmogorov complexity, or establish that simpler answers are generally truer.
 
+![Research architecture](site/figures/architecture.png)
+
+[Paper PDF](output/pdf/paper.pdf) · [Interactive explorer](https://burnycoder.github.io/occams-razor-reinforcement-learning-llm-as-a-judge/) · [Hugging Face collection](https://huggingface.co/collections/BurnyCoder/occam-rl-adequate-and-parsimonious-reasoning-6afbab26f5969584c8f781e5)
+
 ```mermaid
 flowchart LR
     D[Frozen tasks and splits] --> P[Qwen3.5 policy: group of solutions]
