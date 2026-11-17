@@ -233,7 +233,10 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
         style = "Title" if line.startswith("# ") else "Heading2" if line.startswith("## ") else "Heading3" if line.startswith("### ") else "BodyText"
         text = escape(line.lstrip("# ")).replace("“", '"').replace("”", '"').replace("’", "'").replace("—", " - ").replace("×", " x ")
         text = re.sub(r"https?://[^\s<]+", lambda match: f'<link href="{match[0]}" color="#245f49">{match[0]}</link>', text)
-        story.extend([Paragraph(text, styles[style]), Spacer(1, 5)])
+        # Carry a heading through its following spacer so its table/text stays attached.
+        gap = Spacer(1, 5)
+        gap.keepWithNext = style.startswith("Heading") or style == "Title"
+        story.extend([Paragraph(text, styles[style]), gap])
     flush_table()
     for path in paths:
         from reportlab.lib.utils import ImageReader
