@@ -229,6 +229,9 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
 def report(cfg: dict, log) -> None:
     """One command regenerates measured artifacts; publish outputs before the next run."""
     data = snapshot()
+    from .readiness import collect, write_reports
+    data["readiness"] = collect()
+    readiness_table = write_reports(data["readiness"])
     data["analysis"] = comparisons(cfg)
     data["examples"] = examples()
     write_json(ROOT / "site/data.json", data)
@@ -237,6 +240,7 @@ def report(cfg: dict, log) -> None:
     summary = "# Experiment summary\n\nGenerated from run artifacts at " + data["generated_at"] + ".\n\n" + table
     summary += "\n\nAccuracy is the fraction verified correct. Adequacy asks whether necessary reasoning is present. Simplicity summarizes four judge dimensions. C × A × S is zero for wrong or inadequate solutions. Training rollout accuracy is not held-out accuracy.\n"
     summary += "\nPrimary analysis status: `" + data["analysis"]["status"] + "`. See results/summary.json for paired intervals, multiplicity adjustments, and seed sensitivity when available.\n"
+    summary += "\n## Prerequisite audits\n\n" + readiness_table + "\n\nSee [readiness evidence](readiness.md) for data counts and individual audit reports.\n"
     (ROOT / "reports/experiments.md").write_text(summary, encoding="utf-8")
     for run in data["runs"]:
         notes_path = runs_dir() / run["name"] / "notes.md"
@@ -253,6 +257,7 @@ def report(cfg: dict, log) -> None:
     (ROOT / "README.md").write_text(readme, encoding="utf-8")
     paper = (ROOT / "paper/template.md").read_text(encoding="utf-8").replace("{{RESULTS}}", table)
     paper = paper.replace("{{ANALYSIS_STATUS}}", data["analysis"]["status"]).replace("{{GENERATED_AT}}", data["generated_at"])
+    paper = paper.replace("{{READINESS}}", readiness_table)
     (ROOT / "paper/paper.md").write_text(paper, encoding="utf-8")
     paths = figures(data)
     build_pdf(paper, paths)

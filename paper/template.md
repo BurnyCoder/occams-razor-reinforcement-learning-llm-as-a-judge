@@ -34,6 +34,14 @@ Judge qualification uses constructed dominance and omission examples, including 
 
 ## Results
 
+### Prerequisite judge audits
+
+{{READINESS}}
+
+These are constructed specification checks, not policy benchmark results. A failed qualification blocks use of that judge in retained experiments. Individual audit reports retain the full labels and Wilson intervals; small constructed sets cannot establish general validity.
+
+### Policy comparisons
+
 {{RESULTS}}
 
 No claim should be inferred from an unfilled cell. Complete comparisons, when available, are computed from raw results with paired family-cluster uncertainty, corrected primary tests, domain-specific accuracy intervals, and seed sensitivity. A one-seed milestone is exploratory. Training rollout metrics describe the training distribution only.
