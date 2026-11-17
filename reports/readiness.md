@@ -2,6 +2,7 @@
 
 | Judge | Dominance | Omission rejection | Invalid JSON | Qualified |
 |---|---:|---:|---:|---|
+| Qwen3.5-4B | 0/12 | 5/10 | 18 | No |
 | Qwen3.5-2B | 1/12 | 7/10 | 16 | No |
 
 Constructed specification checks are not held-out policy accuracy or human preference validation. Invalid or contradictory JSON does not count as a successful omission rejection.
