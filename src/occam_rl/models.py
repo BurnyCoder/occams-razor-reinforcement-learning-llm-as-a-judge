@@ -54,7 +54,9 @@ def load_policy(cfg: dict, seed: int, adapter: Path | None = None):
         model_name=cfg["policy"], revision=revision(cfg["policy"]),
         max_seq_length=cfg["max_prompt_tokens"] + cfg["max_completion_tokens"],
         dtype=torch.bfloat16, load_in_4bit=False, load_in_16bit=True,
-        fast_inference=False, device_map={"": 0}, trust_remote_code=False)
+        # Unsloth's existing text-only route returns a tokenizer and skips the vision tower.
+        # https://github.com/unslothai/unsloth/blob/3384411d336a5b43cf81e8fdbf73c010eee08e6b/unsloth/models/loader.py
+        text_only=True, fast_inference=False, device_map={"": 0}, trust_remote_code=False)
     if adapter is None:
         model = FastLanguageModel.get_peft_model(model, r=cfg["lora_rank"], lora_alpha=cfg["lora_alpha"],
             target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
