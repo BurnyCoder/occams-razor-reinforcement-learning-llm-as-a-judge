@@ -11,3 +11,7 @@ Runtime concerns requiring measured checks: Blackwell kernels, Unsloth/TRL versi
 Security and reliability review: generated code runs in a nonroot, read-only, networkless, resource-limited container without host mounts. This is not a formal container escape guarantee. Numeric parsing accepts only finite numeric literals/ratios and explicitly handles units; it never evaluates candidate Python as a numeric answer. Candidate strings in the browser use textContent. Git and Hugging Face publication select tracked source and known artifacts; .env is ignored. All models run locally; the only inference HTTP endpoint is loopback llama.cpp.
 
 Next evidence: run the authored tests only after the complete implementation is pushed. Record failures and publish every fix before rerunning. No experimental claims are supported by this review alone.
+# Executed core verification
+
+The complete CPU and container suite passed after publication. Machine-readable evidence is in [the pytest report](../results/tests/core.xml). Coverage includes correctness dominance, reasoning-omission gating, exact answers and unit conversion, deterministic split checks, statistical pairing, multiplicity correction, prompt-only publication, exploratory seed labeling, hidden code cases and timeout cleanup. These are software checks, not model accuracy or proof of judge quality. Model compatibility, GPU fit, qualification, data freezing and actual GRPO remain separate prerequisites.
+
