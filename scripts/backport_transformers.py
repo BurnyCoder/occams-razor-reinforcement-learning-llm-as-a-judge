@@ -17,7 +17,7 @@ def lazy_imports(text):
     """Reuse upstream's direct version lookup before its deferred mapping fallback."""
     text = text.replace("PACKAGE_DISTRIBUTION_MAPPING = importlib.metadata.packages_distributions()",
                         "@functools.cache\ndef _package_distribution_mapping() -> dict[str, list[str]]:\n    return importlib.metadata.packages_distributions()")
-    text = text.replace("PACKAGE_DISTRIBUTION_MAPPING.get(pkg_name, [])", "_package_distribution_mapping().get(pkg_name, [])")
+    text = text.replace("PACKAGE_DISTRIBUTION_MAPPING.get", "_package_distribution_mapping().get")
     start = text.index("        for distribution_name in _candidate_distribution_names(pkg_name):")
     end = text.index("        logger.debug", start)
     fallback = text[start:end]
@@ -43,14 +43,20 @@ def main():
         if not target.parent.resolve().is_relative_to(ROOT / ".venv"):
             raise RuntimeError("Refusing to patch outside the project venv")
         current = file_hash(target)
+        text = target.read_text()
+        before = text
         if current != prior_files.get(name, {}).get("patched_sha256"):
             if current != original:
                 raise RuntimeError(f"Unexpected source bytes: {name}")
-            text = target.read_text()
             text = lazy_imports(text) if name.startswith("utils/") else text.replace(
                 "import PACKAGE_DISTRIBUTION_MAPPING,", "import _package_distribution_mapping,").replace(
                 "PACKAGE_DISTRIBUTION_MAPPING.get", "_package_distribution_mapping().get")
-            ast.parse(text)
+        # Migrate earlier partial receipts using the same upstream substitutions.
+        text = text.replace("PACKAGE_DISTRIBUTION_MAPPING.get", "_package_distribution_mapping().get")
+        if "PACKAGE_DISTRIBUTION_MAPPING" in text:
+            raise RuntimeError(f"An eager mapping reference remains in {name}")
+        ast.parse(text)
+        if text != before:
             temporary = target.with_suffix(".occam.tmp")
             temporary.write_text(text)
             temporary.replace(target)
