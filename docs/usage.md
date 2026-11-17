@@ -37,6 +37,9 @@ uv run --frozen pytest -m sandbox
 uv run --frozen occam resolve
 # Publish the resolved revisions, then build the pinned CUDA llama.cpp runtime.
 bash scripts/build_llama.sh
+# If nvcc is unavailable, install the checksum-pinned official CUDA binary instead:
+uv run --frozen python scripts/install_llama.py
+# Set OCCAM_LLAMA_SERVER in ignored .env to the printed path.
 uv run --frozen occam doctor
 # Publish runtime manifest before the next phase.
 uv run --frozen occam prepare

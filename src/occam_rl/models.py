@@ -235,7 +235,15 @@ class GemmaJudge:
     def assess(self, task: Task, trace: str) -> Judgment | None:
         """Use local streaming JSON-schema-constrained decoding; full prompts are retained."""
         messages = judge_messages(task, trace)
-        self.log.emit("llm_prompt", role="gemma", messages=messages, thinking=False)
+        rendered = httpx.post(self.url + "/apply-template", json={"messages": messages, "add_generation_prompt": True,
+                              "chat_template_kwargs": {"enable_thinking": False}}, timeout=30)
+        rendered.raise_for_status()
+        tokenized = httpx.post(self.url + "/tokenize", json={"content": rendered.json()["prompt"]}, timeout=30)
+        tokenized.raise_for_status()
+        count = len(tokenized.json()["tokens"])
+        if count + self.cfg["judge_max_new_tokens"] > self.cfg["judge_context"]:
+            raise ValueError(f"Full Gemma judgment exceeds context: {count}; refusing truncation")
+        self.log.emit("llm_prompt", role="gemma", messages=messages, prompt_tokens=count, thinking=False)
         payload = {"messages": messages, "temperature": 0, "max_tokens": self.cfg["judge_max_new_tokens"],
                    "stream": True, "chat_template_kwargs": {"enable_thinking": False},
                    "response_format": {"type": "json_schema", "json_schema": {"name": "occam", "schema": Judgment.model_json_schema()}}}

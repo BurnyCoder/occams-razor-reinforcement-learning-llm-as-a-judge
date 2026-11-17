@@ -103,7 +103,8 @@ def verify(task: Task, trace: str, image: str = "occam-verifier:1") -> Verificat
             converted = UNITS.Quantity(float(value), unit).to(task.unit).magnitude
             correct = math.isclose(converted, float(expected), rel_tol=task.rtol, abs_tol=task.atol)
         else:
-            correct = not unit and value == expected
+            correct = not unit and (math.isclose(float(value), float(expected), rel_tol=task.rtol, abs_tol=task.atol)
+                                    if task.rtol or task.atol else value == expected)
         return Verification(correct=bool(correct), reason="matched" if correct else "mismatch", extracted=extracted)
     except (ValueError, ZeroDivisionError, pint.errors.PintError, json.JSONDecodeError) as exc:
         return Verification(correct=False, reason=str(exc), extracted=extracted)

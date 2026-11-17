@@ -61,6 +61,7 @@ def test_unit_conversion_and_exact_rationals():
     assert verify(physical, "<answer>300 cm/s</answer>").correct
     assert not verify(physical, "<answer>3</answer>").correct
     assert not verify(physical, "<answer>3 kg</answer>").correct
+    assert verify(task(domain="physics", answer="0.333333", rtol=1e-3), "<answer>1/3</answer>").correct
     assert numeric("1/3")[0] != numeric("0.333")[0]
     with pytest.raises(ValueError):
         numeric("__import__('os').system('echo bad')")

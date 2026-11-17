@@ -29,9 +29,16 @@ def resolve(cfg: dict, log) -> None:
             files[model] = choices[0]
     for dataset in ("openai/gsm8k", "google-research-datasets/mbpp", "UGPhysics/ugphysics"):
         revisions[dataset] = api.dataset_info(dataset).sha
-    llama = subprocess.check_output(["git", "ls-remote", "https://github.com/ggml-org/llama.cpp.git", "HEAD"], text=True, timeout=60).split()[0]
+    release = json.loads(subprocess.check_output(["gh", "api", "repos/ggml-org/llama.cpp/releases?per_page=1"], text=True, timeout=60))[0]
+    llama = release["target_commitish"]
+    if len(llama) != 40:
+        llama = subprocess.check_output(["git", "ls-remote", "https://github.com/ggml-org/llama.cpp.git", f"refs/tags/{release['tag_name']}"], text=True, timeout=60).split()[0]
+    assets = [{"name": a["name"], "url": a["browser_download_url"], "digest": a["digest"]}
+              for a in release["assets"] if "ubuntu-cuda-13.5-x64.tar.gz" in a["name"]]
+    if len(assets) != 2:
+        raise RuntimeError("Expected official CUDA 13.5 binary and runtime assets; review current release")
     manifest = {"revisions": revisions, "gguf_files": files, "llama_cpp_commit": llama,
-                "evalplus_data_version": "v0.2.0"}
+                "llama_release": release["tag_name"], "llama_assets": assets, "evalplus_data_version": "v0.2.0"}
     write_json(ROOT / "manifests/revisions.json", manifest)
     log.emit("revisions_resolved", **manifest)
 
@@ -86,7 +93,7 @@ def select_gemma(cfg: dict, log) -> None:
     task = Task(id="resource/gemma", domain="math", family="resource", split="resource",
                 question="Solve 2x=6 and justify it.", reference="Divide by two, giving x=3.")
     # A deliberately long resource input, not a sampled baseline or a benchmark result.
-    trace = ("The calculation checks a previously stated equality. " * 1300) + "2x=6 implies x=3."
+    trace = ("The calculation checks a previously stated equality. " * 700) + "2x=6 implies x=3."
     failures = []
     for model in (cfg["gemma_primary"], cfg["gemma_fallback"]):
         try:
