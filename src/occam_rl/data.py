@@ -11,6 +11,7 @@ import random
 import re
 from fractions import Fraction
 from pathlib import Path
+from tokenize import TokenError
 
 from pint.errors import PintError
 
@@ -179,6 +180,9 @@ def public_tasks(cfg: dict, revisions: dict, log) -> list[Task]:
                               source="openai/gsm8k", license="MIT"))
     rows = load_dataset("google-research-datasets/mbpp", "full", split="train",
                         revision=revisions["google-research-datasets/mbpp"])
+    # Exclude every official training ID from MBPP+, including rows later found
+    # ineligible for our training adapter. Eligibility cannot relax split isolation.
+    train_ids = {str(row["task_id"]) for row in rows}
     for row in rows:
         try:
             signature, entrypoint = function_contract(row["code"], row["test_list"])
@@ -208,12 +212,11 @@ def public_tasks(cfg: dict, revisions: dict, log) -> list[Task]:
                 tasks.append(Task(id=identifier, domain="physics", family=identifier, split="test", question=row["problem"],
                                   answer=str(value), unit=unit, reference=row["solution"], rtol=1e-3, atol=1e-8,
                                   source="UGPhysics/ugphysics", license="CC-BY-NC-SA-4.0"))
-            except (ValueError, TypeError, KeyError, PintError) as exc:
+            except (ValueError, ArithmeticError, SyntaxError, TokenError, TypeError, KeyError, PintError) as exc:
                 # Eligibility failures are retained before any model sees the tasks.
                 log.emit("exclude", source="UGPhysics/ugphysics", id=identifier, reason=str(exc))
     from evalplus.data import get_mbpp_plus
     mbpp = get_mbpp_plus(version="v0.2.0")
-    train_ids = {t.id.split("/")[-1] for t in tasks if t.source == "google-research-datasets/mbpp"}
     for identifier, row in mbpp.items():
         try:
             if identifier.split("/")[-1] in train_ids:

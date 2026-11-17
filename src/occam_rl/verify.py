@@ -12,6 +12,7 @@ import subprocess
 import tempfile
 import uuid
 from fractions import Fraction
+from tokenize import TokenError
 
 import pint
 
@@ -51,11 +52,20 @@ def numeric(answer: str) -> tuple[Fraction, str]:
     match = re.fullmatch(fr"({NUMBER})(?:\s*/\s*({NUMBER}))?\s*(.*)", cleaned)
     if not match:
         raise ValueError("Expected a numeric final answer")
-    value = Fraction(match[1])
-    if match[2]:
-        value /= Fraction(match[2])
-    if not math.isfinite(float(value)):
-        raise ValueError("Non-finite answer")
+    # Bound exponent parsing before Fraction allocates an enormous integer. This
+    # is a declared parser limit, independent of any model's observed answers.
+    for literal in (match[1], match[2] or "1"):
+        exponent = re.search(r"[eE]([+-]?\d+)$", literal)
+        if exponent and abs(int(exponent[1])) > 1000:
+            raise ValueError("Numeric exponent exceeds parser limit")
+    try:
+        value = Fraction(match[1])
+        if match[2]:
+            value /= Fraction(match[2])
+        if not math.isfinite(float(value)):
+            raise ValueError("Non-finite answer")
+    except ArithmeticError as exc:
+        raise ValueError("Invalid or overflowing numeric answer") from exc
     return value, match[3].strip()
 
 
@@ -123,5 +133,7 @@ def verify(task: Task, trace: str, image: str = "occam-verifier:1") -> Verificat
             correct = not unit and (math.isclose(float(value), float(expected), rel_tol=task.rtol, abs_tol=task.atol)
                                     if task.rtol or task.atol else value == expected)
         return Verification(correct=bool(correct), reason="matched" if correct else "mismatch", extracted=extracted)
-    except (ValueError, ZeroDivisionError, pint.errors.PintError, json.JSONDecodeError) as exc:
+    # Pint uses Python's tokenizer, which also raises TokenError on malformed
+    # expressions: https://docs.python.org/3.12/library/tokenize.html
+    except (ValueError, ArithmeticError, SyntaxError, TokenError, pint.errors.PintError) as exc:
         return Verification(correct=False, reason=str(exc), extracted=extracted)

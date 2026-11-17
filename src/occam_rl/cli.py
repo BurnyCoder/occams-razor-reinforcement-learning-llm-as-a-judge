@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+import traceback
 from pathlib import Path
 
 from .io import ROOT, EventLog, config, now, runs_dir
@@ -81,7 +82,8 @@ def main() -> None:
             from .publishing import publish_run, publish_source
             publish_source(cfg, log, commit) if args.source else publish_run(cfg, log, commit, args.run)
     except BaseException as exc:
-        log.emit("phase_failed", phase=args.phase, error_type=type(exc).__name__, error=str(exc))
+        log.emit("phase_failed", phase=args.phase, error_type=type(exc).__name__, error=str(exc),
+                 traceback=traceback.format_exc())
         raise
     log.emit("phase_complete", phase=args.phase)
 

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="3" time="24.942" timestamp="2026-11-17T02:50:34.529147+01:00" hostname="burny"><testcase classname="tests.test_contracts" name="test_malformed_quantity_is_wrong_without_crashing[3 m\\s]" time="0.002"><failure message="tokenize.TokenError: ('unexpected character after line continuation character', (1, 4))">answer = '3 m\\s'
+
+    @pytest.mark.parametrize("answer", [r"3 m\s", "3 (m/s", "1e309 m/s"])
+    def test_malformed_quantity_is_wrong_without_crashing(answer):
+        """Unsupported unit syntax and overflow are candidate errors, not run failures."""
+        physical = task(domain="physics", answer="3", unit="m/s", rtol=1e-6)
+&gt;       assert not verify(physical, f"&lt;answer&gt;{answer}&lt;/answer&gt;").correct
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_contracts.py:74: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/occam_rl/verify.py:120: in verify
+    converted = UNITS.Quantity(float(value), unit).to(task.unit).magnitude
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pint/facets/plain/quantity.py:237: in __new__
+    units = inst._REGISTRY._into_units(units, target_class_name="PlainQuantity")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pint/facets/plain/registry.py:1543: in _into_units
+    return self.parse_units(units)._units
+           ^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pint/facets/plain/registry.py:1310: in parse_units
+    self.parse_units_as_container(input_string, as_delta, case_sensitive)
+.venv/lib/python3.12/site-packages/pint/facets/nonmultiplicative/registry.py:70: in parse_units_as_container
+    return super().parse_units_as_container(input_string, as_delta, case_sensitive)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pint/facets/plain/registry.py:1325: in parse_units_as_container
+    return self._parse_units_as_container(input_string, as_delta, case_sensitive)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pint/facets/plain/registry.py:1354: in _parse_units_as_container
+    units = ParserHelper.from_string(input_string, self.non_int_type)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pint/util.py:784: in from_string
+    ret = build_eval_tree(gen).evaluate(
+          ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pint/pint_eval.py:606: in build_eval_tree
+    tokens = list(tokens)
+             ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pint/pint_eval.py:128: in plain_tokenizer
+    for tokinfo in tokenize.tokenize(BytesIO(input_string.encode("utf-8")).readline):
+/usr/lib/python3.12/tokenize.py:486: in tokenize
+    yield from _generate_tokens_from_c_tokenizer(rl_gen.__next__, encoding, extra_tokens=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+source = &lt;method-wrapper '__next__' of itertools.chain object at 0x7fd385c2fd90&gt;
+encoding = 'utf-8', extra_tokens = True
+
+    def _generate_tokens_from_c_tokenizer(source, encoding=None, extra_tokens=False):
+        """Tokenize a source reading Python code as unicode strings using the internal C tokenizer"""
+        if encoding is None:
+            it = _tokenize.TokenizerIter(source, extra_tokens=extra_tokens)
+        else:
+            it = _tokenize.TokenizerIter(source, encoding=encoding, extra_tokens=extra_tokens)
+        try:
+            for info in it:
+                yield TokenInfo._make(info)
+        except SyntaxError as e:
+            if type(e) != SyntaxError:
+                raise e from None
+            msg = _transform_msg(e.msg)
+&gt;           raise TokenError(msg, (e.lineno, e.offset)) from None
+E           tokenize.TokenError: ('unexpected character after line continuation character', (1, 4))
+
+/usr/lib/python3.12/tokenize.py:582: TokenError</failure></testcase><testcase classname="tests.test_contracts" name="test_malformed_quantity_is_wrong_without_crashing[3 (m/s]" time="0.003"><failure message="tokenize.TokenError: ('unexpected EOF in multi-line statement', (1, 0))">answer = '3 (m/s'
+
+    @pytest.mark.parametrize("answer", [r"3 m\s", "3 (m/s", "1e309 m/s"])
+    def test_malformed_quantity_is_wrong_without_crashing(answer):
+        """Unsupported unit syntax and overflow are candidate errors, not run failures."""
+        physical = task(domain="physics", answer="3", unit="m/s", rtol=1e-6)
+&gt;       assert not verify(physical, f"&lt;answer&gt;{answer}&lt;/answer&gt;").correct
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_contracts.py:74: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/occam_rl/verify.py:120: in verify
+    converted = UNITS.Quantity(float(value), unit).to(task.unit).magnitude
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pint/facets/plain/quantity.py:237: in __new__
+    units = inst._REGISTRY._into_units(units, target_class_name="PlainQuantity")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pint/facets/plain/registry.py:1543: in _into_units
+    return self.parse_units(units)._units
+           ^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pint/facets/plain/registry.py:1310: in parse_units
+    self.parse_units_as_container(input_string, as_delta, case_sensitive)
+.venv/lib/python3.12/site-packages/pint/facets/nonmultiplicative/registry.py:70: in parse_units_as_container
+    return super().parse_units_as_container(input_string, as_delta, case_sensitive)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pint/facets/plain/registry.py:1325: in parse_units_as_container
+    return self._parse_units_as_container(input_string, as_delta, case_sensitive)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pint/facets/plain/registry.py:1354: in _parse_units_as_container
+    units = ParserHelper.from_string(input_string, self.non_int_type)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pint/util.py:784: in from_string
+    ret = build_eval_tree(gen).evaluate(
+          ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pint/pint_eval.py:606: in build_eval_tree
+    tokens = list(tokens)
+             ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pint/pint_eval.py:128: in plain_tokenizer
+    for tokinfo in tokenize.tokenize(BytesIO(input_string.encode("utf-8")).readline):
+/usr/lib/python3.12/tokenize.py:486: in tokenize
+    yield from _generate_tokens_from_c_tokenizer(rl_gen.__next__, encoding, extra_tokens=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+source = &lt;method-wrapper '__next__' of itertools.chain object at 0x7fd385c18190&gt;
+encoding = 'utf-8', extra_tokens = True
+
+    def _generate_tokens_from_c_tokenizer(source, encoding=None, extra_tokens=False):
+        """Tokenize a source reading Python code as unicode strings using the internal C tokenizer"""
+        if encoding is None:
+            it = _tokenize.TokenizerIter(source, extra_tokens=extra_tokens)
+        else:
+            it = _tokenize.TokenizerIter(source, encoding=encoding, extra_tokens=extra_tokens)
+        try:
+            for info in it:
+                yield TokenInfo._make(info)
+        except SyntaxError as e:
+            if type(e) != SyntaxError:
+                raise e from None
+            msg = _transform_msg(e.msg)
+&gt;           raise TokenError(msg, (e.lineno, e.offset)) from None
+E           tokenize.TokenError: ('unexpected EOF in multi-line statement', (1, 0))
+
+/usr/lib/python3.12/tokenize.py:582: TokenError</failure></testcase><testcase classname="tests.test_contracts" name="test_malformed_quantity_is_wrong_without_crashing[1e309 m/s]" time="0.001"><failure message="OverflowError: integer division result too large for a float">answer = '1e309 m/s'
+
+    @pytest.mark.parametrize("answer", [r"3 m\s", "3 (m/s", "1e309 m/s"])
+    def test_malformed_quantity_is_wrong_without_crashing(answer):
+        """Unsupported unit syntax and overflow are candidate errors, not run failures."""
+        physical = task(domain="physics", answer="3", unit="m/s", rtol=1e-6)
+&gt;       assert not verify(physical, f"&lt;answer&gt;{answer}&lt;/answer&gt;").correct
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_contracts.py:74: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/occam_rl/verify.py:115: in verify
+    value, unit = numeric(extracted)
+                  ^^^^^^^^^^^^^^^^^^
+src/occam_rl/verify.py:57: in numeric
+    if not math.isfinite(float(value)):
+                         ^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = Fraction(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000...0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, 1)
+
+    def __float__(self):
+        """float(self) = self.numerator / self.denominator
+    
+        It's important that this conversion use the integer's "true"
+        division rather than casting one side to float before dividing
+        so that ratios of huge integers convert without overflowing.
+    
+        """
+&gt;       return int(self.numerator) / int(self.denominator)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       OverflowError: integer division result too large for a float
+
+/usr/lib/python3.12/numbers.py:316: OverflowError</failure></testcase></testsuite></testsuites>

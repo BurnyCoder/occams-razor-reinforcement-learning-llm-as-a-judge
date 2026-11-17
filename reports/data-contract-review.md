@@ -1,5 +1,9 @@
 # Code task contract corrections before freezing data
 
+The next preparation attempt reached UGPhysics but failed on unsupported unit syntax: Pint delegates tokenization to Python, whose `TokenError` was not covered by `PintError`. Regression counterexamples reproduced uncaught malformed-unit and numeric-overflow exceptions. Unsupported unit syntax now becomes a logged eligibility exclusion, and malformed candidate quantities become verifier failures. Exponent magnitude is bounded before exact-rational parsing; this resource bound is documented in the data contract. The failure artifact is retained, and subsequent phase failures include full tracebacks. Sources: [Pint parsing](https://pint.readthedocs.io/en/stable/api/base.html), [Python tokenizer exceptions](https://docs.python.org/3.12/library/tokenize.html).
+
+MBPP+ exclusion now uses all official MBPP training IDs, including records that fail our training eligibility checks. This preserves the stated official-split exclusion independently of adapter eligibility. No policy has been evaluated on either split.
+
 No training data or policy performance had been frozen or measured when these defects were identified. The first preparation process was interrupted while still importing its dependencies; its failure log is retained.
 
 Procedural code questions explicitly forbid input mutation. The runner originally checked only return values, so sorting a list in place could pass despite violating that constraint. The verifier now snapshots JSON arguments and rejects changed inputs when the task requires preservation. A counterexample test has the right numeric output but illegally mutates the list.

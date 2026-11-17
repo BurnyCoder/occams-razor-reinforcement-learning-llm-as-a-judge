@@ -67,7 +67,7 @@ def test_unit_conversion_and_exact_rationals():
         numeric("__import__('os').system('echo bad')")
 
 
-@pytest.mark.parametrize("answer", [r"3 m\s", "3 (m/s", "1e309 m/s"])
+@pytest.mark.parametrize("answer", [r"3 m\s", "3 (m/s", "1e309 m/s", "1e999999999999 m/s"])
 def test_malformed_quantity_is_wrong_without_crashing(answer):
     """Unsupported unit syntax and overflow are candidate errors, not run failures."""
     physical = task(domain="physics", answer="3", unit="m/s", rtol=1e-6)
