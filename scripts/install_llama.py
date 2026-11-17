@@ -28,3 +28,7 @@ servers = list(destination.rglob("llama-server"))
 if len(servers) != 1:
     raise RuntimeError(f"Expected one llama-server, found {servers}")
 print(f"Set OCCAM_LLAMA_SERVER={servers[0]} in ignored .env", flush=True)
+libraries = list(destination.rglob("libcudart.so.13"))
+if len(libraries) != 1:
+    raise RuntimeError(f"Expected one CUDA runtime directory, found {libraries}")
+print(f"Set OCCAM_LLAMA_CUDA_LIB={libraries[0].parent} in ignored .env", flush=True)

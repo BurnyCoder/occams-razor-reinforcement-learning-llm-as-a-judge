@@ -1,5 +1,9 @@
 # Environment setup record
 
+The checksum-verified official llama.cpp binary installed successfully. Its CUDA libraries are in the release's separate runtime directory; dynamic-link inspection exposed the missing search path. The server now receives that path only in its own subprocess environment, avoiding conflicts with Torch's separately pinned CUDA libraries. Moving HF_HOME also changes the default credential path, so ignored local configuration points HF_TOKEN_PATH to the user's existing authenticated token file without copying or printing its contents.
+
+The first paper render was inspected page by page. A narrow pending-count column wrapped the placeholder word unnecessarily; the renderer now uses a dash for missing numbers and includes page numbers. The initial paper contains no model scores.
+
 CUDA inspection succeeded and is recorded in [the runtime manifest](../manifests/runtime.json), including actual library versions, compute capability, available VRAM and the verifier image digest. The first Torch import was slow while reading the new environment through WSL's Windows filesystem mount; this was initialization latency, not a model run. GPU model fit remains unmeasured.
 
 The core pull request was merged and GitHub Pages deployed successfully. Browser inspection confirmed the published empty-state display and domain filter. The in-app browser skill backend was unavailable, so the connected Chrome computer-use surface was used for this check.

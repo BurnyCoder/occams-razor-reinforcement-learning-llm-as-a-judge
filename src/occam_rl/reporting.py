@@ -186,7 +186,7 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
     def flush_table():
         if table_rows:
             widths = [110, 55, 30, 55, 55, 60, 55, 65] if len(table_rows[0]) == 8 else None
-            table = Table([[Paragraph(escape(cell.strip()).replace("—", "pending"), styles["BodyText"]) for cell in row] for row in table_rows], repeatRows=1, colWidths=widths)
+            table = Table([[Paragraph(escape(cell.strip()).replace("—", "-"), styles["BodyText"]) for cell in row] for row in table_rows], repeatRows=1, colWidths=widths)
             table.setStyle(TableStyle([("BACKGROUND", (0,0), (-1,0), colors.HexColor("#e5eee8")),
                                       ("VALIGN", (0,0), (-1,-1), "TOP"), ("GRID", (0,0), (-1,-1), .3, colors.lightgrey)]))
             story.extend([table, Spacer(1, 10)])
@@ -214,9 +214,16 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
                       Paragraph(escape(ai_statement.strip()), styles["BodyText"])])
     destination = ROOT / "output/pdf/paper.pdf"
     destination.parent.mkdir(parents=True, exist_ok=True)
+    def footer(canvas, document):
+        """Keep page identity visible when the living report is printed or excerpted."""
+        canvas.saveState()
+        canvas.setFont("Helvetica", 8)
+        canvas.drawString(.6*inch, .3*inch, "Adequate Simplicity under Local GRPO")
+        canvas.drawRightString(7.9*inch, .3*inch, str(document.page))
+        canvas.restoreState()
     SimpleDocTemplate(str(destination), pagesize=(8.5*inch, 11*inch), rightMargin=.6*inch,
                       leftMargin=.6*inch, topMargin=.6*inch, bottomMargin=.6*inch,
-                      title="Adequate Simplicity under Local GRPO", author='Libor "Burny" Burian').build(story)
+                      title="Adequate Simplicity under Local GRPO", author='Libor "Burny" Burian').build(story, onFirstPage=footer, onLaterPages=footer)
 
 
 def report(cfg: dict, log) -> None:

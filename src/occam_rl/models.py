@@ -207,7 +207,13 @@ class GemmaJudge:
                    "-c", str(self.cfg["judge_context"]), "-b", "128", "-ub", "128", "--parallel", "1",
                    "--host", "127.0.0.1", "--port", str(port), "--jinja", "--reasoning-format", "none",
                    "--chat-template-kwargs", '{"enable_thinking":false}']
-        self.process = subprocess.Popen(command, stdout=self.stream, stderr=subprocess.STDOUT)
+        # Official CUDA release assets separate the runtime libraries from binaries.
+        # Scope this path to llama.cpp so Torch keeps its own pinned CUDA runtime.
+        server_env = dict(os.environ)
+        cuda_libraries = os.environ.get("OCCAM_LLAMA_CUDA_LIB")
+        if cuda_libraries:
+            server_env["LD_LIBRARY_PATH"] = cuda_libraries + ":" + server_env.get("LD_LIBRARY_PATH", "")
+        self.process = subprocess.Popen(command, stdout=self.stream, stderr=subprocess.STDOUT, env=server_env)
         try:
             with MemoryMonitor(self.cfg["headroom_mib"], self.log, "gemma_load"):
                 deadline = time.monotonic() + 300

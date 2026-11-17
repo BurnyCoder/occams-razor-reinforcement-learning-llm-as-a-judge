@@ -39,7 +39,7 @@ uv run --frozen occam resolve
 bash scripts/build_llama.sh
 # If nvcc is unavailable, install the checksum-pinned official CUDA binary instead:
 uv run --frozen python scripts/install_llama.py
-# Set OCCAM_LLAMA_SERVER in ignored .env to the printed path.
+# Set OCCAM_LLAMA_SERVER and OCCAM_LLAMA_CUDA_LIB in ignored .env to the printed paths.
 uv run --frozen occam doctor
 # Publish runtime manifest before the next phase.
 uv run --frozen occam prepare

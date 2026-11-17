@@ -90,3 +90,21 @@ The target confirmatory evaluation has equal domain weights and paired task comp
 - [ ] Measure Lean proof-term structure, dependencies, and axioms programmatically; validate before using as a reward.
 
 Project code is Apache-2.0. See [source and license notes](docs/sources.md). Research author: Libor “Burny” Burian.
+
+
+## Generated results
+
+<!-- RESULTS:START -->
+
+| Run | Split | N | Accuracy | Adequacy | C × A × S | Tokens | Status |
+|---|---|---:|---:|---:|---:|---:|---|
+| occam | pending | — | — | — | — | — | not evaluated |
+| accuracy | pending | — | — | — | — | — | not evaluated |
+| token | pending | — | — | — | — | — | not evaluated |
+| formal | pending | — | — | — | — | — | not evaluated |
+| shuffled | pending | — | — | — | — | — | not evaluated |
+| prompt_ordinary | pending | — | — | — | — | — | not evaluated |
+| prompt_concise | pending | — | — | — | — | — | not evaluated |
+| prompt_occam | pending | — | — | — | — | — | not evaluated |
+
+<!-- RESULTS:END -->
