@@ -1,8 +1,16 @@
 {
   "package": "transformers",
   "version": "5.17.0",
-  "original_sha256": "e147f99cf68352e3260e9780930501c3becc0c40a5ff04150ff641b724161732",
-  "patched_sha256": "81108c57cefee694d02a4eb68d8ff62605c171855e4313b9d1990f89d8b8851e",
-  "scope": "lazy package metadata lookup only",
+  "files": {
+    "utils/import_utils.py": {
+      "original_sha256": "e147f99cf68352e3260e9780930501c3becc0c40a5ff04150ff641b724161732",
+      "patched_sha256": "81108c57cefee694d02a4eb68d8ff62605c171855e4313b9d1990f89d8b8851e"
+    },
+    "modeling_flash_attention_utils.py": {
+      "original_sha256": "b5301ec90664cfe088dc5bd91cb4851cc8affb5ac44e2a1c1c422ba20fa99c11",
+      "patched_sha256": "5e202df37f6cfb28b10f81c58b9c1962dc274cd5d16ebe1cb9633caaf0a37f0a"
+    }
+  },
+  "scope": "lazy package metadata lookup and its existing callers only",
   "upstream_commit": "41f9d3992023970fb5a463e70d56232506c80fbc"
 }
