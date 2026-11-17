@@ -619,6 +619,15 @@
       "artifact": "results/judge-audits/qwen-initial-2b.json"
     }
   ],
+  "profile": {
+    "backward_minimum_free_mib": 3860,
+    "switch_weights_unchanged": true,
+    "switch_rng_unchanged": true,
+    "generation_minimum_free_mib": 4141,
+    "optimizer_roundtrip": true,
+    "passed": true,
+    "config_hash": "74460fe39cae3d4568eca791887b679dbd525de26c9d9d4560fdfbf866ff2a53"
+  },
   "data_counts": [
     {
       "split": "calibration",

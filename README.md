@@ -53,6 +53,10 @@ The policy is [Qwen/Qwen3.5-0.8B](https://huggingface.co/Qwen/Qwen3.5-0.8B), BF1
 
 The larger judge also failed its first audit. [Amendment 002](reports/amendment-002-judge-decoding.md) records the rating/decoder correction and the explicit training-only waiver. It preserves every failure and marks affected comparisons exploratory. GPU fit, verifier checks and independent evaluation remain required.
 
+An interrupted revised audit exposed a model/tokenizer end-token mismatch. Generation now honors both declared document and chat terminators using the standard Transformers API; its partial log is retained before rerunning the unchanged audit.
+
+The initial policy profile exposed a processor/tokenizer mismatch before its backward pass. Selecting Unsloth's existing text-only path resolved it. The full synthetic GPU/state profile now passes; this establishes runtime feasibility, not policy learning. See the [generated measurements](reports/readiness.md), [profile artifact](manifests/preflight.json) and [runtime integration record](reports/runtime-integration.md).
+
 Target machine: RTX 5070 Laptop GPU, approximately 8 GiB VRAM. Model names and weight sizes do not establish fit: the preflight must measure generation, backward, and judge peaks with at least 750 MiB free. Roles run sequentially. Inactive policy weights may be staged in RAM; inference is never silently moved to CPU. Long traces are never truncated to fit the judge. [Unsloth's Qwen3.5 guide](https://unsloth.ai/docs/models/qwen3.5/fine-tune) recommends BF16 LoRA and documents local GRPO with `fast_inference=False`.
 
 ## Reproduction and publication order

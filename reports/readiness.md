@@ -5,6 +5,18 @@
 | Qwen3.5-4B | 0/12 | 5/10 | 18 | No |
 | Qwen3.5-2B | 1/12 | 7/10 | 16 | No |
 
+GPU/state prerequisite measurements (synthetic inputs; not learning results):
+
+| Check | Recorded result |
+|---|---|
+| Backward minimum free VRAM (MiB) | 3860 |
+| Generation minimum free VRAM (MiB) | 4141 |
+| Role-switch weights unchanged | True |
+| Role-switch RNG unchanged | True |
+| Optimizer serialization round trip | True |
+| Profile passed | True |
+
+
 Constructed specification checks are not held-out policy accuracy or human preference validation. Invalid or contradictory JSON does not count as a successful omission rejection.
 
 | Split | Domain | Source | Tasks |
