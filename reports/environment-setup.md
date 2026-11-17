@@ -1,5 +1,7 @@
 # Environment setup record
 
+The first Hugging Face source upload was interrupted during local file discovery. Inspection of the pinned Hub implementation showed that `upload_folder` recursively lists files before applying allow patterns, unnecessarily walking the project venv through WSL. Source uploads now use [the documented create_commit API](https://huggingface.co/docs/huggingface_hub/v1.33.0/guides/upload#create_commit) with exactly Git-tracked paths and explicitly verified frozen data. A regression check excludes untracked configuration. The artifact card and original research README are both retained under distinct filenames.
+
 The checksum-verified official llama.cpp binary installed successfully. Its CUDA libraries are in the release's separate runtime directory; dynamic-link inspection exposed the missing search path. The server now receives that path only in its own subprocess environment, avoiding conflicts with Torch's separately pinned CUDA libraries. Moving HF_HOME also changes the default credential path, so ignored local configuration points HF_TOKEN_PATH to the user's existing authenticated token file without copying or printing its contents.
 
 The first paper render was inspected page by page. A narrow pending-count column wrapped the placeholder word unnecessarily; the renderer now uses a dash for missing numbers and includes page numbers. The initial paper contains no model scores.

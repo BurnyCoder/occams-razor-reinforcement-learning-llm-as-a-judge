@@ -28,23 +28,25 @@ def hub(cfg: dict):
 
 def publish_source(cfg: dict, log, commit: str) -> None:
     """Only git-tracked files are eligible for the source upload."""
+    from huggingface_hub import CommitOperationAdd
     api, collection = hub(cfg)
     repo = cfg["hf_artifacts_repo"]
     api.create_repo(repo, repo_type="dataset", exist_ok=True, private=False)
     tracked = git("ls-files").splitlines()
     if any(Path(name).name == ".env" or "token" in Path(name).name.lower() for name in tracked):
         raise RuntimeError("Potential secret-bearing tracked file; review before upload")
-    result = api.upload_folder(repo_id=repo, repo_type="dataset", folder_path=str(ROOT),
-                               allow_patterns=tracked, commit_message=f"Research source snapshot {commit}")
+    # upload_folder in the pinned Hub version traverses .venv before filtering.
+    # Its documented create_commit API lets Git define the exact eligible files.
+    operations = [CommitOperationAdd(path_in_repo="research-README.md" if name == "README.md" else name,
+                                     path_or_fileobj=str(ROOT / name)) for name in tracked]
     if (ROOT / "manifests/data.json").exists():
         files = read_json(ROOT / "manifests/data.json")["files"]
         for name in files:
             require_data_manifest(data_dir() / name)
-        api.upload_folder(repo_id=repo, repo_type="dataset", folder_path=str(data_dir()),
-                          path_in_repo="frozen-data", allow_patterns=list(files),
-                          commit_message="Publish hash-verified frozen task splits")
-    result = api.upload_file(repo_id=repo, repo_type="dataset", path_or_fileobj=str(ROOT / "docs/hf-artifacts.md"),
-                             path_in_repo="README.md", commit_message="Describe artifact provenance and source-specific licenses")
+            operations.append(CommitOperationAdd(path_in_repo=f"frozen-data/{name}", path_or_fileobj=str(data_dir() / name)))
+    operations.append(CommitOperationAdd(path_in_repo="README.md", path_or_fileobj=str(ROOT / "docs/hf-artifacts.md")))
+    result = api.create_commit(repo_id=repo, repo_type="dataset", operations=operations,
+                               commit_message=f"Research source and frozen data snapshot {commit}")
     api.add_collection_item(collection, item_id=repo, item_type="dataset", exists_ok=True)
     write_json(ROOT / ".local/hf-publication.json", {"git_commit": commit, "hf_commit": result.oid,
                                                     "repo": repo, "collection": collection})

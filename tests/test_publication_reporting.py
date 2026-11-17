@@ -6,6 +6,29 @@ from occam_rl.io import read_json, write_json
 from occam_rl import publishing, reporting
 
 
+def test_source_upload_uses_exact_tracked_paths(tmp_path, monkeypatch):
+    """Untracked files and the local environment are never traversed for source upload."""
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "README.md").write_text("project")
+    (tmp_path / "docs/hf-artifacts.md").write_text("artifact card")
+    (tmp_path / ".env").write_text("must remain local")
+    calls = []
+    class API:
+        def create_repo(self, *args, **kwargs):
+            pass
+        def create_commit(self, **kwargs):
+            calls.extend(op.path_in_repo for op in kwargs["operations"])
+            return SimpleNamespace(oid="snapshot")
+        def add_collection_item(self, *args, **kwargs):
+            pass
+    monkeypatch.setattr(publishing, "ROOT", tmp_path)
+    monkeypatch.setattr(publishing, "git", lambda *a: "README.md\ndocs/hf-artifacts.md")
+    monkeypatch.setattr(publishing, "hub", lambda cfg: (API(), "collection"))
+    publishing.publish_source({"hf_artifacts_repo": "owner/artifacts"}, SimpleNamespace(emit=lambda *a, **k: None), "commit")
+    assert set(calls) == {"research-README.md", "docs/hf-artifacts.md", "README.md"}
+    assert read_json(tmp_path / ".local/hf-publication.json")["git_commit"] == "commit"
+
+
 def test_prompt_only_publication_has_no_model_repository(tmp_path, monkeypatch):
     """An unchanged-model evaluation publishes records, never a fictional adapter."""
     name = "prompt_concise-seed17"
