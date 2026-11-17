@@ -110,6 +110,7 @@ Research author: Libor “Burny” Burian. This is a local LoRA research artifac
 
 Reward arm: {status['arm']}. Training seed: {status['seed']}. Completed steps: {status['steps']}.
 Run complete: {status['complete']}. Exploratory pilot: {status['pilot']}.
+Changed trainable parameter tensors: {status.get('changed_parameter_tensors', 'not recorded')}.
 Training judge qualified: {status.get('judge_qualified', 'not recorded')}.
 Exploratory judge-quality waiver: {status.get('exploratory_judge_override', False)}.
 

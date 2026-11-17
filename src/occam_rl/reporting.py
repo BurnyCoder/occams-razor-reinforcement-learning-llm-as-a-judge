@@ -29,6 +29,7 @@ def snapshot() -> dict:
         events = read_jsonl(directory / "events.jsonl", tolerate_tail=True)
         rollouts = [r for r in events if r["event"] == "rollout"]
         metrics = [r for r in events if r["event"] == "training_metrics"]
+        groups = [r for r in events if r["event"] == "group"]
         if events or status:
             by_step = defaultdict(list)
             for row in rollouts:
@@ -38,6 +39,9 @@ def snapshot() -> dict:
                       "tokens": statistics.mean(r["tokens"] for r in rows)} for step,rows in sorted(by_step.items())]
             runs.append({"name": directory.name, "status": status, "curve": curve, "metrics": metrics,
                          "last_event": events[-1]["time"] if events else None,
+                         "training_correct": sum(r["correct"] for r in rollouts),
+                         "training_truncated": sum(r["truncated"] for r in rollouts),
+                         "groups": len(groups), "nonzero_reward_groups": sum(r["reward_spread"] > 0 for r in groups),
                          "rollouts": len(rollouts), "training_accuracy": statistics.mean(r["correct"] for r in rollouts) if rollouts else None})
         for path in sorted(directory.glob("eval-*/results.jsonl")):
             manifest = read_json(path.parent / "manifest.json")
@@ -120,6 +124,26 @@ def score_table(rows: list[dict]) -> str:
     return header + "\n" + "\n".join(lines)
 
 
+def training_table(runs: list[dict]) -> str:
+    """Expose failed learning signals without treating training samples as evaluations."""
+    lines = []
+    for run in runs:
+        if not run["rollouts"]:
+            continue
+        status = run["status"]
+        steps = status.get("steps", max((r["step"] for r in run["metrics"]), default=0))
+        state = "in progress" if not status else "interrupted"
+        if status.get("complete"):
+            state = "complete pilot" if status.get("pilot") else "complete"
+        changed = status.get("changed_parameter_tensors", "—")
+        lines.append(f"| {run['name']} | {steps} | {run['training_correct']} / {run['rollouts']} | "
+                     f"{run['training_truncated']} | {run['nonzero_reward_groups']} / {run['groups']} | {changed} | {state} |")
+    if not lines:
+        return "No training rollout group has completed."
+    return ("| Run | Updates | Correct / traces | Truncated | Groups with reward spread | Changed tensors | State |\n"
+            "|---|---:|---:|---:|---:|---:|---|\n" + "\n".join(lines))
+
+
 def figures(data: dict) -> list[Path]:
     """Use zero-based accuracy axes; never synthesize points or silently smooth curves."""
     import matplotlib
@@ -182,7 +206,7 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
     from reportlab.lib import colors
     from reportlab.lib.styles import getSampleStyleSheet
     from reportlab.lib.units import inch
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, KeepTogether
 
     styles = getSampleStyleSheet()
     styles["BodyText"].fontSize, styles["BodyText"].leading = 9, 13
@@ -209,15 +233,20 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
         style = "Title" if line.startswith("# ") else "Heading2" if line.startswith("## ") else "Heading3" if line.startswith("### ") else "BodyText"
         text = escape(line.lstrip("# ")).replace("“", '"').replace("”", '"').replace("’", "'").replace("—", " - ").replace("×", " x ")
         text = re.sub(r"https?://[^\s<]+", lambda match: f'<link href="{match[0]}" color="#245f49">{match[0]}</link>', text)
-        story.extend([Paragraph(text, styles[style]), Spacer(1, 5)])
+        # Carry a heading through its following spacer so its table/text stays attached.
+        gap = Spacer(1, 5)
+        gap.keepWithNext = style.startswith("Heading") or style == "Title"
+        paragraph = Paragraph(text, styles[style])
+        paragraph.keepWithNext = gap.keepWithNext
+        story.extend([paragraph, gap])
     flush_table()
     for path in paths:
         from reportlab.lib.utils import ImageReader
         width, height = ImageReader(str(path)).getSize()
-        story.append(Image(str(path), width=6.5*inch, height=6.5*inch*height/width))
+        story.append(Image(str(path), width=6.3*inch, height=6.3*inch*height/width))
     if ai_statement:
-        story.extend([Spacer(1, 12), Paragraph("AI statement", styles["Heading2"]),
-                      Paragraph(escape(ai_statement.strip()), styles["BodyText"])])
+        story.append(KeepTogether([Spacer(1, 12), Paragraph("AI statement", styles["Heading2"]),
+                                   Paragraph(escape(ai_statement.strip()), styles["BodyText"])]))
     destination = ROOT / "output/pdf/paper.pdf"
     destination.parent.mkdir(parents=True, exist_ok=True)
     def footer(canvas, document):
@@ -241,7 +270,9 @@ def report(cfg: dict, log) -> None:
     write_json(ROOT / "site/data.json", data)
     write_json(ROOT / "results/summary.json", data)
     table = score_table(data["evaluations"])
+    training = training_table(data["runs"])
     summary = "# Experiment summary\n\nGenerated from run artifacts at " + data["generated_at"] + ".\n\n" + table
+    summary += "\n\n## Training diagnostics\n\n" + training + "\n"
     summary += "\n\nAccuracy is the fraction verified correct. Adequacy asks whether necessary reasoning is present. Simplicity summarizes four judge dimensions. C × A × S is zero for wrong or inadequate solutions. Training rollout accuracy is not held-out accuracy.\n"
     summary += "\nPrimary analysis status: `" + data["analysis"]["status"] + "`. See results/summary.json for paired intervals, multiplicity adjustments, and seed sensitivity when available.\n"
     summary += "\n## Prerequisite audits\n\n" + readiness_table + "\n\nSee [readiness evidence](readiness.md) for data counts and individual audit reports.\n"
@@ -250,10 +281,11 @@ def report(cfg: dict, log) -> None:
         notes_path = runs_dir() / run["name"] / "notes.md"
         notes = notes_path.read_text() if notes_path.exists() else "No investigator notes recorded yet."
         text = f"# {run['name']}\n\n" + json.dumps(run["status"], indent=2) + "\n\n" + notes
+        text += "\n\n## Training diagnostics\n\n" + training_table([run])
         text += "\n\n" + score_table([r for r in data["evaluations"] if r["run"] == run["name"]])
         (ROOT / "reports" / f"experiment-{run['name']}.md").write_text(text, encoding="utf-8")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    generated = START + "\n\n" + table + "\n\n" + END
+    generated = START + "\n\n### Training diagnostics\n\n" + training + "\n\n### Held-out evaluation\n\n" + table + "\n\n" + END
     if START in readme:
         readme = readme[:readme.index(START)] + generated + readme[readme.index(END)+len(END):]
     else:
@@ -262,6 +294,7 @@ def report(cfg: dict, log) -> None:
     paper = (ROOT / "paper/template.md").read_text(encoding="utf-8").replace("{{RESULTS}}", table)
     paper = paper.replace("{{ANALYSIS_STATUS}}", data["analysis"]["status"]).replace("{{GENERATED_AT}}", data["generated_at"])
     paper = paper.replace("{{READINESS}}", readiness_table)
+    paper = paper.replace("{{TRAINING}}", training)
     (ROOT / "paper/paper.md").write_text(paper, encoding="utf-8")
     paths = figures(data)
     build_pdf(paper, paths)

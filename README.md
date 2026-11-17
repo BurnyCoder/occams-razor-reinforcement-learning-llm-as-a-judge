@@ -2,9 +2,13 @@
 
 Can a local language-model judge reward **simpler, fully justified solutions** better than merely rewarding short outputs? This project studies that question with Qwen3.5, group-relative reinforcement learning, deterministic correctness checks, and an independent Gemma 4 evaluator across mathematics, introductory physics, and Python programming.
 
-**Status: data splits are frozen and the full GPU profile passes. The revised training-judge audit still fails qualification; its errors are retained. The user authorized an exploratory Occam training attempt despite this residual noise. No policy-training or benchmark results yet.** The hypothesis may fail. Correct final answers can omit essential reasoning; such answers earn correctness credit but **no simplicity bonus**. All model computation runs locally on the available GPU. The first training run is Occam; all standalone baseline inference and baseline training follow it.
+**Status: the exploratory Occam pilot completed and saved a checkpoint, but did not learn: all sampled traces were truncated and incorrect, with zero reward variation, gradients and parameter changes.** Data splits are frozen and the full GPU profile passes. The training judge still fails qualification; the explicit training-only waiver preserves that failure. No retained training or benchmark comparison is complete. Correct final answers can omit essential reasoning; such answers earn correctness credit but **no simplicity bonus**. All model computation runs locally on the available GPU. Retained Occam training must precede standalone baseline inference and baseline training.
 
 The first pilot reached policy loading but stopped before rollouts on a Unicode JSONL reader bug. The [documented fix](reports/runtime-integration.md) preserves the frozen data and permits a logged startup retry; no optimizer update is claimed from the failed attempt.
+
+The retry generates traces but repeatedly reaches the output limit without a completed answer. [Qwen's model card](https://huggingface.co/Qwen/Qwen3.5-0.8B#thinking-mode) explicitly documents thinking-loop susceptibility in this small model. This is a candidate explanation, not a tested causal conclusion. Artifact-derived training diagnostics below distinguish actual zero rewards from missing evaluations.
+
+Work is paused at the user's request. The [resume instructions](reports/resume.md) preserve the next controlled experiment and publication order. The [pilot adapter and full checkpoint](https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot) are published as a negative research artifact, with no claim of improved performance.
 
 The proposed contribution is the controlled comparison of an adequacy-gated semantic simplicity reward against adequacy-gated token and formal-length rewards. Short-reasoning RL already exists: see [ShorterBetter](https://arxiv.org/abs/2504.21370), [StepPruner](https://arxiv.org/abs/2510.03805), and [Dr. GRPO](https://arxiv.org/abs/2503.20783). This project does not claim to invent concise reasoning, compute Kolmogorov complexity, or establish that simpler answers are generally truer.
 
@@ -36,7 +40,7 @@ The training reward is `C * (1 + 0.2 * A * S)`. `C` is binary verified correctne
 
 | Arm | Training or prompting | Status |
 |---|---|---|
-| Occam | Verified correctness + sufficient-reasoning-gated semantic simplicity | Planned first |
+| Occam | Verified correctness + sufficient-reasoning-gated semantic simplicity | Pilot completed without learning; retained run pending |
 | Accuracy | Verified correctness only | Pending |
 | Token length | Same adequacy gate; decreasing token-length reward | Pending |
 | Formal length | Same adequacy gate; decreasing math-symbol / code-length reward | Pending |
@@ -109,6 +113,14 @@ Project code is Apache-2.0. See [source and license notes](docs/sources.md). Res
 ## Generated results
 
 <!-- RESULTS:START -->
+
+### Training diagnostics
+
+| Run | Updates | Correct / traces | Truncated | Groups with reward spread | Changed tensors | State |
+|---|---:|---:|---:|---:|---:|---|
+| occam-seed17-pilot | 4 | 0 / 16 | 16 | 0 / 4 | 0 | complete pilot |
+
+### Held-out evaluation
 
 | Run | Split | N | Accuracy | Adequacy | C × A × S | Tokens | Status |
 |---|---|---:|---:|---:|---:|---:|---|

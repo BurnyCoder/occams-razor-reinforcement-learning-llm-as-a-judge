@@ -1,6 +1,6 @@
 # Experiment summary
 
-Generated from run artifacts at 2026-11-17T06:07:25.289+00:00.
+Generated from run artifacts at 2026-11-17T07:01:32.141+00:00.
 
 | Run | Split | N | Accuracy | Adequacy | C × A × S | Tokens | Status |
 |---|---|---:|---:|---:|---:|---:|---|
@@ -12,6 +12,13 @@ Generated from run artifacts at 2026-11-17T06:07:25.289+00:00.
 | prompt_ordinary | pending | — | — | — | — | — | not evaluated |
 | prompt_concise | pending | — | — | — | — | — | not evaluated |
 | prompt_occam | pending | — | — | — | — | — | not evaluated |
+
+## Training diagnostics
+
+| Run | Updates | Correct / traces | Truncated | Groups with reward spread | Changed tensors | State |
+|---|---:|---:|---:|---:|---:|---|
+| occam-seed17-pilot | 4 | 0 / 16 | 16 | 0 / 4 | 0 | complete pilot |
+
 
 Accuracy is the fraction verified correct. Adequacy asks whether necessary reasoning is present. Simplicity summarizes four judge dimensions. C × A × S is zero for wrong or inadequate solutions. Training rollout accuracy is not held-out accuracy.
 
