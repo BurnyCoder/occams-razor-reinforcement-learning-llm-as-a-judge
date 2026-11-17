@@ -2,6 +2,7 @@
   "revisions": {
     "Qwen/Qwen3.5-0.8B": "2fc06364715b967f1860aea9cf38778875588b17",
     "Qwen/Qwen3.5-2B": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+    "Qwen/Qwen3.5-4B": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
     "google/gemma-4-E4B-it-qat-q4_0-gguf": "4b4a2c1d584be7264f87aac328a1bc739ce81b6c",
     "google/gemma-4-E2B-it-qat-q4_0-gguf": "675cff42a74c774d6cb76f76d8eacb49b48c9b93",
     "openai/gsm8k": "740312add88f781978c0658806c59bc2815b9866",
