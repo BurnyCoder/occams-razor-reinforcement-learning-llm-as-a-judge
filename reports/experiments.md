@@ -1,6 +1,6 @@
 # Experiment summary
 
-Generated from run artifacts at 2026-11-17T01:16:11.103+00:00.
+Generated from run artifacts at 2026-11-17T02:23:55.708+00:00.
 
 | Run | Split | N | Accuracy | Adequacy | C × A × S | Tokens | Status |
 |---|---|---:|---:|---:|---:|---:|---|
@@ -16,3 +16,11 @@ Generated from run artifacts at 2026-11-17T01:16:11.103+00:00.
 Accuracy is the fraction verified correct. Adequacy asks whether necessary reasoning is present. Simplicity summarizes four judge dimensions. C × A × S is zero for wrong or inadequate solutions. Training rollout accuracy is not held-out accuracy.
 
 Primary analysis status: `pending`. See results/summary.json for paired intervals, multiplicity adjustments, and seed sensitivity when available.
+
+## Prerequisite audits
+
+| Judge | Dominance | Omission rejection | Invalid JSON | Qualified |
+|---|---:|---:|---:|---|
+| Qwen3.5-2B | 1/12 | 7/10 | 16 | No |
+
+See [readiness evidence](readiness.md) for data counts and individual audit reports.

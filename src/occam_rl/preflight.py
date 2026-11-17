@@ -49,7 +49,8 @@ def doctor(cfg: dict, log) -> None:
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is required; CPU model fallback is prohibited")
     docker = subprocess.check_output(["docker", "image", "inspect", cfg["docker_image"], "--format", "{{.Id}}"], text=True, timeout=30).strip()
-    packages = {name: importlib.metadata.version(name) for name in ("torch", "transformers", "trl", "unsloth", "peft", "bitsandbytes")}
+    packages = {name: importlib.metadata.version(name) for name in
+                ("torch", "transformers", "trl", "unsloth", "peft", "bitsandbytes", "fla-core", "triton")}
     result = {"gpu": gpu_info(), "python": platform.python_version(), "platform": platform.platform(),
               "cuda_runtime": torch.version.cuda, "compute_capability": list(torch.cuda.get_device_capability()),
               "packages": packages, "docker_image": docker}

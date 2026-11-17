@@ -2,7 +2,7 @@
 
 Libor “Burny” Burian
 
-2026-11-17. Living preregistered research report. Artifact regeneration: 2026-11-17T01:16:11.103+00:00.
+2026-11-17. Living preregistered research report. Artifact regeneration: 2026-11-17T02:23:55.708+00:00.
 
 ## Abstract
 
@@ -33,6 +33,16 @@ Procedural tasks combine exact references, analytic physics laws and hidden Pyth
 Judge qualification uses constructed dominance and omission examples, including fixed-answer omissions, unnecessary assumptions, redundant reasoning, obfuscation and injection. It is a specification audit, not independent human validation. Failed audits and prompt revisions must be disclosed. Confirmatory evaluation uses a different model family from the training judge.
 
 ## Results
+
+### Prerequisite judge audits
+
+| Judge | Dominance | Omission rejection | Invalid JSON | Qualified |
+|---|---:|---:|---:|---|
+| Qwen3.5-2B | 1/12 | 7/10 | 16 | No |
+
+These are constructed specification checks, not policy benchmark results. A failed qualification blocks use of that judge in retained experiments. Individual audit reports retain the full labels and Wilson intervals; small constructed sets cannot establish general validity.
+
+### Policy comparisons
 
 | Run | Split | N | Accuracy | Adequacy | C × A × S | Tokens | Status |
 |---|---|---:|---:|---:|---:|---:|---|
