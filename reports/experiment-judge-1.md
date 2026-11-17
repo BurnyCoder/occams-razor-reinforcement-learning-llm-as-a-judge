@@ -2,7 +2,7 @@
 
 | Judge | Dominance | Omission rejection | Invalid JSON | Qualified |
 |---|---:|---:|---:|---|
-| Qwen3.5-4B | 0/12 | 5/10 | 18 | No |
+| Qwen3.5-4B (v2) | 0/12 | 5/10 | 18 | No |
 
 Evidence: [results/judge-audits/qwen-2026-11-17T03-00-23.431+00-00.json](../results/judge-audits/qwen-2026-11-17T03-00-23.431+00-00.json).
 

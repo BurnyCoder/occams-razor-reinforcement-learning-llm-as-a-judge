@@ -2,7 +2,8 @@
 
 | Judge | Dominance | Omission rejection | Invalid JSON | Qualified |
 |---|---:|---:|---:|---|
-| Qwen3.5-4B | 0/12 | 5/10 | 18 | No |
+| Qwen3.5-4B (v2) | 0/12 | 5/10 | 18 | No |
+| Qwen3.5-4B (v3) | 4/12 | 8/10 | 9 | No |
 | Qwen3.5-2B | 1/12 | 7/10 | 16 | No |
 
 GPU/state prerequisite measurements (synthetic inputs; not learning results):
