@@ -8,6 +8,8 @@ The first pilot reached policy loading but stopped before rollouts on a Unicode 
 
 The retry generates traces but repeatedly reaches the output limit without a completed answer. [Qwen's model card](https://huggingface.co/Qwen/Qwen3.5-0.8B#thinking-mode) explicitly documents thinking-loop susceptibility in this small model. This is a candidate explanation, not a tested causal conclusion. Artifact-derived training diagnostics below distinguish actual zero rewards from missing evaluations.
 
+Work is paused at the user's request. The [resume instructions](reports/resume.md) preserve the next controlled experiment and publication order. The [pilot adapter and full checkpoint](https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot) are published as a negative research artifact, with no claim of improved performance.
+
 The proposed contribution is the controlled comparison of an adequacy-gated semantic simplicity reward against adequacy-gated token and formal-length rewards. Short-reasoning RL already exists: see [ShorterBetter](https://arxiv.org/abs/2504.21370), [StepPruner](https://arxiv.org/abs/2510.03805), and [Dr. GRPO](https://arxiv.org/abs/2503.20783). This project does not claim to invent concise reasoning, compute Kolmogorov complexity, or establish that simpler answers are generally truer.
 
 ![Research architecture](site/figures/architecture.png)

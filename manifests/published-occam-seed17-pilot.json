@@ -1,0 +1,10 @@
+{
+  "arm": "occam",
+  "seed": 17,
+  "complete": true,
+  "pilot": true,
+  "hf_commit": "161300fc0a6b65a9908ad22698b4c9ff5713d12d",
+  "repo": "BurnyCoder/occam-rl-occam-seed17-pilot",
+  "git_commit": "c9177a7cbd150877ca3d462c257fe3d3616c00c1",
+  "collection": "BurnyCoder/occam-rl-adequate-and-parsimonious-reasoning-6afbab26f5969584c8f781e5"
+}
