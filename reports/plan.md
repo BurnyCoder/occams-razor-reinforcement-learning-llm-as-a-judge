@@ -24,6 +24,8 @@ Updated 2026-11-17. Preserve the preregistration; record deviations separately. 
 
 ## Planned roadmap beyond the minimum experiment
 
+Add a matched local replication of ConciseRL before making comparisons against semantic-reward prior work. The present matched length/prompt experiment cannot establish superiority over that paper's method.
+
 **Bigger models:** profile larger Qwen3.5 policies and stronger local judges. Keep matched compute/data and report resource differences; larger models are not automatically feasible on this GPU. Domain-specialist policies can follow the shared-policy experiment.
 
 **Programmatic Lean complexity:** pin Lean/mathlib and theorem statements, check proofs with the kernel, reject `sorry` and unapproved axioms, and collect elaborated proof-term tree/DAG nodes, depth, shared subterms, dependency graph size and axiom usage. A short tactic call may hide a large elaborated proof. First compare these diagnostics with judge and script-length scores on fixed statements; only then consider a structural reward. Relevant APIs: [Lean.Expr](https://lean-lang.org/doc/api/Lean/Expr.html), [validation](https://lean-lang.org/doc/reference/latest/ValidatingProofs/), [axioms](https://lean-lang.org/doc/reference/latest/Axioms/).
@@ -31,7 +33,9 @@ Updated 2026-11-17. Preserve the preregistration; record deviations separately. 
 ## Progress record
 
 - Workspace initialized with uv; literature retrieved; hardware/account inventory complete.
-- Research documents drafted; implementation and publication are next.
-- No tests, data generation, inference, or training results exist at this stage.
+- Research documents and preregistration published at commit 2994ef3167660b981c64fb18f55ae6df01c39e79.
+- Initial modular implementation, counterexample tests, dependency lock, site, paper template and command guide written; implementation push precedes the first test.
+- WSL dependencies and the isolated Docker verifier installed successfully. Initial CPU and container checks passed after publication. Model/data readiness and training remain outstanding.
+- Added artifact-only publication for unchanged-model prompt controls and a hard exploratory label for incomplete seed sets. Source publication includes hash-verified frozen data when available, preserving source-specific licenses.
 
 During runs, inspect progress according to expected run duration: five minutes for >10-minute runs, fifteen for >30-minute runs, thirty for >one-hour runs. Report meaningful changes and active implementation progress promptly. Never install an automation just to watch this task.

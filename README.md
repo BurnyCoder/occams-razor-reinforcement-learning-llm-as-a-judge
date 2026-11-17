@@ -2,7 +2,7 @@
 
 Can a local language-model judge reward **simpler, fully justified solutions** better than merely rewarding short outputs? This project studies that question with Qwen3.5, group-relative reinforcement learning, deterministic correctness checks, and an independent Gemma 4 evaluator across mathematics, introductory physics, and Python programming.
 
-**Status: preregistered implementation in progress. No experimental results yet.** The hypothesis may fail. Correct final answers can omit essential reasoning; such answers earn correctness credit but **no simplicity bonus**. All model computation runs locally on the available GPU. The first training run is Occam; all standalone baseline inference and baseline training follow it.
+**Status: environment setup and the first CPU/container checks passed; model readiness checks are next. No model results yet.** The hypothesis may fail. Correct final answers can omit essential reasoning; such answers earn correctness credit but **no simplicity bonus**. All model computation runs locally on the available GPU. The first training run is Occam; all standalone baseline inference and baseline training follow it.
 
 The proposed contribution is the controlled comparison of an adequacy-gated semantic simplicity reward against adequacy-gated token and formal-length rewards. Short-reasoning RL already exists: see [ShorterBetter](https://arxiv.org/abs/2504.21370), [StepPruner](https://arxiv.org/abs/2510.03805), and [Dr. GRPO](https://arxiv.org/abs/2503.20783). This project does not claim to invent concise reasoning, compute Kolmogorov complexity, or establish that simpler answers are generally truer.
 
@@ -24,6 +24,8 @@ flowchart LR
 
 ## Research design
 
+[ConciseRL](https://aclanthology.org/2025.findings-emnlp.927/) is close prior art for judged conciseness with correctness gating and reasoning requirements. The study tests the specific rubric, explicit adequacy gate and comparison protocol, without claiming those broad ideas are new.
+
 The training reward is `C * (1 + 0.2 * A * S)`. `C` is binary verified correctness, `A` is judged sufficiency of the complete reasoning, and `S` is the mean of four scores scaled to `[0, 1]`: assumption economy, conceptual economy, reasoning economy, and clarity. All generated thinking and final text count. Required assumptions, units, boundary cases, and useful checking are not penalized merely for taking space. See the [rubric](docs/rubric.md), [preregistration](reports/preregistration.md), and [literature review](reports/literature-review.md).
 
 | Arm | Training or prompting | Status |
@@ -41,15 +43,31 @@ No measured comparison exists yet. Generated score tables and examples will repl
 
 ## Models and hardware
 
+Use the published source-build script or checksum-pinned official llama.cpp CUDA binaries for the Gemma judge. The latter avoids requiring a full CUDA compiler installation. Both paths record the upstream source revision.
+
 The initial policy is [Qwen/Qwen3.5-0.8B](https://huggingface.co/Qwen/Qwen3.5-0.8B), BF16 with LoRA. The frozen training judge is [Qwen/Qwen3.5-2B](https://huggingface.co/Qwen/Qwen3.5-2B), quantized for inference. The independent evaluator is the newest suitable general-purpose Gemma family, [Gemma 4 E4B Q4_0](https://huggingface.co/google/gemma-4-E4B-it-qat-q4_0-gguf); the preregistered fallback is [Gemma 4 E2B Q4_0](https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf). Model revisions and the measured evaluator selection will be recorded before evaluation. See [Google's releases](https://ai.google.dev/gemma/docs/releases).
 
 Target machine: RTX 5070 Laptop GPU, approximately 8 GiB VRAM. Model names and weight sizes do not establish fit: the preflight must measure generation, backward, and judge peaks with at least 750 MiB free. Roles run sequentially. Inactive policy weights may be staged in RAM; inference is never silently moved to CPU. Long traces are never truncated to fit the judge. [Unsloth's Qwen3.5 guide](https://unsloth.ai/docs/models/qwen3.5/fine-tune) recommends BF16 LoRA and documents local GRPO with `fast_inference=False`.
 
 ## Reproduction and publication order
 
+The verifier also limits host-side output size and forcibly removes timed-out containers. Report generation includes the architecture diagram plus unsmoothed accuracy, reward, length and loss plots when run artifacts exist.
+
 Use Ubuntu through WSL, Python 3.12, `uv`, and the project-local `.venv`. Put model caches and checkpoints on a roomy disk such as `D:\AI\occam-rl` (`/mnt/d/AI/occam-rl` in WSL). Secrets belong in ignored `.env`; start from `.env.example` once implementation is published.
 
-The required order is **write → commit → push → verify remote commit → execute**. This applies to the first test, data preparation, inference, training, report generation, and each rerun after changes. The implementation includes a publication guard. Do not bypass it to run a smoke test. Generated manifests and pinned revisions must themselves be published before training. Dependencies are resolved into `uv.lock` before the first test. The full command reference will be added with the implementation, before executing it.
+The required order is **write → commit → push → verify remote commit → execute**. This applies to the first test, data preparation, inference, training, report generation, and each rerun after changes. The implementation includes a publication guard. Do not bypass it to run a smoke test. Generated manifests and pinned revisions must themselves be published before training. Dependencies are resolved into `uv.lock` before the first test. See the complete [installation and command reference](docs/usage.md).
+
+```bash
+# Ubuntu / WSL, in the published checkout
+bash scripts/setup_wsl.sh
+uv run --frozen pytest -m 'not sandbox'
+uv run --frozen pytest -m sandbox
+uv run --frozen occam resolve
+# Commit/push generated manifests between phases; see docs/usage.md.
+uv run --frozen occam dashboard --port 8765
+```
+
+The CLI delegates to separate data, verifier, model, training, evaluation, statistics, reporting, publishing and dashboard modules. `occam report` regenerates measured tables, plots, selected full output examples, experiment reports, the paper PDF and site data. `occam dashboard` serves live rollout accuracy, reward and loss from saved events. [The static explorer](https://burnycoder.github.io/occams-razor-reinforcement-learning-llm-as-a-judge/) is deployed by GitHub Pages; until deployment succeeds that URL may be unavailable.
 
 The initial run uses seed 17. After that model is saved and published, run the three prompt-only baselines, freeze length normalizers from their separate calibration split, then train the accuracy and two length arms. Seeds 29 and 43 and the shuffled control follow. The [plan](reports/plan.md) records the complete sequence, acceptance criteria, and time budget.
 
@@ -61,8 +79,8 @@ The target confirmatory evaluation has equal domain weights and paired task comp
 
 ## Roadmap
 
-- [ ] Publish research documents and preregistration before any results.
-- [ ] Publish the complete implementation, tests, lockfile, and README before testing.
+- [x] Publish research documents and preregistration before any results.
+- [x] Publish the complete implementation, tests, lockfile, and README before testing.
 - [ ] Verify data, judge behavior, GPU fit, resumability, and logging.
 - [ ] Train and publish the first Occam model; then run prompt-only and trained baselines.
 - [ ] Generate all result tables, plots, experiment reports, and PDF paper from artifacts.

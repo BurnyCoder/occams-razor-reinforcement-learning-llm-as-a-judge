@@ -6,7 +6,34 @@ description = "Local GRPO experiments comparing adequate semantic simplicity wit
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.12,<3.13"
-dependencies = []
+dependencies = [
+    "pydantic>=2.12,<3", "numpy>=2.2,<3", "sympy>=1.14,<2",
+    "pint>=0.25,<1", "pyyaml>=6,<7", "python-dotenv>=1.2,<2",
+    "huggingface-hub>=1.0,<2", "datasets>=4.3,<5,!=4.4.*,!=4.5.0",
+    "matplotlib>=3.10,<4", "reportlab>=5.1,<6", "psutil>=7,<8",
+    "reasoning-gym==0.1.25", "httpx>=0.28,<1",
+]
+
+[project.optional-dependencies]
+train = [
+    "unsloth==2026.11.5", "unsloth-zoo==2026.11.5",
+    "torch>=2.10,<2.15", "transformers==5.17.0", "trl==1.15.0",
+    "peft==0.21.3", "bitsandbytes==0.50.2",
+]
+eval = ["evalplus==0.3.1"]
+
+[project.scripts]
+occam = "occam_rl.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=9,<10"]
+
+[tool.uv]
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["sandbox: requires a working local Docker daemon and verifier image"]
 
 [build-system]
 requires = ["uv_build>=0.13.6,<0.14.0"]
