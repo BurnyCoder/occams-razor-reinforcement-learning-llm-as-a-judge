@@ -2,7 +2,7 @@
 
 Can a local language-model judge reward **simpler, fully justified solutions** better than merely rewarding short outputs? This project studies that question with Qwen3.5, group-relative reinforcement learning, deterministic correctness checks, and an independent Gemma 4 evaluator across mathematics, introductory physics, and Python programming.
 
-**Status: data splits are frozen; both initial judge configurations failed qualification. A clearer rating prompt and existing JSON-schema decoder are implemented for the next audit. The user authorized exploratory training despite residual judge noise, after mechanical checks. No policy-training or benchmark results yet.** The hypothesis may fail. Correct final answers can omit essential reasoning; such answers earn correctness credit but **no simplicity bonus**. All model computation runs locally on the available GPU. The first training run is Occam; all standalone baseline inference and baseline training follow it.
+**Status: data splits are frozen and the full GPU profile passes. The revised training-judge audit still fails qualification; its errors are retained. The user authorized an exploratory Occam training attempt despite this residual noise. No policy-training or benchmark results yet.** The hypothesis may fail. Correct final answers can omit essential reasoning; such answers earn correctness credit but **no simplicity bonus**. All model computation runs locally on the available GPU. The first training run is Occam; all standalone baseline inference and baseline training follow it.
 
 The proposed contribution is the controlled comparison of an adequacy-gated semantic simplicity reward against adequacy-gated token and formal-length rewards. Short-reasoning RL already exists: see [ShorterBetter](https://arxiv.org/abs/2504.21370), [StepPruner](https://arxiv.org/abs/2510.03805), and [Dr. GRPO](https://arxiv.org/abs/2503.20783). This project does not claim to invent concise reasoning, compute Kolmogorov complexity, or establish that simpler answers are generally truer.
 
@@ -54,6 +54,8 @@ The policy is [Qwen/Qwen3.5-0.8B](https://huggingface.co/Qwen/Qwen3.5-0.8B), BF1
 The larger judge also failed its first audit. [Amendment 002](reports/amendment-002-judge-decoding.md) records the rating/decoder correction and the explicit training-only waiver. It preserves every failure and marks affected comparisons exploratory. GPU fit, verifier checks and independent evaluation remain required.
 
 An interrupted revised audit exposed a model/tokenizer end-token mismatch. Generation now honors both declared document and chat terminators using the standard Transformers API; its partial log is retained before rerunning the unchanged audit.
+
+The completed retry uses the unchanged frozen audit and still fails quality qualification. [Its raw artifact](results/judge-audits/qwen-2026-11-17T05-28-33.902+00-00.json) and [generated audit table](reports/readiness.md) retain the result. The training-only override permits the next Occam pilot; it does not convert this audit into a pass.
 
 The initial policy profile exposed a processor/tokenizer mismatch before its backward pass. Selecting Unsloth's existing text-only path resolved it. The full synthetic GPU/state profile now passes; this establishes runtime feasibility, not policy learning. See the [generated measurements](reports/readiness.md), [profile artifact](manifests/preflight.json) and [runtime integration record](reports/runtime-integration.md).
 

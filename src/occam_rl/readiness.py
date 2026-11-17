@@ -31,6 +31,9 @@ def audit_table(audits: list[dict]) -> str:
              "|---|---:|---:|---:|---|"]
     for row in audits:
         model = row["model"].split("/")[-1]
+        # Distinguish the current revised audit from earlier attempts of the same model.
+        if row.get("audit_file"):
+            model += " (" + row["audit_file"].rsplit("/", 1)[-1].removeprefix("judge-audit-").removesuffix(".json") + ")"
         lines.append(f"| {model} | {row['wins']}/{row['pair_count']} | {row['rejected']}/{row['omission_count']} | {row['invalid']} | {'Yes' if row['passed'] else 'No'} |")
     if not audits:
         lines.append("| Pending | — | — | — | Pending |")
