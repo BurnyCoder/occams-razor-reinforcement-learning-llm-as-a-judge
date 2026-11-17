@@ -13,6 +13,7 @@ from xml.sax.saxutils import escape
 
 from .io import ROOT, now, read_json, read_jsonl, runs_dir, write_json
 from .schema import DOMAINS, PROMPT_ARMS, TRAINED_ARMS
+from .readiness import collect, write_reports
 from .statistics import holm, paired_effect
 
 START, END = "<!-- RESULTS:START -->", "<!-- RESULTS:END -->"
@@ -54,7 +55,7 @@ def snapshot() -> dict:
                 for key in ("correct", "adequate", "simplicity", "quality", "tokens", "formal_length", "seconds", "truncated"):
                     record[key] = statistics.mean(statistics.mean(r[key] for r in group) for group in groups)
                 evaluations.append(record)
-    return {"generated_at": now(), "runs": runs, "evaluations": evaluations}
+    return {"generated_at": now(), "runs": runs, "evaluations": evaluations, "readiness": collect()}
 
 
 def comparisons(cfg: dict) -> dict:
@@ -229,8 +230,6 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
 def report(cfg: dict, log) -> None:
     """One command regenerates measured artifacts; publish outputs before the next run."""
     data = snapshot()
-    from .readiness import collect, write_reports
-    data["readiness"] = collect()
     readiness_table = write_reports(data["readiness"])
     data["analysis"] = comparisons(cfg)
     data["examples"] = examples()
