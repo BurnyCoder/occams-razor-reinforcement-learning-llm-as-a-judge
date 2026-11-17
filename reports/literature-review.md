@@ -19,6 +19,8 @@ Our synthesis: **prefer the least unnecessarily complicated solution among solut
 
 [ConciseRL](https://aclanthology.org/2025.findings-emnlp.927/) is particularly close prior art: it uses an LLM conciseness reward, correctness gating, and explicitly discourages answer-only traces. Our separately audited binary sufficiency gate and multidimensional protocol are experimental design differences, not claims to invent semantic conciseness or reasoning completeness. Its [repository](https://github.com/RazvanDu/ConciseRL) is Apache-2.0.
 
+Reading its appendix also provides a concrete caution. Figure 11 reaches the correct final answer for the roots-of-unity problem but describes all roots of `z^4+z^2+1` as primitive sixth roots. Algebraically, a primitive cube root satisfies `z^3=1`, `z!=1`, and therefore `z^4+z^2+1=z+z^2+1=0`; its order is three. This is a deductive counterexample to that intermediate statement, not an estimate of the method's error rate. The final answer remains six because primitive sixth roots are also present. Answer verification alone cannot certify the reasoning. [Source, Figure 11](https://aclanthology.org/2025.findings-emnlp.927.pdf).
+
 | Source | Method and evidence relevant here | Reuse / difference |
 |---|---|---|
 | [DeepSeekMath](https://arxiv.org/abs/2402.03300) | GRPO uses groups of outputs and relative rewards, avoiding a separate learned critic. | Reuse maintained GRPO machinery, with explicitly documented objective changes. Its original experiments do not validate our judges or GPU configuration. |
