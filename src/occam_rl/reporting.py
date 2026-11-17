@@ -236,7 +236,9 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
         # Carry a heading through its following spacer so its table/text stays attached.
         gap = Spacer(1, 5)
         gap.keepWithNext = style.startswith("Heading") or style == "Title"
-        story.extend([Paragraph(text, styles[style]), gap])
+        paragraph = Paragraph(text, styles[style])
+        paragraph.keepWithNext = gap.keepWithNext
+        story.extend([paragraph, gap])
     flush_table()
     for path in paths:
         from reportlab.lib.utils import ImageReader
