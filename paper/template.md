@@ -46,6 +46,8 @@ These are constructed specification checks, not policy benchmark results. Under 
 
 These are sampled training traces, not independent benchmark observations. Reward variation within a group is required for a nonzero GRPO task-reward advantage. Completed optimizer steps alone do not demonstrate learning; the saved-run parameter comparison checks whether trainable tensors changed. Missing final-state measurements remain missing. Pilot runs are excluded from retained policy comparisons.
 
+The completed initial pilot produced no verified correct trace and no changed trainable tensors. Its outputs exhausted the completion cap before finishing. Consequently the training judge was never called on an eligible solution: this pilot cannot test the proposed semantic reward. Qwen documents thinking-loop susceptibility in this policy and defaults it to non-thinking mode (https://huggingface.co/Qwen/Qwen3.5-0.8B#thinking-mode). This is a candidate explanation requiring a controlled follow-up, not a proven cause. Full traces and the failed startup preceding this completed attempt are retained in the runtime artifacts.
+
 ### Policy comparisons
 
 {{RESULTS}}

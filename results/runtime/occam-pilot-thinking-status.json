@@ -1,0 +1,15 @@
+{
+  "name": "occam-seed17-pilot",
+  "arm": "occam",
+  "seed": 17,
+  "pilot": true,
+  "steps": 4,
+  "judge_qualified": false,
+  "exploratory_judge_override": true,
+  "target_steps": 4,
+  "complete": true,
+  "seconds": 1148.1373695599978,
+  "changed_parameter_tensors": 0,
+  "git_commit": "825cc9b8c19fdc5b14341ca723267faa0515c1ee",
+  "fingerprint": "1f9cf1fe8fb0c8985543d4fcdb21389bb5439a0c53bfceccfade46a10a7763df"
+}
