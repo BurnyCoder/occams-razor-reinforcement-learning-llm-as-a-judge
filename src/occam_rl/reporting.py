@@ -206,7 +206,7 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
     from reportlab.lib import colors
     from reportlab.lib.styles import getSampleStyleSheet
     from reportlab.lib.units import inch
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, KeepTogether
 
     styles = getSampleStyleSheet()
     styles["BodyText"].fontSize, styles["BodyText"].leading = 9, 13
@@ -243,10 +243,10 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
     for path in paths:
         from reportlab.lib.utils import ImageReader
         width, height = ImageReader(str(path)).getSize()
-        story.append(Image(str(path), width=6.5*inch, height=6.5*inch*height/width))
+        story.append(Image(str(path), width=6.3*inch, height=6.3*inch*height/width))
     if ai_statement:
-        story.extend([Spacer(1, 12), Paragraph("AI statement", styles["Heading2"]),
-                      Paragraph(escape(ai_statement.strip()), styles["BodyText"])])
+        story.append(KeepTogether([Spacer(1, 12), Paragraph("AI statement", styles["Heading2"]),
+                                   Paragraph(escape(ai_statement.strip()), styles["BodyText"])]))
     destination = ROOT / "output/pdf/paper.pdf"
     destination.parent.mkdir(parents=True, exist_ok=True)
     def footer(canvas, document):
