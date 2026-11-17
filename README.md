@@ -4,9 +4,9 @@ Can a local language-model judge reward **simpler, fully justified solutions** b
 
 **Status: the exploratory Occam pilot completed and saved a checkpoint, but did not learn: all sampled traces were truncated and incorrect, with zero reward variation, gradients and parameter changes.** Data splits are frozen and the full GPU profile passes. The training judge still fails qualification; the explicit training-only waiver preserves that failure. No retained training or benchmark comparison is complete. Correct final answers can omit essential reasoning; such answers earn correctness credit but **no simplicity bonus**. All model computation runs locally on the available GPU. Retained Occam training must precede standalone baseline inference and baseline training.
 
-The first pilot reached policy loading but stopped before rollouts on a Unicode JSONL reader bug. The [documented fix](reports/runtime-integration.md) preserves the frozen data and permits a logged startup retry; no optimizer update is claimed from the failed attempt.
+The initial startup attempt stopped before rollouts on a Unicode JSONL reader bug; the [documented fix](reports/runtime-integration.md) preserved the frozen data. The completed retry repeatedly reached the output limit without a finished answer. The correctness gate never admitted a trace to the training judge, so this pilot **did not test the semantic reward's effectiveness**. See the [pilot report](reports/experiment-occam-seed17-pilot.md) and [complete raw log](results/runtime/occam-pilot-thinking-events.jsonl).
 
-The retry generates traces but repeatedly reaches the output limit without a completed answer. [Qwen's model card](https://huggingface.co/Qwen/Qwen3.5-0.8B#thinking-mode) explicitly documents thinking-loop susceptibility in this small model. This is a candidate explanation, not a tested causal conclusion. Artifact-derived training diagnostics below distinguish actual zero rewards from missing evaluations.
+[Qwen's model card](https://huggingface.co/Qwen/Qwen3.5-0.8B#thinking-mode) documents thinking-loop susceptibility in this small model. This is a candidate explanation, not a tested cause. The next proposed experiment disables thinking mode while retaining explicit necessary reasoning and the other pilot settings. It requires a published amendment and a separate run identity; it has not been implemented or run.
 
 Work is paused at the user's request. The [resume instructions](reports/resume.md) preserve the next controlled experiment and publication order. The [pilot adapter and full checkpoint](https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot) are published as a negative research artifact, with no claim of improved performance.
 
@@ -55,13 +55,11 @@ No measured comparison exists yet. Generated score tables and examples will repl
 
 Use the published source-build script or checksum-pinned official llama.cpp CUDA binaries for the Gemma judge. The latter avoids requiring a full CUDA compiler installation. Both paths record the upstream source revision.
 
-The policy is [Qwen/Qwen3.5-0.8B](https://huggingface.co/Qwen/Qwen3.5-0.8B), BF16 with LoRA. The initial Qwen3.5-2B NF4 judge failed qualification; [the published amendment](reports/amendment-001-judge-capacity.md) selects [Qwen/Qwen3.5-4B](https://huggingface.co/Qwen/Qwen3.5-4B) NF4 as the next candidate, subject to a fresh audit and GPU-fit checks. The independent evaluator is the newest suitable general-purpose Gemma family, [Gemma 4 E4B Q4_0](https://huggingface.co/google/gemma-4-E4B-it-qat-q4_0-gguf); the preregistered fallback is [Gemma 4 E2B Q4_0](https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf). Model revisions and the measured evaluator selection will be recorded before evaluation. See [Google's releases](https://ai.google.dev/gemma/docs/releases).
+The policy is [Qwen/Qwen3.5-0.8B](https://huggingface.co/Qwen/Qwen3.5-0.8B), BF16 with LoRA. The initial Qwen3.5-2B NF4 judge failed qualification. [Amendment 001](reports/amendment-001-judge-capacity.md) selected the current [Qwen/Qwen3.5-4B](https://huggingface.co/Qwen/Qwen3.5-4B) NF4 training judge, whose GPU profile passed but whose revised quality audit also failed.
 
-The larger judge also failed its first audit. [Amendment 002](reports/amendment-002-judge-decoding.md) records the rating/decoder correction and the explicit training-only waiver. It preserves every failure and marks affected comparisons exploratory. GPU fit, verifier checks and independent evaluation remain required.
+[Amendment 002](reports/amendment-002-judge-decoding.md) records the rating/decoder corrections, a corrected end-token mismatch, and the explicit training-only waiver. The completed revised audit remains a failure in [its raw artifact](results/judge-audits/qwen-2026-11-17T05-28-33.902+00-00.json) and the [generated audit table](reports/readiness.md). The waiver authorized exploratory training; it does not qualify the judge or waive independent evaluation.
 
-An interrupted revised audit exposed a model/tokenizer end-token mismatch. Generation now honors both declared document and chat terminators using the standard Transformers API; its partial log is retained before rerunning the unchanged audit.
-
-The completed retry uses the unchanged frozen audit and still fails quality qualification. [Its raw artifact](results/judge-audits/qwen-2026-11-17T05-28-33.902+00-00.json) and [generated audit table](reports/readiness.md) retain the result. The training-only override permits the next Occam pilot; it does not convert this audit into a pass.
+The planned independent evaluator is [Gemma 4 E4B Q4_0](https://huggingface.co/google/gemma-4-E4B-it-qat-q4_0-gguf), with [Gemma 4 E2B Q4_0](https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf) as the preregistered memory fallback. Model revisions are already [pinned](manifests/revisions.json); measured Gemma selection and qualification remain pending. No held-out Gemma evaluation has run. See [Google's releases](https://ai.google.dev/gemma/docs/releases).
 
 The initial policy profile exposed a processor/tokenizer mismatch before its backward pass. Selecting Unsloth's existing text-only path resolved it. The full synthetic GPU/state profile now passes; this establishes runtime feasibility, not policy learning. See the [generated measurements](reports/readiness.md), [profile artifact](manifests/preflight.json) and [runtime integration record](reports/runtime-integration.md).
 
@@ -71,7 +69,7 @@ Target machine: RTX 5070 Laptop GPU, approximately 8 GiB VRAM. Model names and w
 
 The verifier also limits host-side output size and forcibly removes timed-out containers. Report generation includes the architecture diagram plus unsmoothed accuracy, reward, length and loss plots when run artifacts exist.
 
-Use Ubuntu through WSL, Python 3.12, `uv`, and the project-local `.venv`. Put model caches and checkpoints on a roomy disk such as `D:\AI\occam-rl` (`/mnt/d/AI/occam-rl` in WSL). Secrets belong in ignored `.env`; start from `.env.example` once implementation is published.
+Use Ubuntu through WSL, Python 3.12, `uv`, and the project-local `.venv`. Put model caches and checkpoints on a roomy disk such as `D:\AI\occam-rl` (`/mnt/d/AI/occam-rl` in WSL). Secrets belong in ignored `.env`; use `.env.example` for a new installation. The current workspace is already installed; follow the [resume instructions](reports/resume.md) rather than rerunning setup or overwriting frozen manifests.
 
 The required order is **write → commit → push → verify remote commit → execute**. This applies to the first test, data preparation, inference, training, report generation, and each rerun after changes. The implementation includes a publication guard. Do not bypass it to run a smoke test. Generated manifests and pinned revisions must themselves be published before training. Dependencies are resolved into `uv.lock` before the first test. See the complete [installation and command reference](docs/usage.md).
 
@@ -87,7 +85,7 @@ uv run --frozen occam dashboard --port 8765
 
 The CLI delegates to separate data, verifier, model, training, evaluation, statistics, reporting, publishing and dashboard modules. `occam report` regenerates measured tables, plots, selected full output examples, experiment reports, the paper PDF and site data. It reports completed judge audits separately from policy scores, preserves failed audits, and tabulates frozen data counts in `reports/readiness.md`. `occam dashboard` serves live rollout accuracy, reward and loss from saved events. [The static explorer](https://burnycoder.github.io/occams-razor-reinforcement-learning-llm-as-a-judge/) is deployed by GitHub Pages.
 
-The initial run uses seed 17. After that model is saved and published, run the three prompt-only baselines, freeze length normalizers from their separate calibration split, then train the accuracy and two length arms. Seeds 29 and 43 and the shuffled control follow. The [plan](reports/plan.md) records the complete sequence, acceptance criteria, and time budget.
+The first **retained** Occam run must use seed 17 and be saved and published before standalone baseline inference or training. The completed exploratory pilot does not satisfy that requirement, and its lack of parameter changes prevents selecting a retained training budget. After a successful pilot and the retained Occam run, run the three prompt-only baselines, freeze length normalizers from separate calibration, then train the accuracy and two length arms. Seeds 29 and 43 and the shuffled control follow. The [plan](reports/plan.md) records the complete sequence, acceptance criteria, and time budget.
 
 ## Data and interpretation
 
@@ -99,10 +97,16 @@ The target confirmatory evaluation has equal domain weights and paired task comp
 
 - [x] Publish research documents and preregistration before any results.
 - [x] Publish the complete implementation, tests, lockfile, and README before testing.
-- [ ] Verify data, judge behavior, GPU fit, resumability, and logging.
-- [ ] Train and publish the first Occam model; then run prompt-only and trained baselines.
-- [ ] Generate all result tables, plots, experiment reports, and PDF paper from artifacts.
-- [ ] Publish an interactive GitHub Pages explorer and live local accuracy dashboard.
+- [x] Pass core CPU/container checks and freeze validated data and model revisions.
+- [x] Complete training-judge audits, preserve their failures, and document the exploratory waiver.
+- [x] Pass the current full GPU profile and state-preservation/serialization checks.
+- [x] Complete and publish the exploratory pilot, including its negative result and full checkpoint.
+- [x] Generate current readiness/pilot tables, plots, reports, and PDF paper from artifacts.
+- [x] Deploy the interactive GitHub Pages explorer and implement the live local dashboard; the local server is stopped while work is paused.
+- [ ] Test the proposed non-thinking pilot with necessary reasoning preserved and a distinct run identity.
+- [ ] Demonstrate a useful learning signal, exercise judging inside training, and validate actual interrupted-training resumption.
+- [ ] Select and qualify the independent Gemma evaluator before held-out evaluation.
+- [ ] Train and publish retained Occam seed 17; then run prompt-only and trained baselines.
 - [ ] Repeat matched experiments across seeds; document negative and positive findings.
 - [ ] Evaluate bigger Qwen3.5 models when GPU profiling permits.
 - [ ] Measure Lean proof-term structure, dependencies, and axioms programmatically; validate before using as a reward.
@@ -111,6 +115,10 @@ Project code is Apache-2.0. See [source and license notes](docs/sources.md). Res
 
 
 ## Generated results
+
+![Pilot training accuracy, reward, length and loss](site/figures/occam-seed17-pilot.png)
+
+These are sampled training groups, not held-out scores. A completed optimizer step does not establish learning. Full checkpoint serialization has succeeded; real interruption/resumption is still untested.
 
 <!-- RESULTS:START -->
 
