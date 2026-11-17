@@ -2,7 +2,7 @@
   "gpu": {
     "name": "NVIDIA GeForce RTX 5070 Laptop GPU",
     "total_mib": 8151,
-    "free_mib": 6107,
+    "free_mib": 6549,
     "driver": "617.42"
   },
   "python": "3.12.3",
@@ -18,7 +18,9 @@
     "trl": "1.15.0",
     "unsloth": "2026.11.5",
     "peft": "0.21.3",
-    "bitsandbytes": "0.50.2"
+    "bitsandbytes": "0.50.2",
+    "fla-core": "0.6.0",
+    "triton": "3.8.0"
   },
   "docker_image": "sha256:6657cc8afe8f7724e526012026a583aad45d10e0598f66361e137d0c0ed0e004"
 }
