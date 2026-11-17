@@ -2,6 +2,8 @@
 
 Updated 2026-11-17. Preserve the preregistration; record deviations separately. The full original scope remains active.
 
+Execution constraint added by the user: preserve at least 10% of the weekly Codex allowance. Check the account-wide usage tool regularly and before substantial new work; save a resume point and stop with a rounding/cleanup buffer above that floor. This can pause the project before the training-time budget expires; it does not change any scientific success criterion.
+
 ## Phase order
 
 1. Research and fact-check philosophical framing, efficient reasoning RL, judging, datasets, model support, licenses, and research methods. Write literature review, state-of-the-art review, rubric, data docs, preregistration, README. Publish before results.

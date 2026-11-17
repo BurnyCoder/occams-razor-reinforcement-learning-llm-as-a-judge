@@ -12,3 +12,4 @@ Follow the user's complete scientific and execution-order instructions supplied 
 - Save resumable checkpoints for long training. Log complete timestamped prompts, outputs, scores, failures, and metrics.
 - Regenerate measured numbers and plots from artifacts. Keep docs, reports, README, paper, model cards, and site consistent; no invented results.
 - Keep larger models and programmatic Lean proof-structure evaluation on the roadmap.
+- Preserve the user's weekly Codex usage reserve. Read account usage regularly and before substantial new work; stop with a buffer above 10% remaining (begin saving a resume point at 12% remaining). Usage is account-wide and rounded, so do not wait for an exact 10% reading.
