@@ -118,16 +118,37 @@ def figures(data: dict) -> list[Path]:
     import matplotlib.pyplot as plt
     target = ROOT / "site/figures"
     target.mkdir(parents=True, exist_ok=True)
-    paths = []
+    from matplotlib.patches import FancyBboxPatch
+    fig, ax = plt.subplots(figsize=(10, 4.8))
+    ax.set(xlim=(0, 10), ylim=(0, 4.8))
+    ax.axis("off")
+    blocks = [(0.2, 2.9, "Frozen task\n+ local policy"), (3.7, 2.9, "Verified answer\n+ sufficient reasoning"),
+              (7.2, 2.9, "Occam or length\nsimplicity score"), (7.2, .7, "Correctness +\ngated bonus"),
+              (3.7, .7, "GRPO update\nLoRA policy"), (.2, .7, "Held-out tasks\nGemma evaluation")]
+    for x,y,label in blocks:
+        ax.add_patch(FancyBboxPatch((x,y), 2.5, 1.1, boxstyle="round,pad=.08", edgecolor="#286b52", facecolor="#eef3e9"))
+        ax.text(x+1.25, y+.55, label, ha="center", va="center", fontsize=11)
+    for start,end in [((2.8,3.45),(3.55,3.45)),((6.3,3.45),(7.05,3.45)),((8.45,2.75),(8.45,1.95)),((7.05,1.25),(6.35,1.25)),((3.55,1.25),(2.8,1.25))]:
+        ax.annotate("",xy=end,xytext=start,arrowprops={"arrowstyle":"->","color":"#286b52"})
+    ax.text(5,4.45,"Adequate simplicity: separate correctness, reasoning and economy",ha="center",fontsize=13)
+    ax.text(5,.15,"Policy and judges occupy the GPU sequentially; all generated reasoning is retained.",ha="center",fontsize=10)
+    architecture = target / "architecture.png"
+    fig.savefig(architecture, dpi=180, bbox_inches="tight")
+    plt.close(fig)
+    paths = [architecture]
     for run in data["runs"]:
         if not run["curve"]:
             continue
-        fig, axes = plt.subplots(1, 3, figsize=(12, 3.4))
-        for ax,key,label in zip(axes, ("accuracy", "reward", "tokens"), ("Training rollout accuracy", "Training reward", "Generated tokens"), strict=True):
+        fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+        for ax,key,label in zip(axes.flat, ("accuracy", "reward", "tokens"), ("Training rollout accuracy", "Training reward", "Generated tokens")):
             ax.plot([r["step"] for r in run["curve"]], [r[key] for r in run["curve"]], marker=".")
             ax.set(xlabel="Optimizer step", ylabel=label)
             ax.set_ylim(bottom=0, top=1 if key == "accuracy" else None)
             ax.grid(alpha=.2)
+        loss = [r for r in run["metrics"] if "loss" in r]
+        axes[1,1].plot([r["step"] for r in loss], [r["loss"] for r in loss], marker=".")
+        axes[1,1].set(xlabel="Optimizer step", ylabel="Optimization loss")
+        axes[1,1].grid(alpha=.2)
         fig.suptitle(run["name"] + " — individual rollout groups, no held-out claim")
         fig.tight_layout()
         path = target / f"{run['name']}.png"
@@ -180,7 +201,9 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
         story.extend([Paragraph(text, styles[style]), Spacer(1, 5)])
     flush_table()
     for path in paths:
-        story.append(Image(str(path), width=6.5*inch, height=1.84*inch))
+        from reportlab.lib.utils import ImageReader
+        width, height = ImageReader(str(path)).getSize()
+        story.append(Image(str(path), width=6.5*inch, height=6.5*inch*height/width))
     destination = ROOT / "paper/paper.pdf"
     destination.parent.mkdir(parents=True, exist_ok=True)
     SimpleDocTemplate(str(destination), pagesize=(8.5*inch, 11*inch), rightMargin=.6*inch,

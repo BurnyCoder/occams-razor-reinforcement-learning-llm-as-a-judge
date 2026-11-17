@@ -84,8 +84,8 @@ The repository preregistration specifies the primary metric, falsification crite
 
 [14] EvalPlus. https://github.com/evalplus/evalplus
 
-## AI statement
-
 [15] Dumitru et al., ConciseRL. https://aclanthology.org/2025.findings-emnlp.927/
+
+## AI statement
 
 Codex wrote this codebase and paper from the exact specification provided by a human. Human cleanup and rewriting are in progress.

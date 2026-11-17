@@ -9,6 +9,7 @@ import json
 import math
 import re
 import subprocess
+import tempfile
 import uuid
 from fractions import Fraction
 
@@ -62,20 +63,28 @@ def run_code(code: str, *, entrypoint: str = "", inputs: list | None = None,
                "--memory", "256m", "--memory-swap", "256m", "--cpus", "1", "--user", "65534:65534",
                "--tmpfs", "/tmp:rw,noexec,nosuid,size=8m", "-i", image, "python", "-I", "-c", RUNNER]
     payload = json.dumps({"code": code, "entrypoint": entrypoint, "inputs": inputs or [], "tests": tests or []})
-    try:
-        result = subprocess.run(command, input=payload, capture_output=True, text=True, timeout=timeout)
-    except subprocess.TimeoutExpired:
-        # docker CLI termination alone does not guarantee container termination.
-        subprocess.run(["docker", "rm", "-f", name], capture_output=True, timeout=15)
-        raise ValueError("Code exceeded wall-clock limit") from None
+    # Limit regular-file output outside the container. communicate(capture_output=True)
+    # would otherwise let a noisy candidate allocate unbounded host RAM.
+    with tempfile.TemporaryFile() as stdout, tempfile.TemporaryFile() as stderr:
+        try:
+            result = subprocess.run(["prlimit", "--fsize=1048576", "--", *command], input=payload.encode(),
+                                    stdout=stdout, stderr=stderr, timeout=timeout)
+        except subprocess.TimeoutExpired:
+            raise ValueError("Code exceeded wall-clock limit") from None
+        finally:
+            # Terminating the Docker CLI does not guarantee container termination.
+            subprocess.run(["docker", "rm", "-f", name], capture_output=True, timeout=15)
+        stdout.seek(0)
+        stderr.seek(0)
+        output, errors = stdout.read().decode(errors="replace"), stderr.read().decode(errors="replace")
     if result.returncode:
         # Infrastructure failures must not be misclassified as wrong model answers.
-        if "Cannot connect" in result.stderr or "Unable to find image" in result.stderr:
-            raise RuntimeError(result.stderr)
-        raise ValueError("Code failed: " + result.stderr[-2000:])
-    if len(result.stdout) > 1_000_000:
+        if result.returncode == 125 or "Cannot connect" in errors or "Unable to find image" in errors:
+            raise RuntimeError(errors)
+        raise ValueError("Code failed: " + errors[-2000:])
+    if len(output) > 1_000_000:
         raise ValueError("Code output too large")
-    return json.loads(result.stdout)
+    return json.loads(output)
 
 
 def verify(task: Task, trace: str, image: str = "occam-verifier:1") -> Verification:
