@@ -31,7 +31,8 @@ Updated 2026-11-17. Preserve the preregistration; record deviations separately. 
 ## Progress record
 
 - Workspace initialized with uv; literature retrieved; hardware/account inventory complete.
-- Research documents drafted; implementation and publication are next.
+- Research documents and preregistration published at commit 2994ef3167660b981c64fb18f55ae6df01c39e79.
+- Initial modular implementation, counterexample tests, dependency lock, site, paper template and command guide written; implementation push precedes the first test.
 - No tests, data generation, inference, or training results exist at this stage.
 
 During runs, inspect progress according to expected run duration: five minutes for >10-minute runs, fifteen for >30-minute runs, thirty for >one-hour runs. Report meaningful changes and active implementation progress promptly. Never install an automation just to watch this task.
