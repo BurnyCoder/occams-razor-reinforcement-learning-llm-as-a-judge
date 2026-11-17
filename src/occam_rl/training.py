@@ -21,15 +21,17 @@ from .schema import DOMAINS, Task
 from .verify import verify
 
 
-def require_qualification(role: str, cfg: dict) -> dict:
-    """An unaudited or changed prompt/model cannot provide a retained reward."""
+def require_qualification(role: str, cfg: dict, *, allow_unqualified=False) -> dict:
+    """Bind the audit to this judge; an explicit training-only waiver keeps its failure."""
     from .prompts import JUDGE
     from .models import revision
     result = read_json(ROOT / f"manifests/judge-{role}.json")
     expected = cfg["judge"] if role == "qwen" else read_json(ROOT / "manifests/gemma-selection.json")["model"]
     audit_path = ROOT / cfg.get(f"{role}_audit", "configs/judge-audit.json")
-    if (not result["passed"] or result["model"] != expected or result["prompt_hash"] != digest(JUDGE)
+    if (result["model"] != expected or result["prompt_hash"] != digest(JUDGE)
             or result["revision"] != revision(expected) or result["audit_hash"] != digest(read_json(audit_path))):
+        raise RuntimeError(f"{role} judge is not qualified for the current prompt/model")
+    if not result["passed"] and not (role == "qwen" and allow_unqualified):
         raise RuntimeError(f"{role} judge is not qualified for the current prompt/model")
     return result
 
@@ -38,13 +40,17 @@ def train(cfg: dict, log, commit: str, arm: str, seed: int, *, pilot=False, resu
     """Train one run; every dependent artifact must already be published."""
     require_hf_publication(commit)
     require_data_manifest(data_dir() / "train.jsonl")
-    require_qualification("qwen", cfg)
+    judge_audit = require_qualification("qwen", cfg,
+        allow_unqualified=cfg.get("allow_unqualified_training_judge", False))
+    if not judge_audit["passed"]:
+        log.emit("exploratory_judge_override", audit=judge_audit,
+                 reason="User authorized training despite residual judge-quality failures")
     if arm != "occam":
         require_first_occam()
+    preflight = read_json(ROOT / "manifests/preflight.json")
+    if not preflight["passed"] or preflight["config_hash"] != digest(cfg):
+        raise RuntimeError("GPU profile and state-preservation checks must pass for this configuration")
     if not pilot:
-        preflight = read_json(ROOT / "manifests/preflight.json")
-        if not preflight["passed"]:
-            raise RuntimeError("Profile and resume validation must pass before retained training")
         budget = read_json(ROOT / "manifests/budget.json")
         cfg = cfg | {"updates": budget["updates"]}
     normalizers = read_json(ROOT / "manifests/normalizers.json") if arm in ("token", "formal") else {}
@@ -178,6 +184,8 @@ def train(cfg: dict, log, commit: str, arm: str, seed: int, *, pilot=False, resu
         tokenizer.save_pretrained(output / "adapter")
         changed = sum(not torch.equal(trainable_before[n], p.detach().cpu()) for n,p in model.named_parameters() if p.requires_grad)
         status = {"name": name, "arm": arm, "seed": seed, "pilot": pilot, "steps": trainer.state.global_step,
+                  "judge_qualified": judge_audit["passed"],
+                  "exploratory_judge_override": cfg.get("allow_unqualified_training_judge", False),
                   "target_steps": steps, "complete": trainer.state.global_step >= steps,
                   "seconds": time.monotonic()-start, "changed_parameter_tensors": changed,
                   "git_commit": commit, "fingerprint": digest(fingerprint)}

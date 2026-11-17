@@ -10,6 +10,7 @@ The project implements its own rubric and orchestration and reuses maintained li
 | Transformers | https://huggingface.co/docs/transformers/model_doc/qwen3_5 | Qwen3.5 text inference |
 | PEFT | https://huggingface.co/docs/peft/index | LoRA and disabled-adapter reference |
 | bitsandbytes | https://huggingface.co/docs/transformers/quantization/bitsandbytes | Frozen judge quantization |
+| LM Format Enforcer | https://github.com/noamgat/lm-format-enforcer/tree/817f944fcc8851917c40300a47f62d1defc3ffc3 | MIT; imported JSON-schema decoder and Transformers integration |
 | llama.cpp | https://github.com/ggml-org/llama.cpp | CUDA Gemma GGUF inference |
 | Docker | https://docs.docker.com/engine/containers/run/ | Isolated code verification |
 | Hugging Face Hub | https://huggingface.co/docs/huggingface_hub/guides/cli | Artifact publication and revisions |

@@ -38,7 +38,7 @@ Judge qualification uses constructed dominance and omission examples, including 
 
 {{READINESS}}
 
-These are constructed specification checks, not policy benchmark results. A failed qualification blocks use of that judge in retained experiments. Individual audit reports retain the full labels and Wilson intervals; small constructed sets cannot establish general validity.
+These are constructed specification checks, not policy benchmark results. Under amendment 002, the user authorized exploratory training despite residual training-judge quality failures after mechanical corrections. The failed audit remains visible, and current model/prompt identity, GPU fit and verifier checks remain required. Independent Gemma evaluation still requires qualification. Individual reports retain labels and Wilson intervals; small constructed sets cannot establish general validity.
 
 ### Policy comparisons
 

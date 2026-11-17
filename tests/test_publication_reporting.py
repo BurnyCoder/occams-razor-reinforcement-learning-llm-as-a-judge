@@ -2,6 +2,8 @@
 
 from types import SimpleNamespace
 
+import pytest
+
 from occam_rl.io import read_json, write_json
 from occam_rl import publishing, reporting
 
@@ -55,14 +57,19 @@ def test_prompt_only_publication_has_no_model_repository(tmp_path, monkeypatch):
     assert not (tmp_path / "manifests/first-occam.json").exists()
 
 
-def test_one_seed_cannot_satisfy_confirmatory_claim(tmp_path, monkeypatch):
-    """Even favorable intervals cannot replace the registered seed requirement."""
+@pytest.mark.parametrize("seeds,override,expected", [
+    ([17, 29, 43], False, "exploratory_incomplete_seeds"),
+    ([17], True, "exploratory_judge_override"),
+])
+def test_exploratory_evidence_cannot_satisfy_confirmatory_claim(tmp_path, monkeypatch, seeds, override, expected):
+    """Favorable intervals cannot erase incomplete seeds or a judge-quality waiver."""
     for arm in ("occam", "accuracy", "token", "formal"):
         directory = tmp_path / f"{arm}-seed17/eval-test"
-        write_json(directory / "manifest.json", {"arm": arm, "limit_per_domain": None, "tasks": ["a"]})
+        write_json(directory / "manifest.json", {"arm": arm, "limit_per_domain": None, "tasks": ["a"],
+                                                "exploratory_judge_override": override})
         (directory / "results.jsonl").write_text('{"task_id":"a","seed":17,"domain":"math"}\n')
     monkeypatch.setattr(reporting, "runs_dir", lambda: tmp_path)
     monkeypatch.setattr(reporting, "paired_effect", lambda *a, **k: {"effect": .1, "ci95": [.05, .15], "p_one_sided": .001})
-    result = reporting.comparisons({"seeds": [17, 29, 43], "bootstrap_replicates": 10, "bootstrap_seed": 1})
-    assert result["status"] == "exploratory_incomplete_seeds"
-    assert not result["confirmatory_seed_target_met"]
+    result = reporting.comparisons({"seeds": seeds, "bootstrap_replicates": 10, "bootstrap_seed": 1})
+    assert result["status"] == expected
+    assert result["confirmatory_seed_target_met"] == (seeds == [17])

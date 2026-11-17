@@ -51,7 +51,8 @@ def snapshot() -> dict:
                 groups = [group for group in groups if group]
                 record = {"run": directory.name, "split": manifest["split"], "domain": domain,
                           "arm": manifest["arm"], "seed": manifest["seed"], "n": len(selected),
-                          "complete": len(rows) == len(manifest["tasks"]), "exploratory": manifest["limit_per_domain"] is not None}
+                          "complete": len(rows) == len(manifest["tasks"]),
+                          "exploratory": manifest["limit_per_domain"] is not None or manifest.get("exploratory_judge_override", False)}
                 for key in ("correct", "adequate", "simplicity", "quality", "tokens", "formal_length", "seconds", "truncated"):
                     record[key] = statistics.mean(statistics.mean(r[key] for r in group) for group in groups)
                 evaluations.append(record)
@@ -61,11 +62,13 @@ def snapshot() -> dict:
 def comparisons(cfg: dict) -> dict:
     """Only complete, un-limited test evaluations can enter primary paired analysis."""
     arms = defaultdict(list)
+    judge_override = False
     for path in runs_dir().glob("*-seed*/eval-test/results.jsonl"):
         manifest = read_json(path.parent / "manifest.json")
         rows = read_jsonl(path)
         if len(rows) == len(manifest["tasks"]) and manifest["limit_per_domain"] is None:
             arms[manifest["arm"]].extend(rows)
+            judge_override |= manifest.get("exploratory_judge_override", False)
     result = {"status": "pending", "comparisons": {}}
     if not all(arm in arms for arm in ("occam", "accuracy", "token", "formal")):
         return result
@@ -98,6 +101,8 @@ def comparisons(cfg: dict) -> dict:
     result["confirmatory_seed_target_met"] = set(common_seeds) == set(cfg["seeds"])
     if not result["confirmatory_seed_target_met"]:
         result["status"] = "exploratory_incomplete_seeds"
+    if judge_override:
+        result["status"] = "exploratory_judge_override"
     return result
 
 
