@@ -34,7 +34,7 @@ Judge qualification uses constructed dominance and omission examples, including 
 
 ## Results
 
-### Prerequisite judge audits
+### Prerequisite checks
 
 {{READINESS}}
 

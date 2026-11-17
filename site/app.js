@@ -33,6 +33,8 @@ function renderScores(){
 }
 function renderExample(){const r=data.examples?.[Number($('example').value)];$('trace').textContent=r?.trace||'No evaluated examples yet.';$('example-info').textContent=r?`${r.arm} · ${r.domain} · ${r.task_id} · correct ${r.correct} · adequate ${r.adequate} · quality ${format(r.quality)}`:'';}
 function renderAudits(){
+  const profile=data.readiness?.profile;
+  $('profile').textContent=profile?`Recorded profile: ${profile.passed?'passed':'failed'}. Minimum free VRAM: backward ${profile.backward_minimum_free_mib} MiB; generation ${profile.generation_minimum_free_mib} MiB. Role-switch weights and RNG preserved: ${profile.switch_weights_unchanged&&profile.switch_rng_unchanged?'yes':'no'}. Optimizer serialization passed: ${profile.optimizer_roundtrip?'yes':'no'}.`:'No completed GPU profile yet.';
   const body=$('audits');body.replaceChildren();
   const audits=data.readiness?.audits||[];
   for(const audit of audits){const tr=node('tr','',body);for(const value of [audit.model,`${audit.wins}/${audit.pair_count}`,`${audit.rejected}/${audit.omission_count}`,audit.invalid,audit.passed?'Yes':'No'])node('td',String(value),tr);}

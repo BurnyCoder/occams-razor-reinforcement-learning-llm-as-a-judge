@@ -19,7 +19,9 @@ def collect() -> dict:
     manifest = ROOT / "manifests/data.json"
     tasks = read_json(manifest)["tasks"] if manifest.exists() else []
     counts = Counter((t["split"], t["domain"], t["source"]) for t in tasks)
-    return {"audits": audits, "data_counts": [dict(split=s, domain=d, source=source, count=n)
+    profile_path = ROOT / "manifests/preflight.json"
+    return {"audits": audits, "profile": read_json(profile_path) if profile_path.exists() else None,
+            "data_counts": [dict(split=s, domain=d, source=source, count=n)
              for (s, d, source), n in sorted(counts.items())]}
 
 
@@ -38,6 +40,17 @@ def audit_table(audits: list[dict]) -> str:
 def write_reports(data: dict) -> str:
     """Regenerate the prerequisite report and one report per completed judge audit."""
     table = audit_table(data["audits"])
+    profile = data.get("profile")
+    if profile:
+        table += "\n\nGPU/state prerequisite measurements (synthetic inputs; not learning results):\n\n"
+        table += "| Check | Recorded result |\n|---|---|\n"
+        for label, key in (("Backward minimum free VRAM (MiB)", "backward_minimum_free_mib"),
+                           ("Generation minimum free VRAM (MiB)", "generation_minimum_free_mib"),
+                           ("Role-switch weights unchanged", "switch_weights_unchanged"),
+                           ("Role-switch RNG unchanged", "switch_rng_unchanged"),
+                           ("Optimizer serialization round trip", "optimizer_roundtrip"),
+                           ("Profile passed", "passed")):
+            table += f"| {label} | {profile[key]} |\n"
     text = "# Readiness evidence\n\n" + table
     text += "\n\nConstructed specification checks are not held-out policy accuracy or human preference validation. Invalid or contradictory JSON does not count as a successful omission rejection.\n"
     text += "\n| Split | Domain | Source | Tasks |\n|---|---|---|---:|\n"
