@@ -15,3 +15,13 @@ def test_hidden_edge_cases_and_timeout():
     assert verify(task, "<code>def solve(xs): return sum(xs)</code>").correct
     assert not verify(task, "<code>def solve(xs): return xs[0]</code>").correct
     assert not verify(task, "<code>def solve(xs):\n while True: pass</code>").correct
+
+
+@pytest.mark.sandbox
+def test_no_mutation_is_part_of_the_function_contract():
+    """Correct output does not excuse violating an explicitly immutable input contract."""
+    task = Task(id="mutation", domain="code", family="fixture", split="dev", question="Sum without mutation",
+                reference="def solve(xs): return sum(xs)", entrypoint="solve", preserve_inputs=True,
+                inputs=[[[3, 1, 2]]], expected=[6])
+    assert verify(task, "<code>def solve(xs): return sum(xs)</code>").correct
+    assert not verify(task, "<code>def solve(xs):\n xs.sort()\n return sum(xs)</code>").correct

@@ -12,6 +12,8 @@ gh auth status
 
 `.env.example` contains paths, not credentials. `.env` is ignored. Keep model caches, run outputs and checkpoints on D: to avoid filling the system drive. The local venv remains in this checkout. Do not enable hosted inference services. The compatible dependency set is in `uv.lock`; upstream Unsloth version bounds intentionally constrain Torch, Transformers and TRL.
 
+Setup applies a hash-checked backport of the upstream lazy package-metadata lookup to the pinned Transformers. The original file is a uv-cache symlink; only the venv link is replaced, leaving the cache intact. Publish `manifests/runtime-patch.json` after first setup. This avoids repeated whole-wheel filesystem scans on Python/WSL and changes no model computation. If reinstalling dependencies separately, run `.venv/bin/python scripts/backport_transformers.py` again from a published checkout.
+
 ## Publish checkpoints between phases
 
 The setup script includes the standard user `uv` install directory in PATH for noninteractive WSL shells. It uses `UV_LINK_MODE=symlink` so the project-local venv links packages from the D: cache instead of duplicating large CUDA libraries on C:. Keep that cache available; deleting it would break those links.
@@ -39,7 +41,7 @@ uv run --frozen occam resolve
 bash scripts/build_llama.sh
 # If nvcc is unavailable, install the checksum-pinned official CUDA binary instead:
 uv run --frozen python scripts/install_llama.py
-# Set OCCAM_LLAMA_SERVER in ignored .env to the printed path.
+# Set OCCAM_LLAMA_SERVER and OCCAM_LLAMA_CUDA_LIB in ignored .env to the printed paths.
 uv run --frozen occam doctor
 # Publish runtime manifest before the next phase.
 uv run --frozen occam prepare
@@ -96,3 +98,5 @@ uv run --frozen occam report
 ```
 
 The live view polls saved events and labels training accuracy as training accuracy. Static GitHub Pages uses generated `site/data.json`, with no remote model computation. The report command creates every measured table, plot, example list, aggregate report, per-run report, Markdown paper and PDF. Investigator notes belong in each run's `notes.md`; include what failed, why a fix was chosen, and whether an analysis was planned or post hoc. Inspect the rendered PDF before publication. No fabricated benchmark scores, sample outputs, uncertainty bars or training curves are included.
+
+The generated PDF is `output/pdf/paper.pdf`; the editable report and template are in `paper/`.

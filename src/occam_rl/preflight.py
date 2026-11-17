@@ -7,7 +7,7 @@ import subprocess
 import time
 
 from .gpu import MemoryMonitor, gpu_info
-from .io import ROOT, digest, read_json, runs_dir, write_json
+from .io import ROOT, digest, now, read_json, runs_dir, write_json
 from .models import GemmaJudge, QwenJudge, clear_gpu, load_policy, parked_policy, revision
 from .prompts import JUDGE, judge_messages
 from .schema import Task
@@ -49,7 +49,8 @@ def doctor(cfg: dict, log) -> None:
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is required; CPU model fallback is prohibited")
     docker = subprocess.check_output(["docker", "image", "inspect", cfg["docker_image"], "--format", "{{.Id}}"], text=True, timeout=30).strip()
-    packages = {name: importlib.metadata.version(name) for name in ("torch", "transformers", "trl", "unsloth", "peft", "bitsandbytes")}
+    packages = {name: importlib.metadata.version(name) for name in
+                ("torch", "transformers", "trl", "unsloth", "peft", "bitsandbytes", "fla-core", "triton")}
     result = {"gpu": gpu_info(), "python": platform.python_version(), "platform": platform.platform(),
               "cuda_runtime": torch.version.cuda, "compute_capability": list(torch.cuda.get_device_capability()),
               "packages": packages, "docker_image": docker}
@@ -59,7 +60,8 @@ def doctor(cfg: dict, log) -> None:
 
 def qualify(cfg: dict, log, role: str) -> None:
     """Locked constructed pairs and omissions; no training examples or test outcomes."""
-    audit = read_json(ROOT / "configs/judge-audit.json")
+    audit_file = cfg.get(f"{role}_audit", "configs/judge-audit.json")
+    audit = read_json(ROOT / audit_file)
     judge_type = QwenJudge if role == "qwen" else GemmaJudge
     wins, rejected, invalid = 0, 0, 0
     rows = []
@@ -81,10 +83,14 @@ def qualify(cfg: dict, log, role: str) -> None:
             rows.append({"id": task.id, "judgment": judged.model_dump() if judged else None})
     model = cfg["judge"] if role == "qwen" else read_json(ROOT / "manifests/gemma-selection.json")["model"]
     result = {"role": role, "model": model, "revision": revision(model), "prompt_hash": digest(JUDGE), "audit_hash": digest(audit),
+              "audit_file": audit_file, "operation_log": log.path.name,
               "wins": wins, "pair_count": len(audit["pairs"]), "dominance_ci95": wilson(wins, len(audit["pairs"])),
               "rejected": rejected, "omission_count": len(audit["omissions"]), "omission_ci95": wilson(rejected, len(audit["omissions"])),
               "invalid": invalid, "passed": wins/len(audit["pairs"]) >= .8 and rejected/len(audit["omissions"]) >= .9, "rows": rows}
     write_json(ROOT / f"manifests/judge-{role}.json", result)
+    # Retain every completed qualification, including failures and later revisions.
+    stamp = now().replace(":", "-")
+    write_json(ROOT / f"results/judge-audits/{role}-{stamp}.json", result)
     log.emit("judge_audit_complete", **{k:v for k,v in result.items() if k != "rows"})
 
 

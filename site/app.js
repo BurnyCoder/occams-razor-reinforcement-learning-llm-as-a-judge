@@ -32,12 +32,18 @@ function renderScores(){
   $('analysis').textContent=`Primary paired analysis: ${data.analysis?.status||'pending'}. Accuracy preservation requires the registered confidence interval criteria, including each domain.`;
 }
 function renderExample(){const r=data.examples?.[Number($('example').value)];$('trace').textContent=r?.trace||'No evaluated examples yet.';$('example-info').textContent=r?`${r.arm} · ${r.domain} · ${r.task_id} · correct ${r.correct} · adequate ${r.adequate} · quality ${format(r.quality)}`:'';}
+function renderAudits(){
+  const body=$('audits');body.replaceChildren();
+  const audits=data.readiness?.audits||[];
+  for(const audit of audits){const tr=node('tr','',body);for(const value of [audit.model,`${audit.wins}/${audit.pair_count}`,`${audit.rejected}/${audit.omission_count}`,audit.invalid,audit.passed?'Yes':'No'])node('td',String(value),tr);}
+  if(!audits.length){const td=node('td','No completed judge audits yet.',node('tr','',body));td.colSpan=5;}
+}
 async function refresh(){
   try{const response=await fetch(live?'live.json':'data.json',{cache:'no-store'});if(!response.ok)throw Error(`HTTP ${response.status}`);data=await response.json();
     $('status').textContent=`${live?'Live local dashboard':'Published snapshot'} · ${data.generated_at||'No experiments yet'}`;
     const previous=$('run').value;$('run').replaceChildren();for(const r of data.runs){const option=node('option',r.name,$('run'));option.value=r.name;}if(data.runs.some(r=>r.name===previous))$('run').value=previous;
     $('example').replaceChildren();(data.examples||[]).forEach((r,i)=>{const option=node('option',`${r.arm} / ${r.task_id}`,$('example'));option.value=String(i);});
-    renderRun();renderScores();renderExample();
+    renderAudits();renderRun();renderScores();renderExample();
   }catch(error){$('status').textContent=`Artifacts unavailable: ${error.message}`;}
 }
 $('run').addEventListener('change',renderRun);$('domain').addEventListener('change',renderScores);$('example').addEventListener('change',renderExample);

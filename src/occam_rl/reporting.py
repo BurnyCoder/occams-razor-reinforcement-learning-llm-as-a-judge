@@ -13,6 +13,7 @@ from xml.sax.saxutils import escape
 
 from .io import ROOT, now, read_json, read_jsonl, runs_dir, write_json
 from .schema import DOMAINS, PROMPT_ARMS, TRAINED_ARMS
+from .readiness import collect, write_reports
 from .statistics import holm, paired_effect
 
 START, END = "<!-- RESULTS:START -->", "<!-- RESULTS:END -->"
@@ -54,7 +55,7 @@ def snapshot() -> dict:
                 for key in ("correct", "adequate", "simplicity", "quality", "tokens", "formal_length", "seconds", "truncated"):
                     record[key] = statistics.mean(statistics.mean(r[key] for r in group) for group in groups)
                 evaluations.append(record)
-    return {"generated_at": now(), "runs": runs, "evaluations": evaluations}
+    return {"generated_at": now(), "runs": runs, "evaluations": evaluations, "readiness": collect()}
 
 
 def comparisons(cfg: dict) -> dict:
@@ -186,7 +187,7 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
     def flush_table():
         if table_rows:
             widths = [110, 55, 30, 55, 55, 60, 55, 65] if len(table_rows[0]) == 8 else None
-            table = Table([[Paragraph(escape(cell.strip()).replace("—", "pending"), styles["BodyText"]) for cell in row] for row in table_rows], repeatRows=1, colWidths=widths)
+            table = Table([[Paragraph(escape(cell.strip()).replace("—", "-"), styles["BodyText"]) for cell in row] for row in table_rows], repeatRows=1, colWidths=widths)
             table.setStyle(TableStyle([("BACKGROUND", (0,0), (-1,0), colors.HexColor("#e5eee8")),
                                       ("VALIGN", (0,0), (-1,-1), "TOP"), ("GRID", (0,0), (-1,-1), .3, colors.lightgrey)]))
             story.extend([table, Spacer(1, 10)])
@@ -212,16 +213,24 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
     if ai_statement:
         story.extend([Spacer(1, 12), Paragraph("AI statement", styles["Heading2"]),
                       Paragraph(escape(ai_statement.strip()), styles["BodyText"])])
-    destination = ROOT / "paper/paper.pdf"
+    destination = ROOT / "output/pdf/paper.pdf"
     destination.parent.mkdir(parents=True, exist_ok=True)
+    def footer(canvas, document):
+        """Keep page identity visible when the living report is printed or excerpted."""
+        canvas.saveState()
+        canvas.setFont("Helvetica", 8)
+        canvas.drawString(.6*inch, .3*inch, "Adequate Simplicity under Local GRPO")
+        canvas.drawRightString(7.9*inch, .3*inch, str(document.page))
+        canvas.restoreState()
     SimpleDocTemplate(str(destination), pagesize=(8.5*inch, 11*inch), rightMargin=.6*inch,
                       leftMargin=.6*inch, topMargin=.6*inch, bottomMargin=.6*inch,
-                      title="Adequate Simplicity under Local GRPO", author='Libor "Burny" Burian').build(story)
+                      title="Adequate Simplicity under Local GRPO", author='Libor "Burny" Burian').build(story, onFirstPage=footer, onLaterPages=footer)
 
 
 def report(cfg: dict, log) -> None:
     """One command regenerates measured artifacts; publish outputs before the next run."""
     data = snapshot()
+    readiness_table = write_reports(data["readiness"])
     data["analysis"] = comparisons(cfg)
     data["examples"] = examples()
     write_json(ROOT / "site/data.json", data)
@@ -230,6 +239,7 @@ def report(cfg: dict, log) -> None:
     summary = "# Experiment summary\n\nGenerated from run artifacts at " + data["generated_at"] + ".\n\n" + table
     summary += "\n\nAccuracy is the fraction verified correct. Adequacy asks whether necessary reasoning is present. Simplicity summarizes four judge dimensions. C × A × S is zero for wrong or inadequate solutions. Training rollout accuracy is not held-out accuracy.\n"
     summary += "\nPrimary analysis status: `" + data["analysis"]["status"] + "`. See results/summary.json for paired intervals, multiplicity adjustments, and seed sensitivity when available.\n"
+    summary += "\n## Prerequisite audits\n\n" + readiness_table + "\n\nSee [readiness evidence](readiness.md) for data counts and individual audit reports.\n"
     (ROOT / "reports/experiments.md").write_text(summary, encoding="utf-8")
     for run in data["runs"]:
         notes_path = runs_dir() / run["name"] / "notes.md"
@@ -246,6 +256,7 @@ def report(cfg: dict, log) -> None:
     (ROOT / "README.md").write_text(readme, encoding="utf-8")
     paper = (ROOT / "paper/template.md").read_text(encoding="utf-8").replace("{{RESULTS}}", table)
     paper = paper.replace("{{ANALYSIS_STATUS}}", data["analysis"]["status"]).replace("{{GENERATED_AT}}", data["generated_at"])
+    paper = paper.replace("{{READINESS}}", readiness_table)
     (ROOT / "paper/paper.md").write_text(paper, encoding="utf-8")
     paths = figures(data)
     build_pdf(paper, paths)

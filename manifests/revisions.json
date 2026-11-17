@@ -1,0 +1,31 @@
+{
+  "revisions": {
+    "Qwen/Qwen3.5-0.8B": "2fc06364715b967f1860aea9cf38778875588b17",
+    "Qwen/Qwen3.5-2B": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+    "Qwen/Qwen3.5-4B": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+    "google/gemma-4-E4B-it-qat-q4_0-gguf": "4b4a2c1d584be7264f87aac328a1bc739ce81b6c",
+    "google/gemma-4-E2B-it-qat-q4_0-gguf": "675cff42a74c774d6cb76f76d8eacb49b48c9b93",
+    "openai/gsm8k": "740312add88f781978c0658806c59bc2815b9866",
+    "google-research-datasets/mbpp": "4bb6404fdc6cacfda99d4ac4205087b89d32030c",
+    "UGPhysics/ugphysics": "523e71bc4e33356bb19de4af38c128796e8a8770"
+  },
+  "gguf_files": {
+    "google/gemma-4-E4B-it-qat-q4_0-gguf": "gemma-4-E4B_q4_0-it.gguf",
+    "google/gemma-4-E2B-it-qat-q4_0-gguf": "gemma-4-E2B_q4_0-it.gguf"
+  },
+  "llama_cpp_commit": "ef3848f9d7d4cf7b6b2abfc3b4c960b55d6d9e91",
+  "llama_release": "b12445",
+  "llama_assets": [
+    {
+      "name": "cudart-llama-b12445-bin-ubuntu-cuda-13.5-x64.tar.gz",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12445/cudart-llama-b12445-bin-ubuntu-cuda-13.5-x64.tar.gz",
+      "digest": "sha256:6762ab1e52f43028f1609ce97f358a749c52557124987ab3e304845d97183576"
+    },
+    {
+      "name": "llama-b12445-bin-ubuntu-cuda-13.5-x64.tar.gz",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12445/llama-b12445-bin-ubuntu-cuda-13.5-x64.tar.gz",
+      "digest": "sha256:cd48ba9e49dafb6005d145e2c1f34523f9fdf14ea7e22457c9bb558dfe428bf6"
+    }
+  ],
+  "evalplus_data_version": "v0.2.0"
+}

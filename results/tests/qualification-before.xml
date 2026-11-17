@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="44.854" timestamp="2026-11-17T03:11:34.668758+01:00" hostname="burny"><testcase classname="tests.test_qualification" name="test_another_models_qualification_cannot_authorize_training" time="0.001"><failure message="TypeError: require_qualification() takes 1 positional argument but 2 were given">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x753000c4be00&gt;
+
+    def test_another_models_qualification_cannot_authorize_training(monkeypatch):
+        """A valid old judge must not silently authorize a newly selected judge."""
+        previous = dict(passed=True, model="old-judge", revision="old-revision",
+                        prompt_hash=digest(JUDGE), audit_hash=digest({"audit": "fixture"}))
+        monkeypatch.setattr(training, "read_json", lambda path: previous)
+        monkeypatch.setattr("occam_rl.models.revision", lambda name: "old-revision")
+        with pytest.raises(RuntimeError, match="not qualified"):
+&gt;           training.require_qualification("qwen", {"judge": "new-judge"})
+E           TypeError: require_qualification() takes 1 positional argument but 2 were given
+
+tests/test_qualification.py:17: TypeError</failure></testcase></testsuite></testsuites>

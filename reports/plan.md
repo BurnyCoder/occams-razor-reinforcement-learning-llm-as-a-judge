@@ -2,6 +2,8 @@
 
 Updated 2026-11-17. Preserve the preregistration; record deviations separately. The full original scope remains active.
 
+Execution constraint added by the user: preserve at least 10% of the weekly Codex allowance. Check the account-wide usage tool regularly and before substantial new work; save a resume point and stop with a rounding/cleanup buffer above that floor. This can pause the project before the training-time budget expires; it does not change any scientific success criterion.
+
 ## Phase order
 
 1. Research and fact-check philosophical framing, efficient reasoning RL, judging, datasets, model support, licenses, and research methods. Write literature review, state-of-the-art review, rubric, data docs, preregistration, README. Publish before results.
@@ -37,5 +39,7 @@ Add a matched local replication of ConciseRL before making comparisons against s
 - Initial modular implementation, counterexample tests, dependency lock, site, paper template and command guide written; implementation push precedes the first test.
 - WSL dependencies and the isolated Docker verifier installed successfully. Initial CPU and container checks passed after publication. Model/data readiness and training remain outstanding.
 - Added artifact-only publication for unchanged-model prompt controls and a hard exploratory label for incomplete seed sets. Source publication includes hash-verified frozen data when available, preserving source-specific licenses.
+- Core implementation PR merged; GitHub Pages deployed and inspected. Exact revisions and actual CUDA runtime published. Initial paper rendered and visually checked; source, reports and paper uploaded to the single Hugging Face collection. Data preparation then started, with model fit and judge audits pending at that point. Completed readiness logs, including failures, join subsequent source snapshots.
+- Public and procedural data preparation completed with all target strata filled and no normalized-question overlap. The immutable split manifest is frozen before training. Judge qualification remains a prerequisite; the first small-judge audit exposes invalid/contradictory scoring and is retained as a failed readiness experiment. Larger local judge qualification will use a fresh constructed audit under an explicit amendment.
 
 During runs, inspect progress according to expected run duration: five minutes for >10-minute runs, fifteen for >30-minute runs, thirty for >one-hour runs. Report meaningful changes and active implementation progress promptly. Never install an automation just to watch this task.

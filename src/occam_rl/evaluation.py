@@ -17,7 +17,7 @@ from .verify import verify
 def evaluate(cfg: dict, log, commit: str, arm: str, seed: int, split: str, limit: int | None = None) -> None:
     """Resume by task ID; each task gets a stable RNG seed independent of interruption."""
     require_data_manifest(data_dir() / f"{split}.jsonl")
-    require_qualification("gemma")
+    require_qualification("gemma", cfg)
     if arm != "occam":
         require_first_occam()
     tasks = load_tasks(split)

@@ -67,6 +67,13 @@ def test_unit_conversion_and_exact_rationals():
         numeric("__import__('os').system('echo bad')")
 
 
+@pytest.mark.parametrize("answer", [r"3 m\s", "3 (m/s", "1e309 m/s", "1e999999999999 m/s"])
+def test_malformed_quantity_is_wrong_without_crashing(answer):
+    """Unsupported unit syntax and overflow are candidate errors, not run failures."""
+    physical = task(domain="physics", answer="3", unit="m/s", rtol=1e-6)
+    assert not verify(physical, f"<answer>{answer}</answer>").correct
+
+
 def test_length_counts_comment_markers_in_strings():
     """Comment stripping must not erase literal program semantics."""
     assert formal_length('<code>x = "#" # comment\n</code>') == 5

@@ -2,9 +2,13 @@
 
 Can a local language-model judge reward **simpler, fully justified solutions** better than merely rewarding short outputs? This project studies that question with Qwen3.5, group-relative reinforcement learning, deterministic correctness checks, and an independent Gemma 4 evaluator across mathematics, introductory physics, and Python programming.
 
-**Status: environment setup and the first CPU/container checks passed; model readiness checks are next. No model results yet.** The hypothesis may fail. Correct final answers can omit essential reasoning; such answers earn correctness credit but **no simplicity bonus**. All model computation runs locally on the available GPU. The first training run is Occam; all standalone baseline inference and baseline training follow it.
+**Status: data splits are frozen, software checks pass, and the initial small judge failed qualification. A larger local judge is the next readiness experiment. No policy-training or benchmark results yet.** The hypothesis may fail. Correct final answers can omit essential reasoning; such answers earn correctness credit but **no simplicity bonus**. All model computation runs locally on the available GPU. The first training run is Occam; all standalone baseline inference and baseline training follow it.
 
 The proposed contribution is the controlled comparison of an adequacy-gated semantic simplicity reward against adequacy-gated token and formal-length rewards. Short-reasoning RL already exists: see [ShorterBetter](https://arxiv.org/abs/2504.21370), [StepPruner](https://arxiv.org/abs/2510.03805), and [Dr. GRPO](https://arxiv.org/abs/2503.20783). This project does not claim to invent concise reasoning, compute Kolmogorov complexity, or establish that simpler answers are generally truer.
+
+![Research architecture](site/figures/architecture.png)
+
+[Paper PDF](output/pdf/paper.pdf) · [Interactive explorer](https://burnycoder.github.io/occams-razor-reinforcement-learning-llm-as-a-judge/) · [Hugging Face collection](https://huggingface.co/collections/BurnyCoder/occam-rl-adequate-and-parsimonious-reasoning-6afbab26f5969584c8f781e5)
 
 ```mermaid
 flowchart LR
@@ -45,7 +49,7 @@ No measured comparison exists yet. Generated score tables and examples will repl
 
 Use the published source-build script or checksum-pinned official llama.cpp CUDA binaries for the Gemma judge. The latter avoids requiring a full CUDA compiler installation. Both paths record the upstream source revision.
 
-The initial policy is [Qwen/Qwen3.5-0.8B](https://huggingface.co/Qwen/Qwen3.5-0.8B), BF16 with LoRA. The frozen training judge is [Qwen/Qwen3.5-2B](https://huggingface.co/Qwen/Qwen3.5-2B), quantized for inference. The independent evaluator is the newest suitable general-purpose Gemma family, [Gemma 4 E4B Q4_0](https://huggingface.co/google/gemma-4-E4B-it-qat-q4_0-gguf); the preregistered fallback is [Gemma 4 E2B Q4_0](https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf). Model revisions and the measured evaluator selection will be recorded before evaluation. See [Google's releases](https://ai.google.dev/gemma/docs/releases).
+The policy is [Qwen/Qwen3.5-0.8B](https://huggingface.co/Qwen/Qwen3.5-0.8B), BF16 with LoRA. The initial Qwen3.5-2B NF4 judge failed qualification; [the published amendment](reports/amendment-001-judge-capacity.md) selects [Qwen/Qwen3.5-4B](https://huggingface.co/Qwen/Qwen3.5-4B) NF4 as the next candidate, subject to a fresh audit and GPU-fit checks. The independent evaluator is the newest suitable general-purpose Gemma family, [Gemma 4 E4B Q4_0](https://huggingface.co/google/gemma-4-E4B-it-qat-q4_0-gguf); the preregistered fallback is [Gemma 4 E2B Q4_0](https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf). Model revisions and the measured evaluator selection will be recorded before evaluation. See [Google's releases](https://ai.google.dev/gemma/docs/releases).
 
 Target machine: RTX 5070 Laptop GPU, approximately 8 GiB VRAM. Model names and weight sizes do not establish fit: the preflight must measure generation, backward, and judge peaks with at least 750 MiB free. Roles run sequentially. Inactive policy weights may be staged in RAM; inference is never silently moved to CPU. Long traces are never truncated to fit the judge. [Unsloth's Qwen3.5 guide](https://unsloth.ai/docs/models/qwen3.5/fine-tune) recommends BF16 LoRA and documents local GRPO with `fast_inference=False`.
 
@@ -67,7 +71,7 @@ uv run --frozen occam resolve
 uv run --frozen occam dashboard --port 8765
 ```
 
-The CLI delegates to separate data, verifier, model, training, evaluation, statistics, reporting, publishing and dashboard modules. `occam report` regenerates measured tables, plots, selected full output examples, experiment reports, the paper PDF and site data. `occam dashboard` serves live rollout accuracy, reward and loss from saved events. [The static explorer](https://burnycoder.github.io/occams-razor-reinforcement-learning-llm-as-a-judge/) is deployed by GitHub Pages; until deployment succeeds that URL may be unavailable.
+The CLI delegates to separate data, verifier, model, training, evaluation, statistics, reporting, publishing and dashboard modules. `occam report` regenerates measured tables, plots, selected full output examples, experiment reports, the paper PDF and site data. It reports completed judge audits separately from policy scores, preserves failed audits, and tabulates frozen data counts in `reports/readiness.md`. `occam dashboard` serves live rollout accuracy, reward and loss from saved events. [The static explorer](https://burnycoder.github.io/occams-razor-reinforcement-learning-llm-as-a-judge/) is deployed by GitHub Pages.
 
 The initial run uses seed 17. After that model is saved and published, run the three prompt-only baselines, freeze length normalizers from their separate calibration split, then train the accuracy and two length arms. Seeds 29 and 43 and the shuffled control follow. The [plan](reports/plan.md) records the complete sequence, acceptance criteria, and time budget.
 
@@ -90,3 +94,21 @@ The target confirmatory evaluation has equal domain weights and paired task comp
 - [ ] Measure Lean proof-term structure, dependencies, and axioms programmatically; validate before using as a reward.
 
 Project code is Apache-2.0. See [source and license notes](docs/sources.md). Research author: Libor “Burny” Burian.
+
+
+## Generated results
+
+<!-- RESULTS:START -->
+
+| Run | Split | N | Accuracy | Adequacy | C × A × S | Tokens | Status |
+|---|---|---:|---:|---:|---:|---:|---|
+| occam | pending | — | — | — | — | — | not evaluated |
+| accuracy | pending | — | — | — | — | — | not evaluated |
+| token | pending | — | — | — | — | — | not evaluated |
+| formal | pending | — | — | — | — | — | not evaluated |
+| shuffled | pending | — | — | — | — | — | not evaluated |
+| prompt_ordinary | pending | — | — | — | — | — | not evaluated |
+| prompt_concise | pending | — | — | — | — | — | not evaluated |
+| prompt_occam | pending | — | — | — | — | — | not evaluated |
+
+<!-- RESULTS:END -->

@@ -2,7 +2,7 @@
 
 import pytest
 
-from occam_rl.data import procedural_tasks, check_split_overlap
+from occam_rl.data import procedural_tasks, check_split_overlap, function_contract
 from occam_rl.statistics import paired_effect, holm
 
 
@@ -33,3 +33,10 @@ def test_holm_adjustment_monotone_and_bounded():
     """Known simple example catches incorrect multiplicity scaling."""
     assert holm([0.01, 0.04]) == [0.02, 0.04]
     assert holm([0.9, 0.8]) == [1, 1]
+
+
+def test_benchmark_signature_is_visible_without_reference_body():
+    """The tested API must be specified rather than guessed from a hidden solution."""
+    signature, entrypoint = function_contract("def helper(): return 99\ndef solve(xs, k=2): return sum(xs)*k", ["assert solve([1]) == 2"])
+    assert signature == "def solve(xs, k=2):" and entrypoint == "solve"
+    assert "sum" not in signature and "return" not in signature

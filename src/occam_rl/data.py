@@ -4,18 +4,20 @@ Public records use upstream revisions and licenses. Reasoning Gym is called thro
 its dataset API; no source is copied. https://github.com/open-thought/reasoning-gym
 """
 
+import ast
 import json
 import math
 import random
 import re
 from fractions import Fraction
 from pathlib import Path
+from tokenize import TokenError
 
 from pint.errors import PintError
 
 from .io import ROOT, data_dir, digest, file_hash, read_json, read_jsonl, write_json
 from .schema import DOMAINS, Task
-from .verify import numeric, run_code
+from .verify import numeric, run_code, verify
 
 SPLIT_SEEDS = {"train": 1000003, "dev": 2000003, "calibration": 3000003,
                "test": 4000003, "ood": 5000003}
@@ -105,7 +107,7 @@ def _code(rng: random.Random, variant: int, ood: bool) -> dict:
     name = f"solve_{rng.randrange(100000, 999999)}"
     return dict(family=family, question=f"Write Python function {name}(xs), for any finite list of integers, returning {spec}. Do not mutate xs. Explain empty-list and negative-value behavior.",
                 reference=f"def {name}(xs):\n    {body}", requirements=["Satisfy all list sizes", "Handle negatives and duplicates", "Explain empty-list behavior"],
-                entrypoint=name, inputs=[[xs] for xs in cases], expected=[transform(xs) for xs in cases])
+                entrypoint=name, preserve_inputs=True, inputs=[[xs] for xs in cases], expected=[transform(xs) for xs in cases])
 
 
 def procedural_tasks(split: str, per_domain: int) -> list[Task]:
@@ -148,6 +150,17 @@ def _unbox(value: str) -> str:
     return value.strip()
 
 
+def function_contract(reference: str, tests: list[str]) -> tuple[str, str]:
+    """Expose the tested callable signature, never the reference implementation."""
+    calls = {n.func.id for test in tests for n in ast.walk(ast.parse(test))
+             if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)}
+    functions = [n for n in ast.parse(reference).body if isinstance(n, ast.FunctionDef) and n.name in calls]
+    if len(functions) != 1:
+        raise ValueError("Ambiguous benchmark function contract")
+    function = functions[0]
+    return f"def {function.name}({ast.unparse(function.args)}):", function.name
+
+
 def public_tasks(cfg: dict, revisions: dict, log) -> list[Task]:
     """Eligibility is based on schemas, supported types and reference checks, never policy results."""
     from datasets import load_dataset
@@ -167,9 +180,19 @@ def public_tasks(cfg: dict, revisions: dict, log) -> list[Task]:
                               source="openai/gsm8k", license="MIT"))
     rows = load_dataset("google-research-datasets/mbpp", "full", split="train",
                         revision=revisions["google-research-datasets/mbpp"])
+    # Exclude every official training ID from MBPP+, including rows later found
+    # ineligible for our training adapter. Eligibility cannot relax split isolation.
+    train_ids = {str(row["task_id"]) for row in rows}
     for row in rows:
+        try:
+            signature, entrypoint = function_contract(row["code"], row["test_list"])
+        except (ValueError, SyntaxError) as exc:
+            log.emit("exclude", source="MBPP", id=row["task_id"], reason=str(exc))
+            continue
+        setup = [row["test_setup_code"]] if row.get("test_setup_code", "").strip() else []
         tasks.append(Task(id=f"mbpp/{row['task_id']}", domain="code", family=f"mbpp/{row['task_id']}",
-                          split="train", question=row["text"], reference=row["code"], tests=row["test_list"],
+                          split="train", question=row["text"] + "\nRequired function signature: " + signature,
+                          reference=row["code"], entrypoint=entrypoint, tests=setup + row["test_list"],
                           source="google-research-datasets/mbpp", license="CC-BY-4.0"))
     for subject in ("ClassicalMechanics", "ClassicalElectromagnetism"):
         rows = load_dataset("UGPhysics/ugphysics", subject, split="en", revision=revisions["UGPhysics/ugphysics"])
@@ -189,12 +212,11 @@ def public_tasks(cfg: dict, revisions: dict, log) -> list[Task]:
                 tasks.append(Task(id=identifier, domain="physics", family=identifier, split="test", question=row["problem"],
                                   answer=str(value), unit=unit, reference=row["solution"], rtol=1e-3, atol=1e-8,
                                   source="UGPhysics/ugphysics", license="CC-BY-NC-SA-4.0"))
-            except (ValueError, TypeError, KeyError, PintError) as exc:
+            except (ValueError, ArithmeticError, SyntaxError, TokenError, TypeError, KeyError, PintError) as exc:
                 # Eligibility failures are retained before any model sees the tasks.
                 log.emit("exclude", source="UGPhysics/ugphysics", id=identifier, reason=str(exc))
     from evalplus.data import get_mbpp_plus
     mbpp = get_mbpp_plus(version="v0.2.0")
-    train_ids = {t.id.split("/")[-1] for t in tasks if t.source == "google-research-datasets/mbpp"}
     for identifier, row in mbpp.items():
         try:
             if identifier.split("/")[-1] in train_ids:
@@ -252,10 +274,15 @@ def prepare(cfg: dict, log, *, public: bool = True) -> None:
                     key = question_hash(task.question)
                     # Use the longest prompt treatment for eligibility across all arms.
                     ids = tokenizer.apply_chat_template(policy_messages(task, "prompt_occam"), tokenize=True,
-                                                        add_generation_prompt=True, enable_thinking=True)
+                                                        add_generation_prompt=True, enable_thinking=True, return_dict=False)
                     if key in hashes or len(ids) > cfg["max_prompt_tokens"]:
                         log.emit("exclude", id=task.id, reason="duplicate or prompt budget", prompt_tokens=len(ids))
                         continue
+                    if task.domain == "code" and task.source == "google-research-datasets/mbpp":
+                        checked = verify(task, f"<code>{task.reference}</code>", cfg["docker_image"])
+                        if not checked.correct:
+                            log.emit("exclude", id=task.id, reason="reference_verification_failed", detail=checked.reason)
+                            continue
                     hashes.add(key)
                     selected.append(task)
                     kept += 1
