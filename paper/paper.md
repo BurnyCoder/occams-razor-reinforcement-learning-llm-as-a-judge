@@ -2,7 +2,7 @@
 
 Libor “Burny” Burian
 
-2026-11-17. Living preregistered research report. Artifact regeneration: 2026-11-17T01:13:38.216+00:00.
+2026-11-17. Living preregistered research report. Artifact regeneration: 2026-11-17T01:16:11.103+00:00.
 
 ## Abstract
 
