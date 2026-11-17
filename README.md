@@ -2,7 +2,7 @@
 
 Can a local language-model judge reward **simpler, fully justified solutions** better than merely rewarding short outputs? This project studies that question with Qwen3.5, group-relative reinforcement learning, deterministic correctness checks, and an independent Gemma 4 evaluator across mathematics, introductory physics, and Python programming.
 
-**Status: the initial implementation is pushed; environment setup and tests are in progress. No model results yet.** The hypothesis may fail. Correct final answers can omit essential reasoning; such answers earn correctness credit but **no simplicity bonus**. All model computation runs locally on the available GPU. The first training run is Occam; all standalone baseline inference and baseline training follow it.
+**Status: environment setup and the first CPU/container checks passed; model readiness checks are next. No model results yet.** The hypothesis may fail. Correct final answers can omit essential reasoning; such answers earn correctness credit but **no simplicity bonus**. All model computation runs locally on the available GPU. The first training run is Occam; all standalone baseline inference and baseline training follow it.
 
 The proposed contribution is the controlled comparison of an adequacy-gated semantic simplicity reward against adequacy-gated token and formal-length rewards. Short-reasoning RL already exists: see [ShorterBetter](https://arxiv.org/abs/2504.21370), [StepPruner](https://arxiv.org/abs/2510.03805), and [Dr. GRPO](https://arxiv.org/abs/2503.20783). This project does not claim to invent concise reasoning, compute Kolmogorov complexity, or establish that simpler answers are generally truer.
 
@@ -80,7 +80,7 @@ The target confirmatory evaluation has equal domain weights and paired task comp
 ## Roadmap
 
 - [x] Publish research documents and preregistration before any results.
-- [ ] Publish the complete implementation, tests, lockfile, and README before testing.
+- [x] Publish the complete implementation, tests, lockfile, and README before testing.
 - [ ] Verify data, judge behavior, GPU fit, resumability, and logging.
 - [ ] Train and publish the first Occam model; then run prompt-only and trained baselines.
 - [ ] Generate all result tables, plots, experiment reports, and PDF paper from artifacts.

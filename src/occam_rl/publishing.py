@@ -5,8 +5,9 @@ Hub APIs: https://huggingface.co/docs/huggingface_hub/guides/upload
 
 from pathlib import Path
 
-from .io import ROOT, read_json, runs_dir, write_json
-from .publication import git
+from .io import ROOT, data_dir, read_json, read_jsonl, runs_dir, write_json
+from .publication import git, require_data_manifest
+from .schema import PROMPT_ARMS
 
 
 def hub(cfg: dict):
@@ -35,10 +36,31 @@ def publish_source(cfg: dict, log, commit: str) -> None:
         raise RuntimeError("Potential secret-bearing tracked file; review before upload")
     result = api.upload_folder(repo_id=repo, repo_type="dataset", folder_path=str(ROOT),
                                allow_patterns=tracked, commit_message=f"Research source snapshot {commit}")
+    if (ROOT / "manifests/data.json").exists():
+        files = read_json(ROOT / "manifests/data.json")["files"]
+        for name in files:
+            require_data_manifest(data_dir() / name)
+        api.upload_folder(repo_id=repo, repo_type="dataset", folder_path=str(data_dir()),
+                          path_in_repo="frozen-data", allow_patterns=list(files),
+                          commit_message="Publish hash-verified frozen task splits")
+    result = api.upload_file(repo_id=repo, repo_type="dataset", path_or_fileobj=str(ROOT / "docs/hf-artifacts.md"),
+                             path_in_repo="README.md", commit_message="Describe artifact provenance and source-specific licenses")
     api.add_collection_item(collection, item_id=repo, item_type="dataset", exists_ok=True)
     write_json(ROOT / ".local/hf-publication.json", {"git_commit": commit, "hf_commit": result.oid,
                                                     "repo": repo, "collection": collection})
     log.emit("source_published", git_commit=commit, hf_commit=result.oid, repo=repo, collection=collection)
+
+
+def publish_evaluations(api, cfg: dict, collection: str, directory: Path):
+    """Both trained and prompt-only runs share the same raw artifact publication."""
+    artifacts = cfg["hf_artifacts_repo"]
+    api.create_repo(artifacts, repo_type="dataset", private=False, exist_ok=True)
+    result = api.upload_folder(repo_id=artifacts, repo_type="dataset", folder_path=str(directory), path_in_repo=f"runs/{directory.name}",
+                              allow_patterns=["*.json", "*.jsonl", "*.md", "eval-*/**"],
+                              ignore_patterns=["adapter/**", "checkpoint-*/**"],
+                              commit_message=f"Publish {directory.name} logs and evaluations")
+    api.add_collection_item(collection, item_id=artifacts, item_type="dataset", exists_ok=True)
+    return result
 
 
 def publish_run(cfg: dict, log, commit: str, name: str) -> None:
@@ -47,6 +69,22 @@ def publish_run(cfg: dict, log, commit: str, name: str) -> None:
     directory = (runs_dir() / name).resolve()
     if directory.parent != runs_dir().resolve():
         raise ValueError("Run name must identify a direct child of the run directory")
+    if not (directory / "status.json").exists():
+        evaluations = [(read_json(path), read_jsonl(path.parent / "results.jsonl"))
+                       for path in sorted(directory.glob("eval-*/manifest.json"))]
+        if not evaluations or any(m["arm"] not in PROMPT_ARMS for m, _ in evaluations):
+            raise RuntimeError("Missing training state; only prompt-only evaluation runs omit an adapter")
+        first = evaluations[0][0]
+        if any((m["arm"], m["seed"]) != (first["arm"], first["seed"]) for m, _ in evaluations):
+            raise RuntimeError("Mixed evaluation identities in one run directory")
+        complete = all({r["task_id"] for r in rows} == set(m["tasks"]) and len(rows) == len(m["tasks"])
+                       for m, rows in evaluations)
+        result = publish_evaluations(api, cfg, collection, directory)
+        receipt = {"arm": first["arm"], "seed": first["seed"], "complete": complete, "artifact_type": "evaluation",
+                   "hf_commit": result.oid, "repo": cfg["hf_artifacts_repo"], "git_commit": commit, "collection": collection}
+        write_json(ROOT / "manifests" / f"published-{name}.json", receipt)
+        log.emit("run_published", **receipt)
+        return
     status = read_json(directory / "status.json")
     repo = f"BurnyCoder/occam-rl-{name}"
     api.create_repo(repo, repo_type="model", private=False, exist_ok=True)
@@ -71,6 +109,8 @@ https://github.com/{cfg['github_repo']} . No advantage over any baseline is impl
 Code and adapters retain their applicable Apache-2.0 licenses. Dataset rights and attribution
 are described in the research repository; raw benchmark records are separate artifacts.
 """
+    from .reporting import score_table, snapshot
+    card += "\n## Evaluations\n\n" + score_table([r for r in snapshot()["evaluations"] if r["run"] == name]) + "\n"
     (directory / "adapter/README.md").write_text(card, encoding="utf-8")
     result = api.upload_folder(repo_id=repo, folder_path=str(directory / "adapter"), commit_message=f"Publish {name} adapter")
     # Checkpoints preserve optimizer/scheduler/RNG, while run metadata records their meaning.
@@ -78,11 +118,7 @@ are described in the research repository; raw benchmark records are separate art
                       allow_patterns=["checkpoint-*/**", "run.json", "status.json", "notes.md"],
                       commit_message=f"Publish resumable state for {name}")
     api.add_collection_item(collection, item_id=repo, item_type="model", exists_ok=True)
-    artifacts = cfg["hf_artifacts_repo"]
-    api.create_repo(artifacts, repo_type="dataset", private=False, exist_ok=True)
-    api.upload_folder(repo_id=artifacts, repo_type="dataset", folder_path=str(directory), path_in_repo=f"runs/{name}",
-                      allow_patterns=["*.json", "*.jsonl", "*.md", "eval-*/**"],
-                      ignore_patterns=["adapter/**", "checkpoint-*/**"], commit_message=f"Publish {name} logs and evaluations")
+    publish_evaluations(api, cfg, collection, directory)
     receipt = {"arm": status["arm"], "seed": status["seed"], "complete": status["complete"],
                "pilot": status["pilot"], "hf_commit": result.oid, "repo": repo, "git_commit": commit, "collection": collection}
     write_json(ROOT / "manifests" / f"published-{name}.json", receipt)

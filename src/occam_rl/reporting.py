@@ -5,6 +5,7 @@ Missing results remain missing; an empty directory never becomes a zero score.
 """
 
 import json
+import re
 import statistics
 from collections import defaultdict
 from pathlib import Path
@@ -94,6 +95,8 @@ def comparisons(cfg: dict) -> dict:
     result["status"] = "criteria_met" if quality_pass and accuracy_pass else "not_established"
     result["seeds"] = sorted(common_seeds)
     result["confirmatory_seed_target_met"] = set(common_seeds) == set(cfg["seeds"])
+    if not result["confirmatory_seed_target_met"]:
+        result["status"] = "exploratory_incomplete_seeds"
     return result
 
 
@@ -188,7 +191,8 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
                                       ("VALIGN", (0,0), (-1,-1), "TOP"), ("GRID", (0,0), (-1,-1), .3, colors.lightgrey)]))
             story.extend([table, Spacer(1, 10)])
             table_rows.clear()
-    for line in markdown.splitlines():
+    main_text, _, ai_statement = markdown.partition("\n## AI statement\n")
+    for line in main_text.splitlines():
         if line.startswith("|"):
             if not set(line.replace("|", "").replace(" ", "")) <= set("-:"):
                 table_rows.append(line.strip("|").split("|"))
@@ -198,12 +202,16 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
             continue
         style = "Title" if line.startswith("# ") else "Heading2" if line.startswith("## ") else "Heading3" if line.startswith("### ") else "BodyText"
         text = escape(line.lstrip("# ")).replace("“", '"').replace("”", '"').replace("’", "'").replace("—", " - ").replace("×", " x ")
+        text = re.sub(r"https?://[^\s<]+", lambda match: f'<link href="{match[0]}" color="#245f49">{match[0]}</link>', text)
         story.extend([Paragraph(text, styles[style]), Spacer(1, 5)])
     flush_table()
     for path in paths:
         from reportlab.lib.utils import ImageReader
         width, height = ImageReader(str(path)).getSize()
         story.append(Image(str(path), width=6.5*inch, height=6.5*inch*height/width))
+    if ai_statement:
+        story.extend([Spacer(1, 12), Paragraph("AI statement", styles["Heading2"]),
+                      Paragraph(escape(ai_statement.strip()), styles["BodyText"])])
     destination = ROOT / "paper/paper.pdf"
     destination.parent.mkdir(parents=True, exist_ok=True)
     SimpleDocTemplate(str(destination), pagesize=(8.5*inch, 11*inch), rightMargin=.6*inch,
