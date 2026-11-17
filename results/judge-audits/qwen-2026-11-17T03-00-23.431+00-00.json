@@ -1,0 +1,285 @@
+{
+  "role": "qwen",
+  "model": "Qwen/Qwen3.5-4B",
+  "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "prompt_hash": "5fee256f0363ad94c110fbcdeaf56a112ceb57f3ca608b8dc613784ce2e8d579",
+  "audit_hash": "e6c60ae0c5b4c31bb23ef11dd2a6a586296aa59a0454df2a6d31170ec5c9d703",
+  "audit_file": "configs/judge-audit-v2.json",
+  "operation_log": "2026-11-17T02-34-41.735+00-00-qualify.jsonl",
+  "wins": 0,
+  "pair_count": 12,
+  "dominance_ci95": [
+    2.7755575615628914e-17,
+    0.24249400665524085
+  ],
+  "rejected": 5,
+  "omission_count": 10,
+  "omission_ci95": [
+    0.236593090512564,
+    0.7634069094874361
+  ],
+  "invalid": 18,
+  "passed": false,
+  "rows": [
+    {
+      "id": "audit/pair/0",
+      "expected_dominance": false,
+      "better": {
+        "adequate": true,
+        "assumptions": 0,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
+        "missing": [],
+        "rationale": "The solution correctly defines the arithmetic mean, applies the formula to the given numbers, and provides the correct result. The reasoning is direct and complete."
+      },
+      "worse": null
+    },
+    {
+      "id": "audit/pair/1",
+      "expected_dominance": false,
+      "better": {
+        "adequate": true,
+        "assumptions": 0,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
+        "missing": [],
+        "rationale": "The candidate provides the standard algebraic proof using the definition of odd integers (2a+1, 2b+1), expands the product correctly to show the form 2k+1, and explicitly identifies the integer part. The reasoning is complete, concise, and directly addresses the requirement without unnecessary steps or assumptions."
+      },
+      "worse": null
+    },
+    {
+      "id": "audit/pair/2",
+      "expected_dominance": false,
+      "better": {
+        "adequate": true,
+        "assumptions": 0,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
+        "missing": [],
+        "rationale": "The solution correctly identifies the theorem (Pythagoras), performs the arithmetic (25+144=169), applies the square root, and explicitly justifies the positive root for a geometric length. No unnecessary assumptions or steps are present."
+      },
+      "worse": null
+    },
+    {
+      "id": "audit/pair/3",
+      "expected_dominance": false,
+      "better": {
+        "adequate": true,
+        "assumptions": 0,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
+        "missing": [],
+        "rationale": "The solution directly applies the standard procedure for adding fractions with different denominators (finding a common denominator) and performs the addition correctly. The reasoning is concise, complete, and matches the reference exactly without unnecessary steps or assumptions."
+      },
+      "worse": null
+    },
+    {
+      "id": "audit/pair/4",
+      "expected_dominance": false,
+      "better": null,
+      "worse": null
+    },
+    {
+      "id": "audit/pair/5",
+      "expected_dominance": false,
+      "better": null,
+      "worse": null
+    },
+    {
+      "id": "audit/pair/6",
+      "expected_dominance": false,
+      "better": {
+        "adequate": true,
+        "assumptions": 0,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
+        "missing": [],
+        "rationale": "The candidate correctly identifies the definition of period as the reciprocal of frequency, performs the calculation, and explicitly states the relationship, satisfying all requirements with minimal, clear reasoning."
+      },
+      "worse": {
+        "adequate": false,
+        "assumptions": 1,
+        "concepts": 2,
+        "steps": 2,
+        "clarity": 2,
+        "missing": [
+          "Explanation of the physical relationship between period and frequency beyond the formula"
+        ],
+        "rationale": "The candidate relies on an unnecessary conceptual machine ('frequency box', 'reciprocal box') which obscures the direct reasoning. While the calculation is correct, the explanation of the relation is trivial and buried in meta-commentary about 'passing labels', failing to clearly articulate the physical concept that period is the duration of one cycle."
+      }
+    },
+    {
+      "id": "audit/pair/7",
+      "expected_dominance": false,
+      "better": null,
+      "worse": null
+    },
+    {
+      "id": "audit/pair/8",
+      "expected_dominance": false,
+      "better": {
+        "adequate": true,
+        "assumptions": 0,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
+        "missing": [],
+        "rationale": "The solution correctly implements the function using a list comprehension, explicitly addresses the nonmutation requirement (creating a new list), and handles the empty input case (returning []). The reasoning is concise and directly connects the code to the requirements."
+      },
+      "worse": null
+    },
+    {
+      "id": "audit/pair/9",
+      "expected_dominance": false,
+      "better": {
+        "adequate": true,
+        "assumptions": 0,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
+        "missing": [],
+        "rationale": "The solution provides the correct implementation using the standard modulo operator, which correctly handles zero and negative integers as per the reference. The explanation explicitly addresses the edge cases (zero and negatives) and the logic (remainder check) without unnecessary assumptions or steps."
+      },
+      "worse": null
+    },
+    {
+      "id": "audit/pair/10",
+      "expected_dominance": false,
+      "better": {
+        "adequate": true,
+        "assumptions": 0,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
+        "missing": [],
+        "rationale": "The solution correctly implements the filter logic, preserves order via list comprehension, handles spaces (by only filtering the empty string), and explains the empty input case. No unnecessary assumptions or steps are present."
+      },
+      "worse": null
+    },
+    {
+      "id": "audit/pair/11",
+      "expected_dominance": false,
+      "better": {
+        "adequate": true,
+        "assumptions": 0,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
+        "missing": [],
+        "rationale": "The solution correctly implements the standard dictionary membership check using the `in` operator and provides a concise, accurate explanation linking the operator's behavior to the problem's requirement regarding None values."
+      },
+      "worse": null
+    },
+    {
+      "id": "audit/omission/0",
+      "judgment": null
+    },
+    {
+      "id": "audit/omission/1",
+      "judgment": null
+    },
+    {
+      "id": "audit/omission/2",
+      "judgment": null
+    },
+    {
+      "id": "audit/omission/3",
+      "judgment": null
+    },
+    {
+      "id": "audit/omission/4",
+      "judgment": {
+        "adequate": false,
+        "assumptions": 0,
+        "concepts": 0,
+        "steps": 0,
+        "clarity": 0,
+        "missing": [
+          "Definition of average power not shown",
+          "Substitution of values not shown",
+          "Units not explicitly derived in the trace"
+        ],
+        "rationale": "The candidate trace only provides the final answer without showing the definition of average power ($P = E/t$) or the substitution of the given values ($500/10$) as explicitly required by the problem statement. The reference shows these steps, but the candidate omits them entirely."
+      }
+    },
+    {
+      "id": "audit/omission/5",
+      "judgment": {
+        "adequate": false,
+        "assumptions": 1,
+        "concepts": 2,
+        "steps": 2,
+        "clarity": 1,
+        "missing": [
+          "Derivation of the potential energy relation from first principles or definition",
+          "Explicit connection between given variables (m, g, h) and the formula used",
+          "Explanation of why the increase equals mgΔh"
+        ],
+        "rationale": "The candidate skips all reasoning steps, providing only the final answer with a non-justified assertion ('Trust that number'). It fails to show the potential-energy relation as requested or demonstrate the calculation steps connecting the givens to the result."
+      }
+    },
+    {
+      "id": "audit/omission/6",
+      "judgment": {
+        "adequate": false,
+        "assumptions": 0,
+        "concepts": 0,
+        "steps": 0,
+        "clarity": 0,
+        "missing": [
+          "Derivation of the turns-ratio law",
+          "Explanation of the relationship between voltage and turns",
+          "Calculation steps showing the substitution of values"
+        ],
+        "rationale": "The candidate output provides only the final answer without deriving the law, explaining the physics, or showing the calculation steps. It fails to connect the givens to the conclusion as required."
+      }
+    },
+    {
+      "id": "audit/omission/7",
+      "judgment": {
+        "adequate": true,
+        "assumptions": 0,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
+        "missing": [],
+        "rationale": "The candidate provides a complete, correct implementation and explicitly states the required loop invariant ('After processing i elements, total is their sum and out contains every completed prefix sum'). The reasoning directly connects the accumulation logic to the output structure without unnecessary steps or hidden assumptions."
+      }
+    },
+    {
+      "id": "audit/omission/8",
+      "judgment": {
+        "adequate": false,
+        "assumptions": 1,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 2,
+        "missing": [
+          "Explanation of the prefix-balance invariant as requested",
+          "Explanation of why a negative balance fails"
+        ],
+        "rationale": "The candidate provides the correct code but fails the explicit requirement to explain the prefix-balance invariant and the failure condition. The trace states 'No explanation is needed,' which directly contradicts the problem statement demanding an explanation."
+      }
+    },
+    {
+      "id": "audit/omission/9",
+      "judgment": {
+        "adequate": false,
+        "assumptions": 1,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 1,
+        "missing": [
+          "Explanation of loop invariant",
+          "Explanation of termination condition"
+        ],
+        "rationale": "The candidate code implements the merge logic correctly but explicitly refuses to explain the loop invariant and termination as requested by the problem statement. The problem requires an explanation of these concepts, which is a core part of the task, not just the code implementation."
+      }
+    }
+  ]
+}

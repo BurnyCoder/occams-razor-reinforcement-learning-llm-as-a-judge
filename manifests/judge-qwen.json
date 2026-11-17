@@ -1,54 +1,52 @@
 {
   "role": "qwen",
-  "model": "Qwen/Qwen3.5-2B",
-  "revision": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+  "model": "Qwen/Qwen3.5-4B",
+  "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
   "prompt_hash": "5fee256f0363ad94c110fbcdeaf56a112ceb57f3ca608b8dc613784ce2e8d579",
-  "audit_hash": "407af8805ea3de334791d4530158e0fa3600fce770a336b24969b16f3a1f6a28",
-  "wins": 1,
+  "audit_hash": "e6c60ae0c5b4c31bb23ef11dd2a6a586296aa59a0454df2a6d31170ec5c9d703",
+  "audit_file": "configs/judge-audit-v2.json",
+  "operation_log": "2026-11-17T02-34-41.735+00-00-qualify.jsonl",
+  "wins": 0,
   "pair_count": 12,
   "dominance_ci95": [
-    0.014865094404917095,
-    0.35387991114111694
+    2.7755575615628914e-17,
+    0.24249400665524085
   ],
-  "rejected": 7,
+  "rejected": 5,
   "omission_count": 10,
   "omission_ci95": [
-    0.39677814746114537,
-    0.8922087325936989
+    0.236593090512564,
+    0.7634069094874361
   ],
-  "invalid": 16,
+  "invalid": 18,
   "passed": false,
   "rows": [
     {
       "id": "audit/pair/0",
-      "expected_dominance": true,
+      "expected_dominance": false,
       "better": {
         "adequate": true,
         "assumptions": 0,
-        "concepts": 0,
-        "steps": 2,
+        "concepts": 1,
+        "steps": 1,
         "clarity": 4,
         "missing": [],
-        "rationale": "The candidate correctly identifies the inverse operations (subtract 1, divide by 2) to isolate the variable. The derivation is direct, uses only standard arithmetic concepts, and the final answer is derived logically from the given equation. No unnecessary assumptions or complex machinery are required."
+        "rationale": "The solution correctly defines the arithmetic mean, applies the formula to the given numbers, and provides the correct result. The reasoning is direct and complete."
       },
-      "worse": {
-        "adequate": false,
-        "assumptions": 0,
-        "concepts": 0,
-        "steps": 0,
-        "clarity": 0,
-        "missing": [
-          "Justification of the subtraction and division operations",
-          "Verification that the solution satisfies the original equation",
-          "Explanation of the logical steps taken to isolate x"
-        ],
-        "rationale": "The candidate makes an unsupported assumption about the universe favoring odd integers, which is irrelevant to the mathematical problem. It performs the requested operations (subtract 1, divide by 2) but fails to justify them or verify the result. The reasoning is circular and lacks any mathematical rigor or explanation of the algebraic steps."
-      }
+      "worse": null
     },
     {
       "id": "audit/pair/1",
       "expected_dominance": false,
-      "better": null,
+      "better": {
+        "adequate": true,
+        "assumptions": 0,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
+        "missing": [],
+        "rationale": "The candidate provides the standard algebraic proof using the definition of odd integers (2a+1, 2b+1), expands the product correctly to show the form 2k+1, and explicitly identifies the integer part. The reasoning is complete, concise, and directly addresses the requirement without unnecessary steps or assumptions."
+      },
       "worse": null
     },
     {
@@ -57,45 +55,32 @@
       "better": {
         "adequate": true,
         "assumptions": 0,
-        "concepts": 0,
-        "steps": 0,
-        "clarity": 0,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
         "missing": [],
-        "rationale": "The problem asks for $12^2 - 8^2$ using an identity. The reference provides the difference of squares identity $(a-b)(a+b) = a^2 - b^2$ and the specific calculation $(12-8)(12+8) = 4 \times 20 = 80$. The candidate correctly identifies the identity, substitutes the values, performs the multiplication, and states the result. The reasoning is direct, the steps are complete, and the clarity is high. No assumptions or missing reasoning are present."
+        "rationale": "The solution correctly identifies the theorem (Pythagoras), performs the arithmetic (25+144=169), applies the square root, and explicitly justifies the positive root for a geometric length. No unnecessary assumptions or steps are present."
       },
       "worse": null
     },
     {
       "id": "audit/pair/3",
       "expected_dominance": false,
-      "better": null,
-      "worse": {
+      "better": {
         "adequate": true,
         "assumptions": 0,
-        "concepts": 0,
-        "steps": 0,
+        "concepts": 1,
+        "steps": 1,
         "clarity": 4,
         "missing": [],
-        "rationale": "The candidate correctly identifies the division algorithm form (19 = 4*4 + 3) and explicitly states the condition 0<=3<4, which is the definition of the remainder. The conclusion follows directly from the definition of the remainder in the division algorithm. No unnecessary assumptions or complex machinery are used. The reasoning is direct, clear, and sufficient."
-      }
+        "rationale": "The solution directly applies the standard procedure for adding fractions with different denominators (finding a common denominator) and performs the addition correctly. The reasoning is concise, complete, and matches the reference exactly without unnecessary steps or assumptions."
+      },
+      "worse": null
     },
     {
       "id": "audit/pair/4",
       "expected_dominance": false,
-      "better": {
-        "adequate": false,
-        "assumptions": 0,
-        "concepts": 0,
-        "steps": 0,
-        "clarity": 0,
-        "missing": [
-          "Explicit statement of Newton's second law application",
-          "Calculation of the ratio 6/2",
-          "Verification of units (Newtons to kg-m/s^2)",
-          "Explanation of the result's physical meaning"
-        ],
-        "rationale": "The candidate provides a one-line derivation using the formula $a=F/m$ but fails to explicitly state the law of motion, perform the division, or verify the resulting units. The reasoning is completely absent, making the answer trivial and unexplained."
-      },
+      "better": null,
       "worse": null
     },
     {
@@ -110,58 +95,43 @@
       "better": {
         "adequate": true,
         "assumptions": 0,
-        "concepts": 4,
-        "steps": 4,
+        "concepts": 1,
+        "steps": 1,
         "clarity": 4,
         "missing": [],
-        "rationale": "The trace correctly identifies constant acceleration as the key concept, applies the standard kinematic equation $v=u+at$ directly, substitutes the given values ($u=2, a=3, t=4$) to perform the necessary arithmetic, and arrives at the correct final result ($14$ m/s) without extraneous assumptions or unnecessary complexity."
+        "rationale": "The candidate correctly identifies the definition of period as the reciprocal of frequency, performs the calculation, and explicitly states the relationship, satisfying all requirements with minimal, clear reasoning."
       },
-      "worse": null
+      "worse": {
+        "adequate": false,
+        "assumptions": 1,
+        "concepts": 2,
+        "steps": 2,
+        "clarity": 2,
+        "missing": [
+          "Explanation of the physical relationship between period and frequency beyond the formula"
+        ],
+        "rationale": "The candidate relies on an unnecessary conceptual machine ('frequency box', 'reciprocal box') which obscures the direct reasoning. While the calculation is correct, the explanation of the relation is trivial and buried in meta-commentary about 'passing labels', failing to clearly articulate the physical concept that period is the duration of one cycle."
+      }
     },
     {
       "id": "audit/pair/7",
       "expected_dominance": false,
       "better": null,
-      "worse": {
-        "adequate": false,
-        "assumptions": 0,
-        "concepts": 0,
-        "steps": 0,
-        "clarity": 0,
-        "missing": [
-          "Explain why the force is parallel to the displacement vector",
-          "Explain the physical meaning of the angle in the context of work done"
-        ],
-        "rationale": "The candidate correctly identifies that parallel forces result in zero angle, but fails to explicitly state the definition of the angle between the force vector and displacement vector. It also arbitrarily invents irrelevant details (temperature, lab orientation) that do not contribute to the calculation. The reasoning is non-existent because it does not connect the geometric condition (parallel) to the mathematical formula (cos(0)) in a logical chain, nor does it explain the physical significance of the result."
-      }
+      "worse": null
     },
     {
       "id": "audit/pair/8",
       "expected_dominance": false,
       "better": {
-        "adequate": false,
+        "adequate": true,
         "assumptions": 0,
-        "concepts": 0,
-        "steps": 0,
-        "clarity": 0,
-        "missing": [
-          "Explicit handling of the empty input case as requested by the problem statement",
-          "Explanation of why the sum function naturally returns zero for an empty list"
-        ],
-        "rationale": "The candidate code simply calls the built-in `sum` function without any explanation of the empty input case. The problem explicitly asks to 'explain empty input', which is completely absent from the trace. The reasoning is missing entirely, making the solution inadequate."
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
+        "missing": [],
+        "rationale": "The solution correctly implements the function using a list comprehension, explicitly addresses the nonmutation requirement (creating a new list), and handles the empty input case (returning []). The reasoning is concise and directly connects the code to the requirements."
       },
-      "worse": {
-        "adequate": false,
-        "assumptions": 0,
-        "concepts": 0,
-        "steps": 0,
-        "clarity": 0,
-        "missing": [
-          "Explanation of empty input behavior as explicitly requested by the problem statement",
-          "Explanation of the sum function behavior for empty lists"
-        ],
-        "rationale": "The candidate code implements the logic but fails to address the specific requirement to 'explain empty input'. The problem explicitly asks for an explanation of this edge case, which is completely absent from the provided trace. The reasoning is non-existent, and the concept of 'empty input' is treated as a known fact rather than a derived concept."
-      }
+      "worse": null
     },
     {
       "id": "audit/pair/9",
@@ -169,90 +139,57 @@
       "better": {
         "adequate": true,
         "assumptions": 0,
-        "concepts": 2,
-        "steps": 2,
-        "clarity": 2,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
         "missing": [],
-        "rationale": "The candidate provides a standard list comprehension solution. It correctly handles empty input by producing an empty list. The logic is minimal and sufficient. While the explanation is brief, it directly addresses the problem requirements and edge case (empty input) without unnecessary complexity."
+        "rationale": "The solution provides the correct implementation using the standard modulo operator, which correctly handles zero and negative integers as per the reference. The explanation explicitly addresses the edge cases (zero and negatives) and the logic (remainder check) without unnecessary assumptions or steps."
       },
       "worse": null
     },
     {
       "id": "audit/pair/10",
       "expected_dominance": false,
-      "better": null,
+      "better": {
+        "adequate": true,
+        "assumptions": 0,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
+        "missing": [],
+        "rationale": "The solution correctly implements the filter logic, preserves order via list comprehension, handles spaces (by only filtering the empty string), and explains the empty input case. No unnecessary assumptions or steps are present."
+      },
       "worse": null
     },
     {
       "id": "audit/pair/11",
       "expected_dominance": false,
-      "better": null,
+      "better": {
+        "adequate": true,
+        "assumptions": 0,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
+        "missing": [],
+        "rationale": "The solution correctly implements the standard dictionary membership check using the `in` operator and provides a concise, accurate explanation linking the operator's behavior to the problem's requirement regarding None values."
+      },
       "worse": null
     },
     {
       "id": "audit/omission/0",
-      "judgment": {
-        "adequate": false,
-        "assumptions": 0,
-        "concepts": 0,
-        "steps": 0,
-        "clarity": 0,
-        "missing": [
-          "Justification of the transformation steps",
-          "Explanation of the algebraic manipulation",
-          "Verification of the result"
-        ],
-        "rationale": "The candidate provides only the final answer '4' without any reasoning, justification, or explanation of the steps. The problem explicitly asks to 'justify the transformations', which is completely absent from the candidate's output. This makes the solution inadequate."
-      }
+      "judgment": null
     },
     {
       "id": "audit/omission/1",
-      "judgment": {
-        "adequate": false,
-        "assumptions": 0,
-        "concepts": 0,
-        "steps": 0,
-        "clarity": 0,
-        "missing": [
-          "No proof is provided. The statement 'The result is even' is asserted without any derivation, definition of even integers, or algebraic manipulation.",
-          "No logical connection is made between the premise (sum of two even integers) and the conclusion (the sum is even).",
-          "No material assumptions, conditions, or units are discussed.",
-          "No edge cases or verification steps are mentioned.",
-          "No explanation of why the result is even is given."
-        ],
-        "rationale": "The candidate trace contains no reasoning whatsoever. It merely asserts the conclusion without any justification, derivation, or connection to the problem statement. It fails to explain the mathematical principle involved."
-      }
+      "judgment": null
     },
     {
       "id": "audit/omission/2",
-      "judgment": {
-        "adequate": false,
-        "assumptions": 0,
-        "concepts": 0,
-        "steps": 0,
-        "clarity": 0,
-        "missing": [
-          "Explicit calculation of the sum",
-          "Justification of the result"
-        ],
-        "rationale": "The candidate provides the final answer (11/12) but offers no reasoning, calculation steps, or justification. It relies solely on 'intuition' without any mathematical derivation or verification. This fails the requirement to 'justify your result' and lacks any substantive reasoning or steps."
-      }
+      "judgment": null
     },
     {
       "id": "audit/omission/3",
-      "judgment": {
-        "adequate": false,
-        "assumptions": 0,
-        "concepts": 0,
-        "steps": 0,
-        "clarity": 0,
-        "missing": [
-          "Demonstrate that squaring both sides yields x^2 = 9",
-          "Explain the algebraic derivation from x^2 = 9 to the roots",
-          "Verify the validity of the roots"
-        ],
-        "rationale": "The candidate provides the final answer but explicitly states 'no reasoning is needed' and offers no derivation or verification. This fails the requirement to show all real solutions and explain the logic connecting the given equation to the result."
-      }
+      "judgment": null
     },
     {
       "id": "audit/omission/4",
@@ -263,41 +200,31 @@
         "steps": 0,
         "clarity": 0,
         "missing": [
-          "Law of Newton's Second Law",
-          "Substitution of given values",
-          "Calculation of acceleration",
-          "Explicit unit conversion and dimensional analysis",
-          "Verification of the result"
+          "Definition of average power not shown",
+          "Substitution of values not shown",
+          "Units not explicitly derived in the trace"
         ],
-        "rationale": "The candidate trace provides only the final numerical answer without any derivation, law citation, or step-by-step logic. It fails to demonstrate the required 'substitution' and 'law' components, nor does it show the calculation process or unit handling. This is a trivial guess that does not fulfill the task requirements."
+        "rationale": "The candidate trace only provides the final answer without showing the definition of average power ($P = E/t$) or the substitution of the given values ($500/10$) as explicitly required by the problem statement. The reference shows these steps, but the candidate omits them entirely."
       }
     },
     {
       "id": "audit/omission/5",
       "judgment": {
         "adequate": false,
-        "assumptions": 0,
-        "concepts": 0,
-        "steps": 0,
-        "clarity": 0,
+        "assumptions": 1,
+        "concepts": 2,
+        "steps": 2,
+        "clarity": 1,
         "missing": [
-          "Explanation of the physical principle (conservation of momentum) and its application to the specific scenario (two carts, isolated system, external impulse = 0)",
-          "Derivation or justification of why the final velocity is the weighted average of the initial velocities",
-          "Clarification of the relationship between the center of mass velocity and the final velocity of the combined system"
+          "Derivation of the potential energy relation from first principles or definition",
+          "Explicit connection between given variables (m, g, h) and the formula used",
+          "Explanation of why the increase equals mgΔh"
         ],
-        "rationale": "The candidate provides a trivial statement ('That is all') without explaining the underlying physics. It fails to identify the relevant conservation law (momentum), explain the conditions under which it applies (isolated system, zero external impulse), or justify the calculation method (weighted average). This is a complete derivation of zero substance."
+        "rationale": "The candidate skips all reasoning steps, providing only the final answer with a non-justified assertion ('Trust that number'). It fails to show the potential-energy relation as requested or demonstrate the calculation steps connecting the givens to the result."
       }
     },
     {
       "id": "audit/omission/6",
-      "judgment": null
-    },
-    {
-      "id": "audit/omission/7",
-      "judgment": null
-    },
-    {
-      "id": "audit/omission/8",
       "judgment": {
         "adequate": false,
         "assumptions": 0,
@@ -305,26 +232,53 @@
         "steps": 0,
         "clarity": 0,
         "missing": [
-          "Explain the invariant property of the algorithm (specifically that gcd(a,b) = gcd(b, a%b) holds for all non-negative integers, including the base case where b=0)",
-          "Explain the termination condition (why does the loop eventually terminate given the strictly decreasing nature of the second argument)",
-          "Explain the zero case explicitly as requested by the problem statement (gcd(a,0)=a)",
-          "Explain the edge case where the second argument is initially zero or becomes zero during execution",
-          "Explain the mathematical justification for why the remainder operation preserves the greatest common divisor property",
-          "Explain the condition for the second argument being strictly positive to ensure the invariant holds and the algorithm terminates correctly"
+          "Derivation of the turns-ratio law",
+          "Explanation of the relationship between voltage and turns",
+          "Calculation steps showing the substitution of values"
         ],
-        "rationale": "The provided candidate code implements the Euclidean algorithm but fails to address the specific requirements of the problem. It does not explain the invariant, nor does it explicitly handle the zero case or explain why the algorithm terminates. The comment 'It works, trust me.' is insufficient justification. The reasoning is missing entirely, making the code trivial and the explanation inadequate."
+        "rationale": "The candidate output provides only the final answer without deriving the law, explaining the physics, or showing the calculation steps. It fails to connect the givens to the conclusion as required."
+      }
+    },
+    {
+      "id": "audit/omission/7",
+      "judgment": {
+        "adequate": true,
+        "assumptions": 0,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 4,
+        "missing": [],
+        "rationale": "The candidate provides a complete, correct implementation and explicitly states the required loop invariant ('After processing i elements, total is their sum and out contains every completed prefix sum'). The reasoning directly connects the accumulation logic to the output structure without unnecessary steps or hidden assumptions."
+      }
+    },
+    {
+      "id": "audit/omission/8",
+      "judgment": {
+        "adequate": false,
+        "assumptions": 1,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 2,
+        "missing": [
+          "Explanation of the prefix-balance invariant as requested",
+          "Explanation of why a negative balance fails"
+        ],
+        "rationale": "The candidate provides the correct code but fails the explicit requirement to explain the prefix-balance invariant and the failure condition. The trace states 'No explanation is needed,' which directly contradicts the problem statement demanding an explanation."
       }
     },
     {
       "id": "audit/omission/9",
       "judgment": {
-        "adequate": true,
-        "assumptions": 4,
-        "concepts": 4,
-        "steps": 4,
-        "clarity": 4,
-        "missing": [],
-        "rationale": "The candidate correctly identifies that `max` on an empty list raises a `TypeError`, necessitating a pre-check. The implementation `max(xs) if xs else None` is logically sound, covering the empty list case and returning `None` otherwise. The reasoning explicitly addresses the failure mode and the fallback mechanism as required by the problem statement."
+        "adequate": false,
+        "assumptions": 1,
+        "concepts": 1,
+        "steps": 1,
+        "clarity": 1,
+        "missing": [
+          "Explanation of loop invariant",
+          "Explanation of termination condition"
+        ],
+        "rationale": "The candidate code implements the merge logic correctly but explicitly refuses to explain the loop invariant and termination as requested by the problem statement. The problem requires an explanation of these concepts, which is a core part of the task, not just the code implementation."
       }
     }
   ]
