@@ -49,13 +49,18 @@ def read_jsonl(path: Path, *, tolerate_tail: bool = False) -> list[dict]:
     """Only live dashboards may ignore an unfinished final log line."""
     if not path.exists():
         return []
-    lines = path.read_text(encoding="utf-8").splitlines()
+    # JSON Lines uses LF, not Unicode string separators such as GSM8K's U+2028.
+    # https://jsonlines.org/ explicitly permits those characters inside JSON strings.
+    text = path.read_text(encoding="utf-8")
+    lines = text.split("\n")
+    if lines[-1] == "":
+        lines.pop()
     rows = []
     for index, line in enumerate(lines):
         try:
             rows.append(json.loads(line))
         except json.JSONDecodeError:
-            if not tolerate_tail or index != len(lines) - 1:
+            if not tolerate_tail or text.endswith("\n") or index != len(lines) - 1:
                 raise
     return rows
 

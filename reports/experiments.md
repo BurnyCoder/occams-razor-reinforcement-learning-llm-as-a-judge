@@ -1,6 +1,6 @@
 # Experiment summary
 
-Generated from run artifacts at 2026-11-17T05:30:04.429+00:00.
+Generated from run artifacts at 2026-11-17T06:07:25.289+00:00.
 
 | Run | Split | N | Accuracy | Adequacy | C × A × S | Tokens | Status |
 |---|---|---:|---:|---:|---:|---:|---|

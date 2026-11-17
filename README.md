@@ -4,6 +4,8 @@ Can a local language-model judge reward **simpler, fully justified solutions** b
 
 **Status: data splits are frozen and the full GPU profile passes. The revised training-judge audit still fails qualification; its errors are retained. The user authorized an exploratory Occam training attempt despite this residual noise. No policy-training or benchmark results yet.** The hypothesis may fail. Correct final answers can omit essential reasoning; such answers earn correctness credit but **no simplicity bonus**. All model computation runs locally on the available GPU. The first training run is Occam; all standalone baseline inference and baseline training follow it.
 
+The first pilot reached policy loading but stopped before rollouts on a Unicode JSONL reader bug. The [documented fix](reports/runtime-integration.md) preserves the frozen data and permits a logged startup retry; no optimizer update is claimed from the failed attempt.
+
 The proposed contribution is the controlled comparison of an adequacy-gated semantic simplicity reward against adequacy-gated token and formal-length rewards. Short-reasoning RL already exists: see [ShorterBetter](https://arxiv.org/abs/2504.21370), [StepPruner](https://arxiv.org/abs/2510.03805), and [Dr. GRPO](https://arxiv.org/abs/2503.20783). This project does not claim to invent concise reasoning, compute Kolmogorov complexity, or establish that simpler answers are generally truer.
 
 ![Research architecture](site/figures/architecture.png)
