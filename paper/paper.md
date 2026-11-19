@@ -2,11 +2,11 @@
 
 Libor “Burny” Burian
 
-2026-11-17. Living preregistered research report. Artifact regeneration: 2026-11-17T07:01:32.141+00:00.
+2026-11-19. Living research report with a preserved preregistration and dated amendments. Artifact regeneration: 2026-11-19T09:41:47.613+00:00.
 
 ## Abstract
 
-We study whether a local language-model judge can encourage simpler solutions without rewarding missing reasoning. The proposed reward adds a semantic simplicity bonus only when a deterministic verifier accepts the answer and a frozen judge finds the reasoning adequate. Mathematics, introductory physics, and Python functions share a small Qwen3.5 policy. Comparisons include correctness-only reinforcement learning, token and formal-length rewards, shuffled simplicity, and three unchanged-model prompt-only treatments. An independent Gemma 4 judge measures held-out semantic quality. The registered test requires both quality superiority over length baselines and accuracy noninferiority. Current analysis status: pending. Pending cells are missing experiments, not zero performance.
+We study whether a local language-model judge can encourage simpler solutions without rewarding missing reasoning. The proposed reward adds a semantic simplicity bonus only when a deterministic verifier accepts the answer and a frozen judge finds the reasoning adequate. Mathematics, introductory physics, and Python functions share a small Qwen3.5 policy. Planned comparisons include correctness-only reinforcement learning, token and formal-length rewards, shuffled simplicity, and three unchanged-model prompt-only treatments. Independent Gemma 4 qualification and held-out evaluation remain pending. The completed exploratory pilot yielded no verifier-accepted trace or recorded trainable-tensor change. The registered test requires both quality superiority over length baselines and accuracy noninferiority. Current analysis status: pending. Pending cells are missing experiments, not zero performance.
 
 ## Context, motivation, and introduction
 
@@ -14,13 +14,13 @@ Occam-style economy applies when competing explanations meet the same explanator
 
 ## Background and related work
 
-DeepSeekMath introduced GRPO with grouped reward estimates rather than a separate learned critic [3]. Dr. GRPO analyzes length and reward-standard-deviation normalization and motivates a constant-denominator objective [4]. ShorterBetter optimizes sample-optimal reasoning length [5]; O1-Pruner and StepPruner study related efficiency objectives [6,7]. LLM judging has documented position, verbosity, and self-preference biases [8]. Our proposed distinction is the controlled adequacy-gated semantic comparison, not the invention of concise reasoning. Prompt-only controls test whether instructions provide a sufficient alternative to training.
+DeepSeekMath introduced GRPO with grouped reward estimates rather than a separate learned critic [3]. Dr. GRPO analyzes length and reward-standard-deviation normalization and motivates a constant-denominator objective [4]. ShorterBetter optimizes sample-optimal reasoning length [5]; O1-Pruner and StepPruner study related efficiency objectives [6,7]. MT-Bench demonstrates position and verbosity biases in its tested judges; its self-enhancement investigation is inconclusive [8, §3.3]. Our proposed distinction is the controlled adequacy-gated semantic comparison, not the invention of concise reasoning. Prompt-only controls test whether instructions provide a sufficient alternative to training.
 
 ## Method
 
 ConciseRL already combines semantic conciseness judging, correctness gating and instructions against answer-only traces [15]. Our claim is limited to evaluating this explicit gate and rubric under the registered controls.
 
-The reward is R=C(1+0.2 A S): binary verified correctness C, a binary adequacy judgment A, and semantic simplicity S in [0,1]. S averages assumption economy, conceptual economy, reasoning economy, and clarity, each scored from zero to four. The judge reads all generated thinking and final text. A correct final answer with essential omissions receives no simplicity bonus. Necessary conditions, units, boundary cases, and useful checks must remain.
+The reward is R=C(1+0.2 A S): binary verified correctness C, a binary adequacy judgment A, and semantic simplicity S in [0,1]. S sums assumption economy, conceptual economy, reasoning economy, and clarity scores and divides by sixteen; each score ranges from zero to four. The configured judge receives all generated thinking and final text. A correct final answer judged to have essential omissions receives no simplicity bonus. Necessary conditions, units, boundary cases, and useful checks must remain.
 
 The token and formal-length arms use the same adequacy gate and S=k/(k+L). Length normalizers are fixed by calibration after the first Occam run and before length-arm training. Correctness-only uses C. The shuffled control permutes eligible simplicity scores within each question group. Prompt-only controls leave model weights unchanged and use ordinary, concise-but-complete, or full Occam instructions. Decoding, task IDs, and output budgets are held constant.
 
@@ -28,7 +28,7 @@ The implementation reuses TRL, Unsloth, PEFT, Transformers, and local llama.cpp 
 
 ## Data and experimental design
 
-Procedural tasks combine exact references, analytic physics laws and hidden Python function tests. Public sources are GSM8K, MBPP, eligible numerical UGPhysics, and MBPP+ [11-14]. Source licenses remain in force; UGPhysics is evaluation-only and noncommercial/share-alike. Split IDs, normalized question hashes, source revisions and exclusions are frozen before retained training. Family-OOD tasks are distinguished from new parameters of a seen family. Pretraining contamination of public benchmarks remains unknown.
+Procedural tasks combine exact references, analytic physics laws and finite Python function tests withheld from policy prompts. Public sources are GSM8K, MBPP, eligible numerical UGPhysics, and MBPP+ [11-14]. Source licenses remain in force; UGPhysics is evaluation-only and noncommercial/share-alike. Split IDs and normalized question hashes are in manifests/data.json; revisions are in manifests/revisions.json; exclusion reasons are in preparation logs. These artifacts remain frozen. Family-OOD tasks are distinguished from new parameters of a seen family. Public pretraining contamination remains unknown. Expected MBPP assertions execute with candidate code inside the container; passing finite tests is not a proof of program correctness or resistance to harness manipulation [16].
 
 Judge qualification uses constructed dominance and omission examples, including fixed-answer omissions, unnecessary assumptions, redundant reasoning, obfuscation and injection. It is a specification audit, not independent human validation. Failed audits and prompt revisions must be disclosed. Confirmatory evaluation uses a different model family from the training judge.
 
@@ -36,7 +36,7 @@ Judge qualification uses constructed dominance and omission examples, including 
 
 ### Prerequisite checks
 
-| Judge | Dominance | Omission rejection | Invalid JSON | Qualified |
+| Judge | Dominance | Omission rejection | Invalid judgments | Qualified |
 |---|---:|---:|---:|---|
 | Qwen3.5-4B (v2) | 0/12 | 5/10 | 18 | No |
 | Qwen3.5-4B (v3) | 4/12 | 8/10 | 9 | No |
@@ -48,9 +48,9 @@ GPU/state prerequisite measurements (synthetic inputs; not learning results):
 |---|---|
 | Backward minimum free VRAM (MiB) | 3860 |
 | Generation minimum free VRAM (MiB) | 4141 |
-| Role-switch weights unchanged | True |
-| Role-switch RNG unchanged | True |
-| Optimizer serialization round trip | True |
+| Role-switch trainable tensors unchanged | True |
+| Role-switch CUDA RNG unchanged | True |
+| Optimizer state-entry count preserved after reload | True |
 | Profile passed | True |
 
 
@@ -62,9 +62,17 @@ These are constructed specification checks, not policy benchmark results. Under 
 |---|---:|---:|---:|---:|---:|---|
 | occam-seed17-pilot | 4 | 0 / 16 | 16 | 0 / 4 | 0 | complete pilot |
 
-These are sampled training traces, not independent benchmark observations. Reward variation within a group is required for a nonzero GRPO task-reward advantage. Completed optimizer steps alone do not demonstrate learning; the saved-run parameter comparison checks whether trainable tensors changed. Missing final-state measurements remain missing. Pilot runs are excluded from retained policy comparisons.
+occam-seed17-pilot: 16 recorded rollouts across 4 distinct tasks. Repeated rollouts are not independent tasks. Source: https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/blob/main/runs/occam-seed17-pilot/events.jsonl
 
-The completed initial pilot produced no verified correct trace and no changed trainable tensors. Its outputs exhausted the completion cap before finishing. Consequently the training judge was never called on an eligible solution: this pilot cannot test the proposed semantic reward. Qwen documents thinking-loop susceptibility in this policy and defaults it to non-thinking mode (https://huggingface.co/Qwen/Qwen3.5-0.8B#thinking-mode). This is a candidate explanation requiring a controlled follow-up, not a proven cause. Full traces and the failed startup preceding this completed attempt are retained in the runtime artifacts.
+| Verifier rejection reason | Recorded traces |
+|---|---:|
+| Expected a numeric final answer | 2 |
+| Expected exactly one code submission | 4 |
+| Expected exactly one final answer | 10 |
+
+These are repeated completions of sampled training tasks, not independent benchmark observations. Reward variation within a group is required for a nonzero centered task-reward advantage; a KL gradient can in principle exist independently. Completed optimizer steps alone do not demonstrate learning. The runtime compares trainable tensors; initial tensors were not separately persisted for an independent reconstruction. Pilot runs are excluded from retained comparisons. Rollout plots index completed updates before sampling, while loss plots index completed updates [16].
+
+The completed initial pilot produced no verifier-accepted trace and recorded no changed trainable tensors. Its outputs exhausted the completion cap. Missing or unparsable submissions caused rejection; this does not establish that every intermediate mathematical statement was false. The training judge was never called on an eligible solution, so this pilot cannot test the semantic reward. Qwen documents thinking-loop susceptibility and defaults this policy to non-thinking mode (https://huggingface.co/Qwen/Qwen3.5-0.8B/blob/2fc06364715b967f1860aea9cf38778875588b17/README.md). This motivates a controlled follow-up, not a proven causal diagnosis. Full traces and the startup failure remain in runtime artifacts [16].
 
 ### Policy comparisons
 
@@ -91,11 +99,11 @@ Small local judges can miss gaps, prefer superficial style, or be exploited. Agr
 
 ## Conclusion
 
-This report separates a testable adequacy-gated simplicity hypothesis from evidence that has not yet been collected. All positive, negative, and inconclusive experiments remain part of the record. Larger models and programmatic Lean proof-term measurements are preregistered roadmap items, not completed results.
+This report separates an adequacy-gated simplicity hypothesis from evidence that has not yet been collected. Recorded positive, negative, and inconclusive checks remain visible. Larger models and Lean proof-term measurements are roadmap items in reports/plan.md, not completed results or experiments specified in the original preregistration.
 
 ## Appendix: reproducibility and analysis
 
-The repository preregistration specifies the primary metric, falsification criteria, paired bootstrap, multiplicity adjustment, accuracy margin, seeds, and execution order. Every change is pushed before execution. Full checkpoints preserve optimizer, scheduler, random-number and trainer state. One report command regenerates tables, figures, examples, this PDF and the static results explorer from artifacts. Experiment reports contain failures and investigator notes. See reports/preregistration.md, reports/plan.md and docs/usage.md.
+The original preregistration specifies the primary metric, falsification criteria, paired bootstrap, multiplicity adjustment, accuracy margin, seeds, and execution order. Push-before-execution is an enforced current workflow; historical commit dates alone do not prove historical push timing. Checkpoint files contain optimizer, scheduler, random-number and trainer state; successful interrupted-training resumption remains untested. The synthetic profile compares trainable tensors, current CUDA RNG and optimizer state-entry counts after reload, not all state tensors. It does not establish worst-case judge-context fit. One report command regenerates measured tables, figures, examples, this PDF, model-card metrics and explorer data. Amendment 003 requires exact evaluation task membership, domain coverage and consistent recorded provenance before complete/confirmatory labels. Explicit failed judgments retain the preregistered zero score [16]. Wilson intervals are descriptive score intervals on constructed audits; the paired family bootstrap conditions on recorded seeds, with seed resampling only as a sensitivity analysis [17-19].
 
 ## References
 
@@ -128,6 +136,14 @@ The repository preregistration specifies the primary metric, falsification crite
 [14] EvalPlus. https://github.com/evalplus/evalplus
 
 [15] Dumitru et al., ConciseRL. https://aclanthology.org/2025.findings-emnlp.927/
+
+[16] Independent evidence audit, source map, raw-record checks and dated amendment. https://github.com/BurnyCoder/occams-razor-reinforcement-learning-llm-as-a-judge/blob/main/reports/independent-fact-check.md
+
+[17] Wilson (1927), probable inference and the score interval. https://doi.org/10.1080/01621459.1927.10502953
+
+[18] Holm (1979), a simple sequentially rejective multiple test procedure. https://www.jstor.org/stable/4615733
+
+[19] Efron and Tibshirani (1986), bootstrap methods. The project's domain/family/seed hierarchy is its own registered choice. https://doi.org/10.1214/ss/1177013815
 
 ## AI statement
 

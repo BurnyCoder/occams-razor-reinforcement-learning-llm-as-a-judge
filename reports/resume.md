@@ -1,6 +1,6 @@
 # Resume point
 
-2026-11-17. Work stopped at the user's request while preserving the weekly usage reserve. This is an incomplete research project, not a successful training result.
+Original resume point: 2026-11-17; evidence correction: 2026-11-19. Model experiments remain stopped. The independently authorized audit uses existing records and overrides the usage reserve only for that audit. This is an incomplete research project, not a successful training result.
 
 ## Preserved state
 
@@ -8,7 +8,7 @@ The original thinking-mode Occam pilot completed and saved its adapter plus full
 
 Local run: `D:/AI/occam-rl/runs/occam-seed17-pilot`. The `checkpoint-4` directory contains adapter weights, optimizer, scheduler, RNG and trainer state. It has not been tested by interrupting and resuming a real training run. Do not infer that property from serialization alone. The original startup failure remains in the appended event log.
 
-Every pilot trace was truncated and failed verification. Rewards and gradients were zero, and no trainable tensor changed. The correctness gate therefore never invoked the training judge. The experiment does not test the semantic reward's effectiveness. It also cannot estimate general accuracy from such a small task sample.
+Every pilot trace hit the cap and failed verification. The log records zero rewards and gradients; the runtime comparison records no changed trainable tensor, without separately saved initialization for reconstruction. Rejections include missing/unparsable submissions, not proof that every reasoning statement was false. The correctness gate never invoked the training judge. The experiment does not test the semantic reward's effectiveness or estimate general accuracy. See the [independent fact-check](independent-fact-check.md).
 
 The current Qwen training-judge audit failed; its explicit exploratory waiver remains authorized. Do not erase or relabel that failure. Independent Gemma qualification is still required before held-out semantic evaluation. Data hashes and the current full GPU profile are frozen in `manifests/`.
 

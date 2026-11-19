@@ -1,8 +1,8 @@
 # Implementation and experiment plan
 
-Updated 2026-11-17. Preserve the preregistration; record deviations separately. The full original scope remains active.
+Updated 2026-11-19. Preserve the preregistration; record deviations separately. Model experiments remain paused. The active task is the independent evidence audit below; it authorizes no training or inference.
 
-Execution constraint added by the user: preserve at least 10% of the weekly Codex allowance. Check the account-wide usage tool regularly and before substantial new work; save a resume point and stop with a rounding/cleanup buffer above that floor. This can pause the project before the training-time budget expires; it does not change any scientific success criterion.
+The user explicitly overrides the weekly usage reserve for this audit. The ordinary reserve instruction still applies to future model work. Scientific success criteria are unchanged.
 
 ## Phase order
 
@@ -34,6 +34,8 @@ Add a matched local replication of ConciseRL before making comparisons against s
 
 ## Progress record
 
+The following entries are historical investigator notes, not independent proof of publication timing or general runtime validity. The [independent fact-check](independent-fact-check.md) supersedes their broad language: profile equality is limited to trainable tensors/current CUDA RNG; optimizer reload compares state-entry counts; pilot rejection does not prove every statement wrong; tensor changes are a recorded runtime comparison. Commit dates alone do not prove when a push occurred.
+
 - Workspace initialized with uv; literature retrieved; hardware/account inventory complete.
 - Research documents and preregistration published at commit 2994ef3167660b981c64fb18f55ae6df01c39e79.
 - Initial modular implementation, counterexample tests, dependency lock, site, paper template and command guide written; implementation push precedes the first test.
@@ -46,10 +48,22 @@ Add a matched local replication of ConciseRL before making comparisons against s
 - The corrected full GPU/state profile passed. Its generated measurements establish feasibility for the current configuration; the current judge audit and Occam pilot remain next. The synthetic long-input judge response was invalid and is retained, without another semantic prompt-tuning cycle.
 - The current revised judge audit completed and still failed quality thresholds. Its immutable result is published before the Occam pilot, which proceeds under the explicit exploratory training waiver. No further semantic prompt tuning is planned before observing the training attempt.
 - The first pilot attempt failed before any rollout on a Unicode separator in a valid frozen JSONL record. The reader now follows LF record boundaries, with unchanged dataset hashes; data parsing moves before GPU loading. A logged startup-only retry is permitted with the same identity and seed. Full training-loop validation remains pending.
-- The retry completed the pilot and saved its full checkpoint, but all traces were truncated and incorrect, with zero reward spread, gradients and parameter changes. Generated training diagnostics and the immutable raw trace disclose this negative result. No retained budget is selected. The next controlled candidate is Qwen's default non-thinking mode with explicit necessary reasoning still required; publish an amendment and give the new pilot a distinct identity before executing it. Larger policies and sampling changes remain later candidates if this controlled change fails.
+- The retry completed the pilot and saved its checkpoint. Every trace was truncated and rejected by the verifier; this does not establish that every mathematical statement was incorrect. The log records zero reward spread and gradients; the runtime comparison records no changed trainable tensors. Generated diagnostics disclose this negative result. No retained budget is selected. The next proposed controlled candidate is Qwen's default non-thinking mode with explicit necessary reasoning still required; publish an amendment and give the new pilot a distinct identity before executing it. This audit does not authorize that experiment.
 
 During runs, inspect progress according to expected run duration: five minutes for >10-minute runs, fifteen for >30-minute runs, thirty for >one-hour runs. Report meaningful changes and active implementation progress promptly. Never install an automation just to watch this task.
 
 ## Current stopping point
 
-The user requested a wrap-up after the completed pilot, near the weekly usage reserve. No new experiment should start during wrap-up. See [resume instructions](resume.md) for the preserved state, interpretation and next implementation steps. The original research objective and uncompleted phases remain pending.
+No new model experiment is authorized in this audit. See [resume instructions](resume.md) for the preserved state and proposed next experiment. The original research phases remain pending.
+
+## Independent audit, 2026-11-19
+
+Local corrections and validation are complete: the claim register and source review are written, evidence is recomputed, CPU/container and UI checks pass, reports are regenerated with stable measurements, and PDF/browser review is recorded in [publication verification](publication-verification.md). Publication and final remote byte checks are the remaining delivery steps. Scientific limitations remain explicit; no new model experiment was run.
+
+- Inventory substantive claims in [the register](claim-register.json), separating observations, deductions, hypotheses, implementation and instructions; previous audit conclusions are not evidence.
+- Correct evidence validation, reporting generators and templates before regenerating outputs. Preserve raw/frozen artifacts and original preregistration, with hashes in results/independent-fact-check.json.
+- Recompute task membership, split/family overlap, pilot diagnostics and judge decisions; check source claims against primary papers, pinned implementations and cards. Record gaps in [source verification](source-verification.md).
+- Run regression, CPU and container checks after pushing implementation. Regenerate with `occam report`, verify stable measured content, inspect every PDF page and desktop/mobile/empty/partial/live UI.
+- Publish generated artifacts, merge the feature PR, refresh Pages and existing Hugging Face collection/cards, and verify current remote content. Record evidence in [publication verification](publication-verification.md).
+
+Completion evidence and remaining limitations are generated into [the independent fact-check](independent-fact-check.md). Passing software checks cannot qualify the failed judge, establish semantic reward efficacy, reconstruct unsaved initial tensors, validate public reference answers universally, or prove historical push order.

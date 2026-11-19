@@ -52,7 +52,8 @@ def test_prompt_only_publication_has_no_model_repository(tmp_path, monkeypatch):
     monkeypatch.setattr(publishing, "hub", lambda cfg: (API(), "collection"))
     publishing.publish_run({"hf_artifacts_repo": "owner/artifacts"}, SimpleNamespace(emit=lambda *a, **k: None), "commit", name)
     receipt = read_json(tmp_path / "manifests" / f"published-{name}.json")
-    assert receipt["complete"] and receipt["artifact_type"] == "evaluation"
+    assert not receipt["complete"] and receipt["artifact_type"] == "evaluation"
+    assert receipt["evidence_issues"]  # Legacy records remain publishable, not certified.
     assert all(kind == "dataset" for _, kind in calls)
     assert not (tmp_path / "manifests/first-occam.json").exists()
 
@@ -63,12 +64,13 @@ def test_prompt_only_publication_has_no_model_repository(tmp_path, monkeypatch):
 ])
 def test_exploratory_evidence_cannot_satisfy_confirmatory_claim(tmp_path, monkeypatch, seeds, override, expected):
     """Favorable intervals cannot erase incomplete seeds or a judge-quality waiver."""
+    import json
+    from test_evidence import evaluation_fixture
+    manifest, rows = evaluation_fixture(tmp_path, monkeypatch)
     for arm in ("occam", "accuracy", "token", "formal"):
-        directory = tmp_path / f"{arm}-seed17/eval-test"
-        write_json(directory / "manifest.json", {"arm": arm, "limit_per_domain": None, "tasks": ["a"],
-                                                "exploratory_judge_override": override})
-        (directory / "results.jsonl").write_text('{"task_id":"a","seed":17,"domain":"math"}\n')
-    monkeypatch.setattr(reporting, "runs_dir", lambda: tmp_path)
+        directory = tmp_path / f"runs/{arm}-seed17/eval-test"
+        write_json(directory / "manifest.json", manifest | {"arm": arm, "exploratory_judge_override": override})
+        (directory / "results.jsonl").write_text("".join(json.dumps(r | {"arm": arm}) + "\n" for r in rows))
     monkeypatch.setattr(reporting, "paired_effect", lambda *a, **k: {"effect": .1, "ci95": [.05, .15], "p_one_sided": .001})
     result = reporting.comparisons({"seeds": seeds, "bootstrap_replicates": 10, "bootstrap_seed": 1})
     assert result["status"] == expected

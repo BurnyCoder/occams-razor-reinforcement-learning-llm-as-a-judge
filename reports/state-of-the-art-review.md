@@ -1,5 +1,7 @@
 # State of the art and gap
 
+2026-11-19 independent update: the model choices below are pinned candidates, not a verified newest/best ranking. Their runtime suitability is empirical and Gemma qualification remains pending. See [source verification](source-verification.md) for source revisions and limits.
+
 Update before model results: [ConciseRL](https://aclanthology.org/2025.findings-emnlp.927/) already combines judged semantic conciseness with correctness and discourages missing reasoning. Treat this project as a controlled extension and evaluation study; direct replication is additional roadmap work.
 
 2026-11-17. This is a scoped review of efficient reasoning and local implementation, not a leaderboard claiming coverage of every publication.

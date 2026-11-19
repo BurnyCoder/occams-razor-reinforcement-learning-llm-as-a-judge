@@ -1,6 +1,6 @@
 # Readiness evidence
 
-| Judge | Dominance | Omission rejection | Invalid JSON | Qualified |
+| Judge | Dominance | Omission rejection | Invalid judgments | Qualified |
 |---|---:|---:|---:|---|
 | Qwen3.5-4B (v2) | 0/12 | 5/10 | 18 | No |
 | Qwen3.5-4B (v3) | 4/12 | 8/10 | 9 | No |
@@ -12,13 +12,15 @@ GPU/state prerequisite measurements (synthetic inputs; not learning results):
 |---|---|
 | Backward minimum free VRAM (MiB) | 3860 |
 | Generation minimum free VRAM (MiB) | 4141 |
-| Role-switch weights unchanged | True |
-| Role-switch RNG unchanged | True |
-| Optimizer serialization round trip | True |
+| Role-switch trainable tensors unchanged | True |
+| Role-switch CUDA RNG unchanged | True |
+| Optimizer state-entry count preserved after reload | True |
 | Profile passed | True |
 
 
-Constructed specification checks are not held-out policy accuracy or human preference validation. Invalid or contradictory JSON does not count as a successful omission rejection.
+Constructed specification checks are not held-out policy accuracy or human preference validation. Invalid judgments include JSON syntax errors, schema violations and contradictory adequacy/missing-reasoning fields; they do not count as successful omission rejections.
+
+Profile evidence: [recorded measurements](../manifests/preflight.json). The optimizer check compares state-entry counts after loading; it does not compare every tensor or test interrupted training. Role-switch equality covers trainable tensors and the current CUDA RNG, not every model buffer or every RNG.
 
 | Split | Domain | Source | Tasks |
 |---|---|---|---:|

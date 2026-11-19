@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-17T07:01:32.141+00:00",
+  "generated_at": "2026-11-19T09:41:47.613+00:00",
   "runs": [
     {
       "name": "occam-seed17-pilot",
@@ -185,6 +185,13 @@
       "last_event": "2026-11-17T06:53:22.226+00:00",
       "training_correct": 0,
       "training_truncated": 16,
+      "unique_tasks": 4,
+      "verifier_failure_counts": {
+        "Expected exactly one final answer": 10,
+        "Expected a numeric final answer": 2,
+        "Expected exactly one code submission": 4
+      },
+      "source_events": "runs/occam-seed17-pilot/events.jsonl",
       "groups": 4,
       "nonzero_reward_groups": 0,
       "rollouts": 16,

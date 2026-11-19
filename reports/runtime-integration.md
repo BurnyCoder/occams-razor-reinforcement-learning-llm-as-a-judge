@@ -14,6 +14,8 @@ The runtime also reported that its optional xFormers extension could not load wi
 
 ## Corrected profile
 
+2026-11-19 precision amendment: the profile compares only trainable tensors and the current CUDA RNG across the switch. Optimizer reload compares the number of state entries, not equality of every optimizer tensor. The repeated judge input is not a maximum-context construction. The following historical “full profile” wording refers to that implemented procedure, not a proof of complete state preservation or worst-case memory fit. See [implementation](../src/occam_rl/preflight.py) and [amendment 003](amendment-003-evidence-reporting.md).
+
 The same full profile passed at source `944de00fb71ca322f4eca0498579b723172d22ea`. Its immutable operation log is `2026-11-17T04-02-15.178+00-00-profile.jsonl`; [the manifest](../manifests/preflight.json) supplies the values regenerated into [readiness evidence](readiness.md). The maximum configured sequence completed a differentiable forward/backward/optimizer step and maximum-length generation. Policy adapter weights and CUDA RNG survived the role switch unchanged, and optimizer state serialized and reloaded. This is state-preservation evidence, not yet a complete interrupted TRL-training resume test.
 
 The repeated synthetic judge input produced an overlong rationale that exhausted the output budget and failed JSON validation. Its complete output is retained; it receives no valid adequacy/simplicity score. It is a resource stress input, not a judge-audit or policy-quality observation. The current frozen audit remains required before the exploratory training attempt. No semantic prompt revision follows this resource result.

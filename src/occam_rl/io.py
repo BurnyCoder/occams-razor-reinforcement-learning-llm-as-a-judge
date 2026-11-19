@@ -77,7 +77,7 @@ def runs_dir() -> Path:
 
 
 def data_dir() -> Path:
-    """Task bodies are local; their IDs and hashes are published separately."""
+    """Locate task bodies; source publication also uploads the hash-verified JSONL files."""
     return Path(os.environ.get("OCCAM_DATA", ROOT / "data/generated"))
 
 

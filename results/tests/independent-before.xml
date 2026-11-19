@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="10" skipped="0" tests="12" time="28.499" timestamp="2026-11-19T09:59:16.232894+01:00" hostname="burny"><testcase classname="tests.test_evidence" name="test_equal_row_count_cannot_certify_evaluation[&lt;lambda&gt;0]" time="0.015"><failure message="AssertionError: assert ([{'run': 'occam-seed17', 'split': 'test', 'domain': 'all', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'tes...ain': 'math', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'test', 'domain': 'physics', 'arm': 'occam', ...}] and not True)&#10; +  where True = any(&lt;generator object test_equal_row_count_cannot_certify_evaluation.&lt;locals&gt;.&lt;genexpr&gt; at 0x73c3a5ead080&gt;)">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-1/test_equal_row_count_cannot_ce0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73c37b78a870&gt;
+mutation = &lt;function &lt;lambda&gt; at 0x73c3a5ec4d60&gt;
+
+    @pytest.mark.parametrize("mutation", [
+        lambda m, r: r.__setitem__(2, dict(r[0])),
+        lambda m, r: r[2].update(task_id="substituted"),
+        lambda m, r: r[2].update(seed=29),
+        lambda m, r: r[2].update(family="different"),
+        lambda m, r: m.pop("provenance"),
+        lambda m, r: m["data"].update(sha256="0" * 64),
+    ])
+    def test_equal_row_count_cannot_certify_evaluation(tmp_path, monkeypatch, mutation):
+        """The same number of rows is not proof of population or provenance identity."""
+        evaluation_fixture(tmp_path, monkeypatch, mutation)
+        rows = reporting.snapshot()["evaluations"]
+&gt;       assert rows and not any(r["complete"] for r in rows)
+E       AssertionError: assert ([{'run': 'occam-seed17', 'split': 'test', 'domain': 'all', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'tes...ain': 'math', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'test', 'domain': 'physics', 'arm': 'occam', ...}] and not True)
+E        +  where True = any(&lt;generator object test_equal_row_count_cannot_certify_evaluation.&lt;locals&gt;.&lt;genexpr&gt; at 0x73c3a5ead080&gt;)
+
+tests/test_evidence.py:48: AssertionError</failure></testcase><testcase classname="tests.test_evidence" name="test_equal_row_count_cannot_certify_evaluation[&lt;lambda&gt;1]" time="0.011"><failure message="AssertionError: assert ([{'run': 'occam-seed17', 'split': 'test', 'domain': 'all', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'tes...ain': 'physics', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'test', 'domain': 'code', 'arm': 'occam', ...}] and not True)&#10; +  where True = any(&lt;generator object test_equal_row_count_cannot_certify_evaluation.&lt;locals&gt;.&lt;genexpr&gt; at 0x73c37b7a5630&gt;)">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-1/test_equal_row_count_cannot_ce1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73c37b74ff80&gt;
+mutation = &lt;function &lt;lambda&gt; at 0x73c37b7709a0&gt;
+
+    @pytest.mark.parametrize("mutation", [
+        lambda m, r: r.__setitem__(2, dict(r[0])),
+        lambda m, r: r[2].update(task_id="substituted"),
+        lambda m, r: r[2].update(seed=29),
+        lambda m, r: r[2].update(family="different"),
+        lambda m, r: m.pop("provenance"),
+        lambda m, r: m["data"].update(sha256="0" * 64),
+    ])
+    def test_equal_row_count_cannot_certify_evaluation(tmp_path, monkeypatch, mutation):
+        """The same number of rows is not proof of population or provenance identity."""
+        evaluation_fixture(tmp_path, monkeypatch, mutation)
+        rows = reporting.snapshot()["evaluations"]
+&gt;       assert rows and not any(r["complete"] for r in rows)
+E       AssertionError: assert ([{'run': 'occam-seed17', 'split': 'test', 'domain': 'all', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'tes...ain': 'physics', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'test', 'domain': 'code', 'arm': 'occam', ...}] and not True)
+E        +  where True = any(&lt;generator object test_equal_row_count_cannot_certify_evaluation.&lt;locals&gt;.&lt;genexpr&gt; at 0x73c37b7a5630&gt;)
+
+tests/test_evidence.py:48: AssertionError</failure></testcase><testcase classname="tests.test_evidence" name="test_equal_row_count_cannot_certify_evaluation[&lt;lambda&gt;2]" time="0.009"><failure message="AssertionError: assert ([{'run': 'occam-seed17', 'split': 'test', 'domain': 'all', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'tes...ain': 'physics', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'test', 'domain': 'code', 'arm': 'occam', ...}] and not True)&#10; +  where True = any(&lt;generator object test_equal_row_count_cannot_certify_evaluation.&lt;locals&gt;.&lt;genexpr&gt; at 0x73c37b7a6e90&gt;)">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-1/test_equal_row_count_cannot_ce2')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73c37b78ade0&gt;
+mutation = &lt;function &lt;lambda&gt; at 0x73c37b770a40&gt;
+
+    @pytest.mark.parametrize("mutation", [
+        lambda m, r: r.__setitem__(2, dict(r[0])),
+        lambda m, r: r[2].update(task_id="substituted"),
+        lambda m, r: r[2].update(seed=29),
+        lambda m, r: r[2].update(family="different"),
+        lambda m, r: m.pop("provenance"),
+        lambda m, r: m["data"].update(sha256="0" * 64),
+    ])
+    def test_equal_row_count_cannot_certify_evaluation(tmp_path, monkeypatch, mutation):
+        """The same number of rows is not proof of population or provenance identity."""
+        evaluation_fixture(tmp_path, monkeypatch, mutation)
+        rows = reporting.snapshot()["evaluations"]
+&gt;       assert rows and not any(r["complete"] for r in rows)
+E       AssertionError: assert ([{'run': 'occam-seed17', 'split': 'test', 'domain': 'all', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'tes...ain': 'physics', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'test', 'domain': 'code', 'arm': 'occam', ...}] and not True)
+E        +  where True = any(&lt;generator object test_equal_row_count_cannot_certify_evaluation.&lt;locals&gt;.&lt;genexpr&gt; at 0x73c37b7a6e90&gt;)
+
+tests/test_evidence.py:48: AssertionError</failure></testcase><testcase classname="tests.test_evidence" name="test_equal_row_count_cannot_certify_evaluation[&lt;lambda&gt;3]" time="0.007"><failure message="AssertionError: assert ([{'run': 'occam-seed17', 'split': 'test', 'domain': 'all', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'tes...ain': 'physics', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'test', 'domain': 'code', 'arm': 'occam', ...}] and not True)&#10; +  where True = any(&lt;generator object test_equal_row_count_cannot_certify_evaluation.&lt;locals&gt;.&lt;genexpr&gt; at 0x73c37b7692f0&gt;)">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-1/test_equal_row_count_cannot_ce3')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73c37b74fe30&gt;
+mutation = &lt;function &lt;lambda&gt; at 0x73c37b770ae0&gt;
+
+    @pytest.mark.parametrize("mutation", [
+        lambda m, r: r.__setitem__(2, dict(r[0])),
+        lambda m, r: r[2].update(task_id="substituted"),
+        lambda m, r: r[2].update(seed=29),
+        lambda m, r: r[2].update(family="different"),
+        lambda m, r: m.pop("provenance"),
+        lambda m, r: m["data"].update(sha256="0" * 64),
+    ])
+    def test_equal_row_count_cannot_certify_evaluation(tmp_path, monkeypatch, mutation):
+        """The same number of rows is not proof of population or provenance identity."""
+        evaluation_fixture(tmp_path, monkeypatch, mutation)
+        rows = reporting.snapshot()["evaluations"]
+&gt;       assert rows and not any(r["complete"] for r in rows)
+E       AssertionError: assert ([{'run': 'occam-seed17', 'split': 'test', 'domain': 'all', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'tes...ain': 'physics', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'test', 'domain': 'code', 'arm': 'occam', ...}] and not True)
+E        +  where True = any(&lt;generator object test_equal_row_count_cannot_certify_evaluation.&lt;locals&gt;.&lt;genexpr&gt; at 0x73c37b7692f0&gt;)
+
+tests/test_evidence.py:48: AssertionError</failure></testcase><testcase classname="tests.test_evidence" name="test_equal_row_count_cannot_certify_evaluation[&lt;lambda&gt;4]" time="0.008"><failure message="AssertionError: assert ([{'run': 'occam-seed17', 'split': 'test', 'domain': 'all', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'tes...ain': 'physics', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'test', 'domain': 'code', 'arm': 'occam', ...}] and not True)&#10; +  where True = any(&lt;generator object test_equal_row_count_cannot_certify_evaluation.&lt;locals&gt;.&lt;genexpr&gt; at 0x73c37b5fe190&gt;)">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-1/test_equal_row_count_cannot_ce4')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73c37b78b230&gt;
+mutation = &lt;function &lt;lambda&gt; at 0x73c37b770b80&gt;
+
+    @pytest.mark.parametrize("mutation", [
+        lambda m, r: r.__setitem__(2, dict(r[0])),
+        lambda m, r: r[2].update(task_id="substituted"),
+        lambda m, r: r[2].update(seed=29),
+        lambda m, r: r[2].update(family="different"),
+        lambda m, r: m.pop("provenance"),
+        lambda m, r: m["data"].update(sha256="0" * 64),
+    ])
+    def test_equal_row_count_cannot_certify_evaluation(tmp_path, monkeypatch, mutation):
+        """The same number of rows is not proof of population or provenance identity."""
+        evaluation_fixture(tmp_path, monkeypatch, mutation)
+        rows = reporting.snapshot()["evaluations"]
+&gt;       assert rows and not any(r["complete"] for r in rows)
+E       AssertionError: assert ([{'run': 'occam-seed17', 'split': 'test', 'domain': 'all', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'tes...ain': 'physics', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'test', 'domain': 'code', 'arm': 'occam', ...}] and not True)
+E        +  where True = any(&lt;generator object test_equal_row_count_cannot_certify_evaluation.&lt;locals&gt;.&lt;genexpr&gt; at 0x73c37b5fe190&gt;)
+
+tests/test_evidence.py:48: AssertionError</failure></testcase><testcase classname="tests.test_evidence" name="test_equal_row_count_cannot_certify_evaluation[&lt;lambda&gt;5]" time="0.008"><failure message="AssertionError: assert ([{'run': 'occam-seed17', 'split': 'test', 'domain': 'all', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'tes...ain': 'physics', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'test', 'domain': 'code', 'arm': 'occam', ...}] and not True)&#10; +  where True = any(&lt;generator object test_equal_row_count_cannot_certify_evaluation.&lt;locals&gt;.&lt;genexpr&gt; at 0x73c37b769080&gt;)">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-1/test_equal_row_count_cannot_ce5')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73c37b78baa0&gt;
+mutation = &lt;function &lt;lambda&gt; at 0x73c37b770c20&gt;
+
+    @pytest.mark.parametrize("mutation", [
+        lambda m, r: r.__setitem__(2, dict(r[0])),
+        lambda m, r: r[2].update(task_id="substituted"),
+        lambda m, r: r[2].update(seed=29),
+        lambda m, r: r[2].update(family="different"),
+        lambda m, r: m.pop("provenance"),
+        lambda m, r: m["data"].update(sha256="0" * 64),
+    ])
+    def test_equal_row_count_cannot_certify_evaluation(tmp_path, monkeypatch, mutation):
+        """The same number of rows is not proof of population or provenance identity."""
+        evaluation_fixture(tmp_path, monkeypatch, mutation)
+        rows = reporting.snapshot()["evaluations"]
+&gt;       assert rows and not any(r["complete"] for r in rows)
+E       AssertionError: assert ([{'run': 'occam-seed17', 'split': 'test', 'domain': 'all', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'tes...ain': 'physics', 'arm': 'occam', ...}, {'run': 'occam-seed17', 'split': 'test', 'domain': 'code', 'arm': 'occam', ...}] and not True)
+E        +  where True = any(&lt;generator object test_equal_row_count_cannot_certify_evaluation.&lt;locals&gt;.&lt;genexpr&gt; at 0x73c37b769080&gt;)
+
+tests/test_evidence.py:48: AssertionError</failure></testcase><testcase classname="tests.test_evidence" name="test_complete_population_is_recognized" time="0.010" /><testcase classname="tests.test_evidence" name="test_missing_domain_is_not_a_three_domain_macro_average" time="0.008"><failure message="AssertionError: assert {'all', 'math', 'physics'} == {'math', 'physics'}&#10;  &#10;  Extra items in the left set:&#10;  'all'&#10;  Use -v to get more diff">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-1/test_missing_domain_is_not_a_t0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73c37b5d0e00&gt;
+
+    def test_missing_domain_is_not_a_three_domain_macro_average(tmp_path, monkeypatch):
+        """Partial domains remain visible, but the registered overall estimand is missing."""
+        evaluation_fixture(tmp_path, monkeypatch, lambda m, r: r.pop())
+        rows = reporting.snapshot()["evaluations"]
+&gt;       assert {r["domain"] for r in rows} == {"math", "physics"}
+E       AssertionError: assert {'all', 'math', 'physics'} == {'math', 'physics'}
+E         
+E         Extra items in the left set:
+E         'all'
+E         Use -v to get more diff
+
+tests/test_evidence.py:62: AssertionError</failure></testcase><testcase classname="tests.test_evidence" name="test_partial_status_is_not_hidden_by_exploratory_flag" time="0.002"><failure message="AssertionError: assert 'partial' in '| Run | Split | N | Accuracy | Adequacy | C × A × S | Tokens | Status |\n|---|---|---:|---:|---:|---:|---:|---|\n| r | test | 1 | 0.000 | 0.000 | 0.000 | 10.0 | exploratory |'&#10;[+2 more lines; full report in element text]">def test_partial_status_is_not_hidden_by_exploratory_flag():
+        """Both qualifications must survive presentation."""
+        row = dict(domain="all", run="r", split="test", n=1, correct=0, adequate=0,
+                   quality=0, tokens=10, complete=False, exploratory=True, evidence_issues=["missing tasks"])
+&gt;       assert "partial" in reporting.score_table([row])
+E       AssertionError: assert 'partial' in '| Run | Split | N | Accuracy | Adequacy | C × A × S | Tokens | Status |\n|---|---|---:|---:|---:|---:|---:|---|\n| r | test | 1 | 0.000 | 0.000 | 0.000 | 10.0 | exploratory |'
+E        +  where '| Run | Split | N | Accuracy | Adequacy | C × A × S | Tokens | Status |\n|---|---|---:|---:|---:|---:|---:|---|\n| r | test | 1 | 0.000 | 0.000 | 0.000 | 10.0 | exploratory |' = &lt;function score_table at 0x73c37b7705e0&gt;([{'domain': 'all', 'run': 'r', 'split': 'test', 'n': 1, ...}])
+E        +    where &lt;function score_table at 0x73c37b7705e0&gt; = reporting.score_table
+
+tests/test_evidence.py:69: AssertionError</failure></testcase><testcase classname="tests.test_evidence" name="test_distinct_tasks_and_verifier_rejections_are_reported" time="0.003"><failure message="KeyError: 'unique_tasks'">tmp_path = PosixPath('/tmp/pytest-of-burny/pytest-1/test_distinct_tasks_and_verifi0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73c37b5d05f0&gt;
+
+    def test_distinct_tasks_and_verifier_rejections_are_reported(tmp_path, monkeypatch):
+        """Two completions of one question are not two independent tasks."""
+        directory = tmp_path / "run"
+        directory.mkdir()
+        row = dict(event="rollout", time="now", step=0, task_id="a", domain="math", correct=0,
+                   reward=0, tokens=10, truncated=True, verifier=dict(reason="Expected exactly one final answer"))
+        (directory / "events.jsonl").write_text((json.dumps(row) + "\n") * 2)
+        monkeypatch.setattr(reporting, "runs_dir", lambda: tmp_path)
+        monkeypatch.setattr(reporting, "collect", lambda: {})
+        run = reporting.snapshot()["runs"][0]
+&gt;       assert run["unique_tasks"] == 1
+               ^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'unique_tasks'
+
+tests/test_evidence.py:82: KeyError</failure></testcase><testcase classname="tests.test_evidence" name="test_family_metadata_must_be_identical_across_seeds" time="0.916"><failure message="Failed: DID NOT RAISE ValueError">def test_family_metadata_must_be_identical_across_seeds():
+        """A seed-dependent cluster definition changes the registered bootstrap unit."""
+        rows = [dict(seed=s, task_id="a", domain="math", family=str(s), correct=1) for s in (17, 29)]
+&gt;       with pytest.raises(ValueError, match="metadata"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_evidence.py:89: Failed</failure></testcase><testcase classname="tests.test_evidence" name="test_wilson_boundary_and_known_value" time="0.001" /></testsuite></testsuites>

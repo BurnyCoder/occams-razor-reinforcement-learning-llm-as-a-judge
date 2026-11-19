@@ -8,6 +8,7 @@ from pathlib import Path
 from .io import ROOT, data_dir, read_json, read_jsonl, runs_dir, write_json
 from .publication import git, require_data_manifest
 from .schema import PROMPT_ARMS
+from .evidence import evaluation_issues
 
 
 def hub(cfg: dict):
@@ -84,43 +85,24 @@ def publish_run(cfg: dict, log, commit: str, name: str) -> None:
         first = evaluations[0][0]
         if any((m["arm"], m["seed"]) != (first["arm"], first["seed"]) for m, _ in evaluations):
             raise RuntimeError("Mixed evaluation identities in one run directory")
-        complete = all({r["task_id"] for r in rows} == set(m["tasks"]) and len(rows) == len(m["tasks"])
-                       for m, rows in evaluations)
+        frozen_path = ROOT / "manifests/data.json"
+        frozen = read_json(frozen_path) if frozen_path.exists() else {}
+        issues = sorted({issue for m, rows in evaluations for issue in evaluation_issues(m, rows, frozen)})
+        complete = not issues
         result = publish_evaluations(api, cfg, collection, directory)
         receipt = {"arm": first["arm"], "seed": first["seed"], "complete": complete, "artifact_type": "evaluation",
-                   "hf_commit": result.oid, "repo": cfg["hf_artifacts_repo"], "git_commit": commit, "collection": collection}
+                   "hf_commit": result.oid, "repo": cfg["hf_artifacts_repo"], "git_commit": commit, "collection": collection,
+                   "evidence_issues": issues}
         write_json(ROOT / "manifests" / f"published-{name}.json", receipt)
         log.emit("run_published", **receipt)
         return
     status = read_json(directory / "status.json")
     repo = f"BurnyCoder/occam-rl-{name}"
     api.create_repo(repo, repo_type="model", private=False, exist_ok=True)
-    card = f"""---
-license: apache-2.0
-base_model: {cfg['policy']}
-library_name: peft
-tags:
-- reinforcement-learning
-- grpo
-- lora
----
-# {name}
-
-Research author: Libor “Burny” Burian. This is a local LoRA research artifact, not a validated general-purpose model.
-
-Reward arm: {status['arm']}. Training seed: {status['seed']}. Completed steps: {status['steps']}.
-Run complete: {status['complete']}. Exploratory pilot: {status['pilot']}.
-Changed trainable parameter tensors: {status.get('changed_parameter_tensors', 'not recorded')}.
-Training judge qualified: {status.get('judge_qualified', 'not recorded')}.
-Exploratory judge-quality waiver: {status.get('exploratory_judge_override', False)}.
-
-The full implementation, prerequisites, data provenance, uncertainty, and limitations are in
-https://github.com/{cfg['github_repo']} . No advantage over any baseline is implied by this upload.
-Code and adapters retain their applicable Apache-2.0 licenses. Dataset rights and attribution
-are described in the research repository; raw benchmark records are separate artifacts.
-"""
-    from .reporting import score_table, snapshot
-    card += "\n## Evaluations\n\n" + score_table([r for r in snapshot()["evaluations"] if r["run"] == name]) + "\n"
+    from .reporting import model_card, snapshot
+    data = snapshot()
+    run = next(r for r in data["runs"] if r["name"] == name)
+    card = model_card(cfg, run, [r for r in data["evaluations"] if r["run"] == name])
     (directory / "adapter/README.md").write_text(card, encoding="utf-8")
     result = api.upload_folder(repo_id=repo, folder_path=str(directory / "adapter"), commit_message=f"Publish {name} adapter")
     # Checkpoints preserve optimizer/scheduler/RNG, while run metadata records their meaning.

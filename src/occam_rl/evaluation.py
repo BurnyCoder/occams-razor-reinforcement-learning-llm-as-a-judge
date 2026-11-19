@@ -4,7 +4,7 @@ import statistics
 from pathlib import Path
 
 from .data import load_tasks
-from .io import ROOT, data_dir, digest, read_json, read_jsonl, runs_dir, write_json
+from .io import ROOT, data_dir, digest, file_hash, read_json, read_jsonl, runs_dir, write_json
 from .models import GemmaJudge, clear_gpu, generate, load_policy
 from .prompts import policy_messages
 from .publication import require_data_manifest, require_first_occam
@@ -17,7 +17,7 @@ from .verify import verify
 def evaluate(cfg: dict, log, commit: str, arm: str, seed: int, split: str, limit: int | None = None) -> None:
     """Resume by task ID; each task gets a stable RNG seed independent of interruption."""
     require_data_manifest(data_dir() / f"{split}.jsonl")
-    require_qualification("gemma", cfg)
+    judge_identity = require_qualification("gemma", cfg)
     if arm != "occam":
         require_first_occam()
     tasks = load_tasks(split)
@@ -28,6 +28,11 @@ def evaluate(cfg: dict, log, commit: str, arm: str, seed: int, split: str, limit
     output = runs_dir() / f"{arm}-seed{seed}" / f"eval-{split}{suffix}"
     output.mkdir(parents=True, exist_ok=True)
     manifest = {"arm": arm, "seed": seed, "split": split, "limit_per_domain": limit, "tasks": [t.id for t in tasks],
+                "git_commit": commit, "provenance": {
+                    "policy_revision": read_json(ROOT / "manifests/revisions.json")["revisions"][cfg["policy"]],
+                    "judge_hash": digest(judge_identity),
+                    "adapter_sha256": None if arm in PROMPT_ARMS else file_hash(
+                        runs_dir() / f"{arm}-seed{seed}/adapter/adapter_model.safetensors")},
                 "exploratory_judge_override": cfg.get("allow_unqualified_training_judge", False),
                 "config_hash": digest(cfg), "data": read_json(ROOT / "manifests/data.json")["files"][f"{split}.jsonl"]}
     if (output / "manifest.json").exists() and read_json(output / "manifest.json") != manifest:

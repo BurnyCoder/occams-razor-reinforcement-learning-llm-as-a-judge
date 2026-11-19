@@ -2,7 +2,9 @@
 
 No generated program executes in the host interpreter. Docker isolation follows
 https://docs.docker.com/engine/containers/run/ and is defense in depth, not a proof
-against container-runtime vulnerabilities. Test expectations stay outside the container.
+against container-runtime vulnerabilities. Procedural expected outputs stay on the
+host; benchmark assertions (including their expectations) execute in the container.
+Tests are withheld from the policy prompt, not secret from executing candidate code.
 """
 
 import json
