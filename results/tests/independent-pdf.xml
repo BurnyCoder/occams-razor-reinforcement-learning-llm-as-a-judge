@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="12.695" timestamp="2026-11-19T10:48:56.177473+01:00" hostname="burny"><testcase classname="tests.test_pdf" name="test_pdf_links_exclude_sentence_punctuation" time="3.217" /></testsuite></testsuites>
