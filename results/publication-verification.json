@@ -1,0 +1,181 @@
+{
+  "verified_at": "2026-11-19T09:45:40.662617+00:00",
+  "git_commit": "454f8e60fcbdfe023b15592d6b7abca6a40adca3",
+  "hf_source_commit": "7982da3dab6408e29d48cc61691caaf3f68eb877",
+  "collection": "BurnyCoder/occam-rl-adequate-and-parsimonious-reasoning-6afbab26f5969584c8f781e5",
+  "collection_items": [
+    "BurnyCoder/occam-rl-artifacts",
+    "BurnyCoder/occam-rl-occam-seed17-pilot"
+  ],
+  "checks": [
+    {
+      "surface": "pages",
+      "url": "https://burnycoder.github.io/occams-razor-reinforcement-learning-llm-as-a-judge/app.js",
+      "sha256": "5a837a2a30007b780cfbfd171ca3d32ab329d817f6763e4ca4925f21bb5aa6dc"
+    },
+    {
+      "surface": "pages",
+      "url": "https://burnycoder.github.io/occams-razor-reinforcement-learning-llm-as-a-judge/data.json",
+      "sha256": "591d0d83b86711227a6341904de2d42ac2271b9ed9daaffc5e8ebf1d05236922"
+    },
+    {
+      "surface": "pages",
+      "url": "https://burnycoder.github.io/occams-razor-reinforcement-learning-llm-as-a-judge/figures/architecture.png",
+      "sha256": "dd9d63a05381514fea87538051e4bcab2376d7947aabf1d5507ec5ffbc776cd1"
+    },
+    {
+      "surface": "pages",
+      "url": "https://burnycoder.github.io/occams-razor-reinforcement-learning-llm-as-a-judge/figures/occam-seed17-pilot.png",
+      "sha256": "94be5f54e50fce6d1156a9c61b7003d9734b47d338c2c39c8f9625d57eb5d330"
+    },
+    {
+      "surface": "pages",
+      "url": "https://burnycoder.github.io/occams-razor-reinforcement-learning-llm-as-a-judge/index.html",
+      "sha256": "e5a66bec3c90b7a3a23330cb3f5c4eda263de04651efbbcf8527455d98a26ffb"
+    },
+    {
+      "surface": "pages",
+      "url": "https://burnycoder.github.io/occams-razor-reinforcement-learning-llm-as-a-judge/style.css",
+      "sha256": "87432e87e376ab906c1fbf5c894c64f15f2885d4a28aa533daf4f7db54d79736"
+    },
+    {
+      "surface": "huggingface-source",
+      "url": "https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/resolve/main/README.md",
+      "sha256": "c46102d3eb6cca057c6ceec670922d2e23b0ce184ce270c4686ddce674ec0664"
+    },
+    {
+      "surface": "huggingface-source",
+      "url": "https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/resolve/main/research-README.md",
+      "sha256": "673f419f8ebe81363d8965fe3ab2e0cb112cd11e645db916105cbf5df33aafe3"
+    },
+    {
+      "surface": "huggingface-source",
+      "url": "https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/resolve/main/paper/paper.md",
+      "sha256": "ee2b4f1cda644b7967f99bac90c1c0d8065e47b708b4e31485cfcb55189097dd"
+    },
+    {
+      "surface": "huggingface-source",
+      "url": "https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/resolve/main/output/pdf/paper.pdf",
+      "sha256": "9f312e229037412de95a19afe8df018bd7e115ed81be7fdd81cb8b59b8476887"
+    },
+    {
+      "surface": "huggingface-source",
+      "url": "https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/resolve/main/reports/independent-fact-check.md",
+      "sha256": "c6250fb7325fbdcb0c8c8b57b4579864aba36bc3a4da28469f09f6aaaa33cb93"
+    },
+    {
+      "surface": "huggingface-source",
+      "url": "https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/resolve/main/reports/claim-register.json",
+      "sha256": "2ec2e38a8a66a8ee34f6803596a9a4eb17f1a405a69b1be36a3043cc02ad5daf"
+    },
+    {
+      "surface": "huggingface-source",
+      "url": "https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/resolve/main/results/summary.json",
+      "sha256": "591d0d83b86711227a6341904de2d42ac2271b9ed9daaffc5e8ebf1d05236922"
+    },
+    {
+      "surface": "huggingface-source",
+      "url": "https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/resolve/main/site/data.json",
+      "sha256": "591d0d83b86711227a6341904de2d42ac2271b9ed9daaffc5e8ebf1d05236922"
+    },
+    {
+      "surface": "frozen-data",
+      "url": "https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/resolve/main/frozen-data/train.jsonl",
+      "sha256": "4e6c03af44a7a8c4686f116a268485236527d43575dfd6eba36faff45bea915f"
+    },
+    {
+      "surface": "frozen-data",
+      "url": "https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/resolve/main/frozen-data/dev.jsonl",
+      "sha256": "2b1a0b9f150d137d3ab276fb94fdf7da3222d7708ad6a566358c0aac2f9edf5e"
+    },
+    {
+      "surface": "frozen-data",
+      "url": "https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/resolve/main/frozen-data/calibration.jsonl",
+      "sha256": "c9893bf8f9dafd8138713d306afa4856ffa7497c546389f9f1d9c5c855a4704f"
+    },
+    {
+      "surface": "frozen-data",
+      "url": "https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/resolve/main/frozen-data/test.jsonl",
+      "sha256": "7a3ba95cbb14803c4449bcbbb47633edeca822e0b501e505fa45468c12b255e9"
+    },
+    {
+      "surface": "frozen-data",
+      "url": "https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/resolve/main/frozen-data/ood.jsonl",
+      "sha256": "f40568f61dd7bf7b6b589925b68eba72d5d565f9dd21aecd834a353fac459c23"
+    },
+    {
+      "surface": "model-card",
+      "url": "https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot/resolve/main/README.md",
+      "sha256": "a0212872006478496cc2f301634c6195226f3578079d8b1f4e74432bcf027f06"
+    },
+    {
+      "surface": "checkpoint",
+      "url": "https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot/resolve/main/training-state/checkpoint-4/README.md",
+      "sha256": "03451f9f9b8efb8f255b1f268f6cb581f3737dfd4d972ced0987a96db9b17bdb"
+    },
+    {
+      "surface": "checkpoint",
+      "url": "https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot/resolve/main/training-state/checkpoint-4/adapter_config.json",
+      "sha256": "fd1335c2561a4cb813fa90f19ff8c33cd722b8f9e61e174c695fca6e69c1805b"
+    },
+    {
+      "surface": "checkpoint",
+      "url": "https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot/resolve/main/training-state/checkpoint-4/adapter_model.safetensors",
+      "sha256": "eac74d825b1a1ad29d12d0f5f62aa2f0f5d460b04ab6e3e50698702cdb66a706"
+    },
+    {
+      "surface": "checkpoint",
+      "url": "https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot/resolve/main/training-state/checkpoint-4/chat_template.jinja",
+      "sha256": "273d8e0e683b885071fb17e08d71e5f2a5ddfb5309756181681de4f5a1822d80"
+    },
+    {
+      "surface": "checkpoint",
+      "url": "https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot/resolve/main/training-state/checkpoint-4/optimizer.pt",
+      "sha256": "05801fedb597e464193b75ec4a7a66c6b62a8cfcc5237853dd0141162b328b94"
+    },
+    {
+      "surface": "checkpoint",
+      "url": "https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot/resolve/main/training-state/checkpoint-4/rng_state.pth",
+      "sha256": "4fd029c3053b1492e35d5bd7040fce7b46c80e402a7731d333cc5525de2380d6"
+    },
+    {
+      "surface": "checkpoint",
+      "url": "https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot/resolve/main/training-state/checkpoint-4/scheduler.pt",
+      "sha256": "508bef244aef6463b722d855e0db8b05f18dafcbfb20e885ef11839f1570f8be"
+    },
+    {
+      "surface": "checkpoint",
+      "url": "https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot/resolve/main/training-state/checkpoint-4/tokenizer.json",
+      "sha256": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523"
+    },
+    {
+      "surface": "checkpoint",
+      "url": "https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot/resolve/main/training-state/checkpoint-4/tokenizer_config.json",
+      "sha256": "4bf79cad5d8874eb7f12b3f1a5892f528216719342726043624320a8c659ef3c"
+    },
+    {
+      "surface": "checkpoint",
+      "url": "https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot/resolve/main/training-state/checkpoint-4/trainer_state.json",
+      "sha256": "daea7527d950ff3b4e17fa6d39c500fc329a51ef6fdbda7399b37910e222ea5a"
+    },
+    {
+      "surface": "checkpoint",
+      "url": "https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot/resolve/main/training-state/checkpoint-4/training_args.bin",
+      "sha256": "7348f3a1d070b40df2d55fd73943d5d9c7effd7d413fe6fba02b5d1725fbe786"
+    }
+  ],
+  "regeneration": {
+    "generated_at": [
+      "2026-11-19T09:34:03.415+00:00",
+      "2026-11-19T09:41:47.613+00:00"
+    ],
+    "summary_measurements_equal": true,
+    "independent_sections_equal": [
+      "frozen",
+      "preserved",
+      "pilot",
+      "tests"
+    ],
+    "inventory_note": "Coverage expanded when generated artifacts became tracked; measured records remained equal."
+  }
+}
