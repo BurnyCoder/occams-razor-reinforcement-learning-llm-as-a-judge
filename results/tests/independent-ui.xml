@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testcase name="empty and partial domains remain explicit; candidates are plain text" time="0.008979" classname="test" file="C:\Users\Happy\Documents\projects\occams-razor-reinforcement-learning-llm-as-a-judge\tests\ui.test.cjs"/>
+	<testcase name="live completed pilot and chart indices do not imply learning" time="0.003820" classname="test" file="C:\Users\Happy\Documents\projects\occams-razor-reinforcement-learning-llm-as-a-judge\tests\ui.test.cjs"/>
+	<!-- tests 2 -->
+	<!-- suites 0 -->
+	<!-- pass 2 -->
+	<!-- fail 0 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 137.1649 -->
+</testsuites>
