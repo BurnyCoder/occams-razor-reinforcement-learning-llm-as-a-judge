@@ -1,6 +1,6 @@
 # Judge audit
 
-| Judge | Dominance | Omission rejection | Invalid JSON | Qualified |
+| Judge | Dominance | Omission rejection | Invalid judgments | Qualified |
 |---|---:|---:|---:|---|
 | Qwen3.5-4B (v2) | 0/12 | 5/10 | 18 | No |
 

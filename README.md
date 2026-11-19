@@ -127,6 +127,14 @@ These are sampled training groups, not held-out scores. Rollout points use the c
 |---|---:|---:|---:|---:|---:|---|
 | occam-seed17-pilot | 4 | 0 / 16 | 16 | 0 / 4 | 0 | complete pilot |
 
+occam-seed17-pilot: 16 recorded rollouts across 4 distinct tasks. Repeated rollouts are not independent tasks. Source: https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/blob/main/runs/occam-seed17-pilot/events.jsonl
+
+| Verifier rejection reason | Recorded traces |
+|---|---:|
+| Expected a numeric final answer | 2 |
+| Expected exactly one code submission | 4 |
+| Expected exactly one final answer | 10 |
+
 ### Held-out evaluation
 
 | Run | Split | N | Accuracy | Adequacy | C × A × S | Tokens | Status |

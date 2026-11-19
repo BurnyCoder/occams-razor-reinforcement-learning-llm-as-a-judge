@@ -63,10 +63,11 @@ def main():
     compare(f"https://huggingface.co/{model}/resolve/main/README.md",
             (root / "docs/model-cards/occam-seed17-pilot.md").read_bytes(), "model-card")
     api = HfApi()
-    tree = {item.path: item for item in api.list_repo_tree(model, path_in_repo="checkpoint-4", recursive=True)}
+    checkpoint_path = "training-state/checkpoint-4"
+    tree = {item.path: item for item in api.list_repo_tree(model, path_in_repo=checkpoint_path, recursive=True)}
     for name, expected in audit["preserved"]["checkpoint_sha256"].items():
-        item = tree["checkpoint-4/" + name]
-        url = f"https://huggingface.co/{model}/resolve/main/checkpoint-4/{name}"
+        item = tree[checkpoint_path + "/" + name]
+        url = f"https://huggingface.co/{model}/resolve/main/{checkpoint_path}/{name}"
         actual = item.lfs.sha256 if item.lfs else hashlib.sha256(fetch(url)).hexdigest()
         if actual != expected:
             raise RuntimeError(f"Published checkpoint differs: {name}")

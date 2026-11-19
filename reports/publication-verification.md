@@ -4,6 +4,8 @@
 
 The browser review exercised the actual local dashboard, live refresh, domain selection, empty evaluation/example states, a synthetic partial-domain fixture and escaped candidate text. Desktop and mobile views were inspected. Partial results remain marked unverified/exploratory; missing overall results do not become zero scores. A zero-only chart now has distinct displayed axis bounds. No model inference was run.
 
-Generated measurement stability, every PDF page and final remote publication checks remain to be recorded after report generation. [The publication verification command](../scripts/verify_publication.py) checks Pages bytes, source/card bytes, frozen-data hashes, checkpoint identities and existing collection membership. Its live receipt is kept in ignored `.local/publication-verification.json` to avoid a circular source-commit identity.
+Every rendered PDF page was inspected, including result tables, references, the architecture diagram, training plots and the final AI statement. Plot indices distinguish pre-update rollouts from completed-update loss; planned evaluation is labeled. The paper's simplicity normalization was made explicit during this inspection.
+
+Repeated-generation measurement stability and final remote publication checks remain to be recorded. [The publication verification command](../scripts/verify_publication.py) checks Pages bytes, source/card bytes, frozen-data hashes, checkpoint identities and existing collection membership. Its live receipt is kept in ignored `.local/publication-verification.json` to avoid a circular source-commit identity.
 
 The original pilot receipt identifies the adapter upload. The subsequent checkpoint upload is a separate Hub commit. Neither receipt alone proves successful interrupted-training resumption. Current model and dataset contents will be checked without rewriting the original receipt or checkpoint.

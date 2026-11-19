@@ -1,0 +1,607 @@
+{
+  "frozen": {
+    "files": [
+      {
+        "file": "train.jsonl",
+        "count": 1536,
+        "sha256": "4e6c03af44a7a8c4686f116a268485236527d43575dfd6eba36faff45bea915f"
+      },
+      {
+        "file": "dev.jsonl",
+        "count": 90,
+        "sha256": "2b1a0b9f150d137d3ab276fb94fdf7da3222d7708ad6a566358c0aac2f9edf5e"
+      },
+      {
+        "file": "calibration.jsonl",
+        "count": 150,
+        "sha256": "c9893bf8f9dafd8138713d306afa4856ffa7497c546389f9f1d9c5c855a4704f"
+      },
+      {
+        "file": "test.jsonl",
+        "count": 900,
+        "sha256": "7a3ba95cbb14803c4449bcbbb47633edeca822e0b501e505fa45468c12b255e9"
+      },
+      {
+        "file": "ood.jsonl",
+        "count": 180,
+        "sha256": "f40568f61dd7bf7b6b589925b68eba72d5d565f9dd21aecd834a353fac459c23"
+      }
+    ],
+    "unique_tasks": 2856,
+    "normalized_questions": 2856,
+    "train_ood_family_overlap": []
+  },
+  "preserved": {
+    "baseline_commit": "e58dcdf433e82943e8cc862aa8e09968b6cc28a0",
+    "git_content_sha256": {
+      "configs/experiment.json": "0850272dc6b614244a1b80215e25b9d51dcc0df44d0df6253643e8aec047baee",
+      "configs/judge-audit-v2.json": "406901c4958f6a1c04d967b2c7763f05d1aec2648bf416dac2448ea511debafd",
+      "configs/judge-audit-v3.json": "9918759b92c3c20e2ddacfdd448544cad470598c9804dacff2d91d429e539d05",
+      "configs/judge-audit.json": "4b19098b5eac162e854d002249b5b6b492628cfd67b7d243a9d6f806527504eb",
+      "manifests/data.json": "cd82dca3489346637bbd8741458b33fdd0a794bfa54eeb876d908d6cbcf74f69",
+      "manifests/judge-qwen.json": "08c823e1b845f26520f14d25448987e2be073b09a0aab99fbf42c8515b514139",
+      "manifests/preflight.json": "f7e5ae2d4b06f72c69a7cc066701e00bc4810446f597bcadcad3459ce4a5e326",
+      "manifests/published-occam-seed17-pilot.json": "a508df3e19eaa8bcd0093d4b41d8ff78bbfec23fe5711a271b4fa67361cda780",
+      "manifests/revisions.json": "5064736579b1ad8d2ae18339069cbfc6a292198255cc1518fbb4f15bf903f0bf",
+      "manifests/runtime-patch.json": "c0a3e14c0b84cef930ca052fff11a8e9bb7b7759c24a095f3ee1c7f01f9171b7",
+      "manifests/runtime.json": "092c490ece8dc3b9641a864df260af995f735c3de561e31450698d20e1e78bde",
+      "reports/preregistration.md": "1f1665cd41f2cecf7f204a24914534d34c844bb1f6c748d14d45bbef37eceba5",
+      "results/judge-audits/qwen-2026-11-17T03-00-23.431+00-00.json": "97098f53d77136483be0f127eb85b29146e6925ffdd64cc10b0626272daa4b69",
+      "results/judge-audits/qwen-2026-11-17T05-28-33.902+00-00.json": "08c823e1b845f26520f14d25448987e2be073b09a0aab99fbf42c8515b514139",
+      "results/judge-audits/qwen-initial-2b.json": "0e8a8adccc05b2536f4dd5224d6710ad4c3e4a6ea2e01373a43a389ac55bd022",
+      "results/runtime/occam-pilot-startup.jsonl": "1dcda662a846323d9c73d9248ee833411bd26197d00af220b3610a6dc780e8cf",
+      "results/runtime/occam-pilot-thinking-events.jsonl": "32ce266854b857e7b2c6ad7dd594a74debed64ae1b6b8dd6a844c2944792656f",
+      "results/runtime/occam-pilot-thinking-status.json": "c21f8a403ad252d0f61a0080cff6e5b0cbe6849e272795f7bdd850a2fc426538"
+    },
+    "checkpoint_sha256": {
+      "README.md": "03451f9f9b8efb8f255b1f268f6cb581f3737dfd4d972ced0987a96db9b17bdb",
+      "adapter_config.json": "fd1335c2561a4cb813fa90f19ff8c33cd722b8f9e61e174c695fca6e69c1805b",
+      "adapter_model.safetensors": "eac74d825b1a1ad29d12d0f5f62aa2f0f5d460b04ab6e3e50698702cdb66a706",
+      "chat_template.jinja": "273d8e0e683b885071fb17e08d71e5f2a5ddfb5309756181681de4f5a1822d80",
+      "optimizer.pt": "05801fedb597e464193b75ec4a7a66c6b62a8cfcc5237853dd0141162b328b94",
+      "rng_state.pth": "4fd029c3053b1492e35d5bd7040fce7b46c80e402a7731d333cc5525de2380d6",
+      "scheduler.pt": "508bef244aef6463b722d855e0db8b05f18dafcbfb20e885ef11839f1570f8be",
+      "tokenizer.json": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523",
+      "tokenizer_config.json": "4bf79cad5d8874eb7f12b3f1a5892f528216719342726043624320a8c659ef3c",
+      "trainer_state.json": "daea7527d950ff3b4e17fa6d39c500fc329a51ef6fdbda7399b37910e222ea5a",
+      "training_args.bin": "7348f3a1d070b40df2d55fd73943d5d9c7effd7d413fe6fba02b5d1725fbe786"
+    },
+    "pilot_log_sha256": "32ce266854b857e7b2c6ad7dd594a74debed64ae1b6b8dd6a844c2944792656f"
+  },
+  "pilot": {
+    "rollouts": 16,
+    "distinct_tasks": 4,
+    "correct": 0,
+    "truncated": 16,
+    "verifier_reasons": {
+      "Expected exactly one final answer": 10,
+      "Expected a numeric final answer": 2,
+      "Expected exactly one code submission": 4
+    },
+    "reward_judgments": 0,
+    "optimizer_steps": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "gradient_norms": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "tests": [
+    {
+      "file": "results/tests/independent-after.xml",
+      "tests": 66,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/independent-before.xml",
+      "tests": 12,
+      "failures": 10,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/independent-first-pass.xml",
+      "tests": 65,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/independent-ui-first-pass.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/independent-ui.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "coverage": {
+    ".env.example": [
+      "C13"
+    ],
+    ".github/workflows/pages.yml": [
+      "C31"
+    ],
+    "AGENTS.md": [
+      "C29"
+    ],
+    "README.md": [
+      "C01",
+      "C02",
+      "C03",
+      "C04",
+      "C08",
+      "C09",
+      "C10",
+      "C12",
+      "C13",
+      "C25",
+      "C27",
+      "C28",
+      "C31"
+    ],
+    "configs/experiment.json": [
+      "C13"
+    ],
+    "configs/judge-audit-v2.json": [
+      "C07",
+      "C17"
+    ],
+    "configs/judge-audit-v3.json": [
+      "C07",
+      "C17"
+    ],
+    "configs/judge-audit.json": [
+      "C07",
+      "C17"
+    ],
+    "docker/Dockerfile": [
+      "C18"
+    ],
+    "docs/data.md": [
+      "C14",
+      "C15",
+      "C16",
+      "C18",
+      "C19"
+    ],
+    "docs/hf-artifacts.md": [
+      "C15",
+      "C16",
+      "C31"
+    ],
+    "docs/rubric.md": [
+      "C07",
+      "C08",
+      "C09",
+      "C28"
+    ],
+    "docs/sources.md": [
+      "C16",
+      "C33"
+    ],
+    "docs/usage.md": [
+      "C13",
+      "C29",
+      "C30",
+      "C33"
+    ],
+    "manifests/data.json": [
+      "C14"
+    ],
+    "manifests/judge-qwen.json": [
+      "C05"
+    ],
+    "manifests/preflight.json": [
+      "C12"
+    ],
+    "manifests/published-occam-seed17-pilot.json": [
+      "C31"
+    ],
+    "manifests/revisions.json": [
+      "C33"
+    ],
+    "manifests/runtime-patch.json": [
+      "C33"
+    ],
+    "manifests/runtime.json": [
+      "C33"
+    ],
+    "output/pdf/paper.pdf": [
+      "C23",
+      "C24"
+    ],
+    "paper/paper.md": [
+      "C01",
+      "C02",
+      "C03",
+      "C04",
+      "C06",
+      "C08",
+      "C09",
+      "C10",
+      "C11",
+      "C12",
+      "C16",
+      "C21",
+      "C24",
+      "C25",
+      "C27",
+      "C28"
+    ],
+    "paper/template.md": [
+      "C01",
+      "C02",
+      "C03",
+      "C04",
+      "C06",
+      "C08",
+      "C09",
+      "C10",
+      "C11",
+      "C12",
+      "C16",
+      "C21",
+      "C25",
+      "C27",
+      "C28"
+    ],
+    "pyproject.toml": [
+      "C33"
+    ],
+    "reports/amendment-001-judge-capacity.md": [
+      "C07",
+      "C29",
+      "C32"
+    ],
+    "reports/amendment-002-judge-decoding.md": [
+      "C07",
+      "C29",
+      "C32"
+    ],
+    "reports/amendment-003-evidence-reporting.md": [
+      "C29"
+    ],
+    "reports/claim-register.json": [
+      "C36"
+    ],
+    "reports/data-contract-review.md": [
+      "C18",
+      "C19",
+      "C32"
+    ],
+    "reports/environment-setup.md": [
+      "C32"
+    ],
+    "reports/experiment-judge-1.md": [
+      "C05",
+      "C22"
+    ],
+    "reports/experiment-judge-2.md": [
+      "C05",
+      "C22"
+    ],
+    "reports/experiment-judge-3.md": [
+      "C05",
+      "C22"
+    ],
+    "reports/experiment-occam-seed17-pilot.md": [
+      "C02",
+      "C04",
+      "C11"
+    ],
+    "reports/experiments.md": [
+      "C02"
+    ],
+    "reports/implementation-review.md": [
+      "C32"
+    ],
+    "reports/literature-review.md": [
+      "C10",
+      "C25",
+      "C26",
+      "C27",
+      "C28"
+    ],
+    "reports/plan.md": [
+      "C01",
+      "C29"
+    ],
+    "reports/preregistration.md": [
+      "C01",
+      "C08",
+      "C21",
+      "C29"
+    ],
+    "reports/publication-verification.md": [
+      "C31",
+      "C36"
+    ],
+    "reports/readiness.md": [
+      "C05",
+      "C06",
+      "C12"
+    ],
+    "reports/resume.md": [
+      "C02",
+      "C03",
+      "C04",
+      "C29"
+    ],
+    "reports/runtime-integration.md": [
+      "C12",
+      "C32"
+    ],
+    "reports/source-verification.md": [
+      "C36"
+    ],
+    "reports/state-of-the-art-review.md": [
+      "C25",
+      "C27"
+    ],
+    "results/judge-audits/qwen-2026-11-17T03-00-23.431+00-00.json": [
+      "C05"
+    ],
+    "results/judge-audits/qwen-2026-11-17T05-28-33.902+00-00.json": [
+      "C05"
+    ],
+    "results/judge-audits/qwen-initial-2b.json": [
+      "C05"
+    ],
+    "results/readiness.json": [
+      "C05"
+    ],
+    "results/runtime/occam-pilot-startup.jsonl": [
+      "C35"
+    ],
+    "results/runtime/occam-pilot-thinking-events.jsonl": [
+      "C35"
+    ],
+    "results/runtime/occam-pilot-thinking-status.json": [
+      "C35"
+    ],
+    "results/summary.json": [
+      "C02",
+      "C24"
+    ],
+    "results/tests/contracts-revised.xml": [
+      "C34"
+    ],
+    "results/tests/core.xml": [
+      "C34"
+    ],
+    "results/tests/eos-after.xml": [
+      "C34"
+    ],
+    "results/tests/eos-before.xml": [
+      "C34"
+    ],
+    "results/tests/independent-after.xml": [
+      "C34"
+    ],
+    "results/tests/independent-before.xml": [
+      "C34"
+    ],
+    "results/tests/independent-first-pass.xml": [
+      "C34"
+    ],
+    "results/tests/independent-ui-first-pass.xml": [
+      "C34"
+    ],
+    "results/tests/independent-ui.xml": [
+      "C34"
+    ],
+    "results/tests/io-resume-after.xml": [
+      "C34"
+    ],
+    "results/tests/io-resume-before.xml": [
+      "C34"
+    ],
+    "results/tests/pilot-report-after.xml": [
+      "C34"
+    ],
+    "results/tests/pilot-report-before.xml": [
+      "C34"
+    ],
+    "results/tests/publication.xml": [
+      "C34"
+    ],
+    "results/tests/qualification-before.xml": [
+      "C34"
+    ],
+    "results/tests/quantity-after.xml": [
+      "C34"
+    ],
+    "results/tests/quantity-before.xml": [
+      "C34"
+    ],
+    "results/tests/readiness-contracts.xml": [
+      "C34"
+    ],
+    "results/tests/structured-after.xml": [
+      "C34"
+    ],
+    "results/tests/structured-before.xml": [
+      "C34"
+    ],
+    "scripts/backport_transformers.py": [
+      "C33"
+    ],
+    "scripts/build_llama.sh": [
+      "C33"
+    ],
+    "scripts/install_llama.py": [
+      "C33"
+    ],
+    "scripts/setup_wsl.sh": [
+      "C33"
+    ],
+    "scripts/verify_publication.py": [
+      "C33"
+    ],
+    "site/app.js": [
+      "C05",
+      "C12",
+      "C23"
+    ],
+    "site/data.json": [
+      "C02",
+      "C24"
+    ],
+    "site/figures/architecture.png": [
+      "C23"
+    ],
+    "site/figures/occam-seed17-pilot.png": [
+      "C23"
+    ],
+    "site/index.html": [
+      "C01",
+      "C23"
+    ],
+    "site/style.css": [
+      "C23"
+    ],
+    "src/occam_rl/__init__.py": [
+      "C35"
+    ],
+    "src/occam_rl/cli.py": [
+      "C30",
+      "C35"
+    ],
+    "src/occam_rl/dashboard.py": [
+      "C23"
+    ],
+    "src/occam_rl/data.py": [
+      "C14",
+      "C15",
+      "C16",
+      "C17"
+    ],
+    "src/occam_rl/evaluation.py": [
+      "C09",
+      "C20"
+    ],
+    "src/occam_rl/evidence.py": [
+      "C20"
+    ],
+    "src/occam_rl/factcheck.py": [
+      "C14",
+      "C36"
+    ],
+    "src/occam_rl/gpu.py": [
+      "C12",
+      "C13"
+    ],
+    "src/occam_rl/io.py": [
+      "C15",
+      "C35"
+    ],
+    "src/occam_rl/models.py": [
+      "C06",
+      "C13"
+    ],
+    "src/occam_rl/preflight.py": [
+      "C12"
+    ],
+    "src/occam_rl/prompts.py": [
+      "C07"
+    ],
+    "src/occam_rl/publication.py": [
+      "C30"
+    ],
+    "src/occam_rl/publishing.py": [
+      "C20",
+      "C24"
+    ],
+    "src/occam_rl/readiness.py": [
+      "C05",
+      "C06",
+      "C24"
+    ],
+    "src/occam_rl/reporting.py": [
+      "C20",
+      "C21",
+      "C23",
+      "C24"
+    ],
+    "src/occam_rl/rewards.py": [
+      "C08",
+      "C09"
+    ],
+    "src/occam_rl/schema.py": [
+      "C06",
+      "C08"
+    ],
+    "src/occam_rl/statistics.py": [
+      "C21",
+      "C22"
+    ],
+    "src/occam_rl/structured.py": [
+      "C06"
+    ],
+    "src/occam_rl/training.py": [
+      "C03",
+      "C10",
+      "C11"
+    ],
+    "src/occam_rl/verify.py": [
+      "C18",
+      "C19"
+    ],
+    "tests/conftest.py": [
+      "C30",
+      "C34"
+    ],
+    "tests/test_contracts.py": [
+      "C34"
+    ],
+    "tests/test_data_and_statistics.py": [
+      "C17",
+      "C34"
+    ],
+    "tests/test_evidence.py": [
+      "C20",
+      "C26",
+      "C34"
+    ],
+    "tests/test_generation_config.py": [
+      "C34"
+    ],
+    "tests/test_io_resume.py": [
+      "C34",
+      "C35"
+    ],
+    "tests/test_publication_reporting.py": [
+      "C34"
+    ],
+    "tests/test_qualification.py": [
+      "C34"
+    ],
+    "tests/test_sandbox.py": [
+      "C34"
+    ],
+    "tests/test_structured_judgment.py": [
+      "C34"
+    ],
+    "tests/ui.test.cjs": [
+      "C23",
+      "C34"
+    ]
+  },
+  "claims": 36,
+  "generated_at": "2026-11-19T09:34:03.415+00:00"
+}
