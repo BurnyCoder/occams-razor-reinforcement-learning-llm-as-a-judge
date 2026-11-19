@@ -6,7 +6,7 @@ This audit uses source code, raw records, frozen data and primary sources. Previ
 
 ## Recomputed evidence
 
-Reviewed inventory: 122 files mapped to 36 deduplicated substantive claim groups. Mapping is a coverage aid, not proof of semantic correctness.
+Reviewed inventory: 124 files mapped to 36 deduplicated substantive claim groups. Mapping is a coverage aid, not proof of semantic correctness.
 
 | Frozen split | Records | SHA-256 |
 |---|---:|---|
@@ -68,6 +68,7 @@ Original tracked experiment artifacts and preregistration match the pre-audit co
 | [results/tests/independent-after.xml](../results/tests/independent-after.xml) | 66 | 0 | 0 | 0 |
 | [results/tests/independent-before.xml](../results/tests/independent-before.xml) | 12 | 10 | 0 | 0 |
 | [results/tests/independent-first-pass.xml](../results/tests/independent-first-pass.xml) | 65 | 0 | 0 | 0 |
+| [results/tests/independent-pdf.xml](../results/tests/independent-pdf.xml) | 1 | 0 | 0 | 0 |
 | [results/tests/independent-ui-first-pass.xml](../results/tests/independent-ui-first-pass.xml) | 2 | 0 | 0 | 0 |
 | [results/tests/independent-ui.xml](../results/tests/independent-ui.xml) | 2 | 0 | 0 | 0 |
 

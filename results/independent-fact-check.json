@@ -115,6 +115,13 @@
       "skipped": 0
     },
     {
+      "file": "results/tests/independent-pdf.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
       "file": "results/tests/independent-ui-first-pass.xml",
       "tests": 2,
       "failures": 0,
@@ -415,6 +422,9 @@
     "results/tests/independent-first-pass.xml": [
       "C34"
     ],
+    "results/tests/independent-pdf.xml": [
+      "C34"
+    ],
     "results/tests/independent-ui-first-pass.xml": [
       "C34"
     ],
@@ -601,6 +611,9 @@
       "C34",
       "C35"
     ],
+    "tests/test_pdf.py": [
+      "C34"
+    ],
     "tests/test_publication_reporting.py": [
       "C34"
     ],
@@ -619,5 +632,5 @@
     ]
   },
   "claims": 36,
-  "generated_at": "2026-11-19T09:47:10.053+00:00"
+  "generated_at": "2026-11-19T09:49:43.362+00:00"
 }

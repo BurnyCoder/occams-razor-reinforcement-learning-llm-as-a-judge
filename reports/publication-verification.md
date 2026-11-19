@@ -16,4 +16,4 @@ The [dated machine-readable receipt](../results/publication-verification.json) r
 
 The archived receipt refers to its explicitly recorded revision, before this receipt was added to the source snapshot. Subsequent final-snapshot verification writes `.local/publication-verification.json`; keeping that live receipt outside Git avoids a circular source-commit identity.
 
-The original pilot receipt identifies the adapter upload. The subsequent checkpoint upload is a separate Hub commit. Neither receipt alone proves successful interrupted-training resumption. Current model and dataset contents will be checked without rewriting the original receipt or checkpoint.
+The original pilot receipt identifies the adapter upload. The subsequent checkpoint upload is a separate Hub commit. Neither receipt alone proves successful interrupted-training resumption. Current model and dataset contents were checked without rewriting the original receipt or checkpoint.
