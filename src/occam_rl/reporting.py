@@ -291,6 +291,14 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
     styles["Title"].fontSize = 20
     story, table_rows = [], []
 
+    def link_url(match):
+        """Keep sentence punctuation outside PDF links; retain balanced URL parentheses."""
+        original = match[0]
+        url = original.rstrip(".,;")
+        while url.endswith(")") and url.count(")") > url.count("("):
+            url = url[:-1]
+        return f'<link href="{url}" color="#245f49">{url}</link>' + original[len(url):]
+
     def flush_table():
         if table_rows:
             widths = [110, 55, 30, 55, 55, 60, 55, 65] if len(table_rows[0]) == 8 else None
@@ -310,7 +318,7 @@ def build_pdf(markdown: str, paths: list[Path]) -> None:
             continue
         style = "Title" if line.startswith("# ") else "Heading2" if line.startswith("## ") else "Heading3" if line.startswith("### ") else "BodyText"
         text = escape(line.lstrip("# ")).replace("“", '"').replace("”", '"').replace("’", "'").replace("—", " - ").replace("×", " x ")
-        text = re.sub(r"https?://[^\s<]+", lambda match: f'<link href="{match[0]}" color="#245f49">{match[0]}</link>', text)
+        text = re.sub(r"https?://[^\s<]+", link_url, text)
         # Carry a heading through its following spacer so its table/text stays attached.
         gap = Spacer(1, 5)
         gap.keepWithNext = style.startswith("Heading") or style == "Title"

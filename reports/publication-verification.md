@@ -6,6 +6,8 @@ The browser review exercised the actual local dashboard, live refresh, domain se
 
 Every rendered PDF page was inspected, including result tables, references, the architecture diagram, training plots and the final AI statement. Plot indices distinguish pre-update rollouts from completed-update loss; planned evaluation is labeled. The paper's simplicity normalization was made explicit during this inspection.
 
+The PDF annotation check also found closing sentence punctuation included in an inline source URL. The renderer now excludes that punctuation while retaining balanced URL parentheses; [the PDF regression](../tests/test_pdf.py) checks the actual annotation bytes. This correction changes no measured result.
+
 Repeated `occam report` generation preserved summary measurements and the independently recomputed frozen-data, checkpoint, pilot and test records. Comparison removed only the declared generation timestamp; the file-coverage inventory expanded when generated files became tracked. The paper's explicitly described wording correction is separate from measured content. Both generations remain in Git history.
 
 The [feature PR](https://github.com/BurnyCoder/occams-razor-reinforcement-learning-llm-as-a-judge/pull/9) is merged. [Pages deployment](https://github.com/BurnyCoder/occams-razor-reinforcement-learning-llm-as-a-judge/actions/runs/44499123117) succeeded, and the deployed dashboard was inspected in the browser. Source, paper, reports and dataset card were uploaded to the existing Hub artifact repository; the pilot model card and existing collection description were updated. No checkpoint was rewritten.

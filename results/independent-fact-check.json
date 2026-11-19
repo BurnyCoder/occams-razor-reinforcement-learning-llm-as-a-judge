@@ -375,6 +375,9 @@
     "results/judge-audits/qwen-initial-2b.json": [
       "C05"
     ],
+    "results/publication-verification.json": [
+      "C36"
+    ],
     "results/readiness.json": [
       "C05"
     ],
@@ -616,5 +619,5 @@
     ]
   },
   "claims": 36,
-  "generated_at": "2026-11-19T09:41:47.613+00:00"
+  "generated_at": "2026-11-19T09:47:10.053+00:00"
 }
