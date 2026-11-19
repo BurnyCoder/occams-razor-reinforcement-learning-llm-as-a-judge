@@ -58,6 +58,8 @@ No new model experiment is authorized in this audit. See [resume instructions](r
 
 ## Independent audit, 2026-11-19
 
+Local corrections and validation are complete: the claim register and source review are written, evidence is recomputed, CPU/container and UI checks pass, reports are regenerated with stable measurements, and PDF/browser review is recorded in [publication verification](publication-verification.md). Publication and final remote byte checks are the remaining delivery steps. Scientific limitations remain explicit; no new model experiment was run.
+
 - Inventory substantive claims in [the register](claim-register.json), separating observations, deductions, hypotheses, implementation and instructions; previous audit conclusions are not evidence.
 - Correct evidence validation, reporting generators and templates before regenerating outputs. Preserve raw/frozen artifacts and original preregistration, with hashes in results/independent-fact-check.json.
 - Recompute task membership, split/family overlap, pilot diagnostics and judge decisions; check source claims against primary papers, pinned implementations and cards. Record gaps in [source verification](source-verification.md).

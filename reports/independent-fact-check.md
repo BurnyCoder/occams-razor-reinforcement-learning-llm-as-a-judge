@@ -6,7 +6,7 @@ This audit uses source code, raw records, frozen data and primary sources. Previ
 
 ## Recomputed evidence
 
-Reviewed inventory: 118 files mapped to 36 deduplicated substantive claim groups. Mapping is a coverage aid, not proof of semantic correctness.
+Reviewed inventory: 121 files mapped to 36 deduplicated substantive claim groups. Mapping is a coverage aid, not proof of semantic correctness.
 
 | Frozen split | Records | SHA-256 |
 |---|---:|---|

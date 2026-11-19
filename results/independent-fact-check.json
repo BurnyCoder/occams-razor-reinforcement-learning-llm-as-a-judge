@@ -184,6 +184,11 @@
       "C16",
       "C31"
     ],
+    "docs/model-cards/occam-seed17-pilot.md": [
+      "C02",
+      "C03",
+      "C24"
+    ],
     "docs/rubric.md": [
       "C07",
       "C08",
@@ -310,6 +315,10 @@
     "reports/implementation-review.md": [
       "C32"
     ],
+    "reports/independent-fact-check.md": [
+      "C34",
+      "C36"
+    ],
     "reports/literature-review.md": [
       "C10",
       "C25",
@@ -352,6 +361,10 @@
     "reports/state-of-the-art-review.md": [
       "C25",
       "C27"
+    ],
+    "results/independent-fact-check.json": [
+      "C14",
+      "C36"
     ],
     "results/judge-audits/qwen-2026-11-17T03-00-23.431+00-00.json": [
       "C05"
@@ -603,5 +616,5 @@
     ]
   },
   "claims": 36,
-  "generated_at": "2026-11-19T09:34:03.415+00:00"
+  "generated_at": "2026-11-19T09:41:47.613+00:00"
 }
