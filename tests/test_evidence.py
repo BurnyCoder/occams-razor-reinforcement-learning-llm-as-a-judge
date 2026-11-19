@@ -166,3 +166,14 @@ def test_conciserl_primitive_root_counterexample():
     assert rem(z**4 + z**2 + 1, z**2 + z + 1, z) == 0
     assert rem(z**3 - 1, z**2 + z + 1, z) == 0
     assert rem(z - 1, z**2 + z + 1, z) != 0
+def test_junit_counts_direct_cases_and_nested_suites(tmp_path, monkeypatch):
+    from occam_rl import factcheck
+    monkeypatch.setattr(factcheck, "ROOT", tmp_path)
+    folder = tmp_path / "results/tests"
+    folder.mkdir(parents=True)
+    (folder / "independent-node.xml").write_text('<testsuites><testcase/><testcase><failure/></testcase></testsuites>')
+    (folder / "independent-python.xml").write_text('<testsuites><testsuite><testcase/><testcase><skipped/></testcase></testsuite></testsuites>')
+    a, b = factcheck.test_records()
+    assert (a["tests"], a["failures"], a["skipped"]) == (2, 1, 0)
+    assert (b["tests"], b["failures"], b["skipped"]) == (2, 0, 1)
+

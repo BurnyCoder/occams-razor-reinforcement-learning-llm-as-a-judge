@@ -55,5 +55,6 @@ test('live completed pilot and chart indices do not imply learning',async()=>{
   assert.match(p.get('cards').text,/4 \/ 1/);
   assert.match(p.get('accuracy-chart').text,/Updates before rollout/);
   assert.match(p.get('loss-chart').text,/Completed updates/);
+  assert.equal(p.get('loss-chart').children[1].children[1].textContent,'0.01');
   assert.equal(p.get('accuracy-chart').children[1].children.filter(c=>c.tag==='circle').length,1);
 });

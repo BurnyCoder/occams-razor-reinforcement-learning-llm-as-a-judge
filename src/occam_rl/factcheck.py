@@ -106,11 +106,10 @@ def test_records() -> list[dict]:
     """Parse actual test artifacts; never type test totals into reports."""
     records = []
     for path in sorted((ROOT / "results/tests").glob("independent-*.xml")):
-        suites = ElementTree.parse(path).getroot().iter("testsuite")
-        totals = {key: 0 for key in ("tests", "failures", "errors", "skipped")}
-        for suite in suites:
-            for key in totals:
-                totals[key] += int(suite.get(key, "0"))
+        cases = list(ElementTree.parse(path).getroot().iter("testcase"))
+        # Count leaf records: Node emits direct testcases, pytest wraps a suite.
+        totals = {"tests": len(cases), **{key: sum(c.find(tag) is not None for c in cases)
+                  for key, tag in (("failures", "failure"), ("errors", "error"), ("skipped", "skipped"))}}
         records.append(dict(file=path.relative_to(ROOT).as_posix(), **totals))
     return records
 

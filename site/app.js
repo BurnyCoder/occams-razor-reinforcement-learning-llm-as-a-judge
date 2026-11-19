@@ -10,7 +10,7 @@ function chart(id, title, points, key, fixedMax) {
   if(!values.length){node('p','No recorded points yet.',host);return;}
   const ns='http://www.w3.org/2000/svg', svg=document.createElementNS(ns,'svg');
   svg.setAttribute('viewBox','0 0 320 170'); svg.setAttribute('role','img'); svg.setAttribute('aria-label',title);
-  const low=Math.min(0,...values.map(p=>p[key])), high=fixedMax||Math.max(.001,...values.map(p=>p[key]));
+  const low=Math.min(0,...values.map(p=>p[key])), high=fixedMax||Math.max(.01,...values.map(p=>p[key]));
   const xmax=Math.max(1,...values.map(p=>p.step));
   const x=p=>34+p.step/xmax*274, y=p=>137-(p[key]-low)/(high-low)*112;
   for(const value of [low,high]){const label=document.createElementNS(ns,'text');label.setAttribute('x','0');label.setAttribute('y',String(137-(value-low)/(high-low)*112));label.setAttribute('font-size','10');label.textContent=format(value,2);svg.append(label);}

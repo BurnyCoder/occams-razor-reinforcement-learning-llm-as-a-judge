@@ -14,7 +14,7 @@ Occam-style economy applies when competing explanations meet the same explanator
 
 ## Background and related work
 
-DeepSeekMath introduced GRPO with grouped reward estimates rather than a separate learned critic [3]. Dr. GRPO analyzes length and reward-standard-deviation normalization and motivates a constant-denominator objective [4]. ShorterBetter optimizes sample-optimal reasoning length [5]; O1-Pruner and StepPruner study related efficiency objectives [6,7]. LLM judging has documented position, verbosity, and self-preference biases [8]. Our proposed distinction is the controlled adequacy-gated semantic comparison, not the invention of concise reasoning. Prompt-only controls test whether instructions provide a sufficient alternative to training.
+DeepSeekMath introduced GRPO with grouped reward estimates rather than a separate learned critic [3]. Dr. GRPO analyzes length and reward-standard-deviation normalization and motivates a constant-denominator objective [4]. ShorterBetter optimizes sample-optimal reasoning length [5]; O1-Pruner and StepPruner study related efficiency objectives [6,7]. MT-Bench demonstrates position and verbosity biases in its tested judges; its self-enhancement investigation is inconclusive [8, §3.3]. Our proposed distinction is the controlled adequacy-gated semantic comparison, not the invention of concise reasoning. Prompt-only controls test whether instructions provide a sufficient alternative to training.
 
 ## Method
 
