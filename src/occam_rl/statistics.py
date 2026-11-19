@@ -1,14 +1,15 @@
 """Paired family-cluster bootstrap with explicit seed sensitivity.
 
 The resampling unit matches the preregistration; no independent-response bootstrap.
-Method context: https://neurips.cc/public/guides/PaperChecklist
+Bootstrap context: https://doi.org/10.1214/ss/1177013815
+The domain/family/seed hierarchy is this project's registered design choice.
 """
 
 import numpy as np
 
 
 def holm(pvalues: list[float]) -> list[float]:
-    """Step-down familywise adjustment, returned in original comparison order."""
+    """Holm (1979), https://www.jstor.org/stable/4615733; original input order."""
     order = np.argsort(pvalues)
     adjusted, maximum = [0.0] * len(pvalues), 0.0
     for rank, index in enumerate(order):
@@ -42,6 +43,8 @@ def paired_effect(left: list[dict], right: list[dict], metric: str, *, replicate
             for i in ids:
                 if (lhs[s,i]["domain"], lhs[s,i]["family"]) != (rhs[s,i]["domain"], rhs[s,i]["family"]):
                     raise ValueError("Paired task metadata disagree")
+                if (lhs[s,i]["domain"], lhs[s,i]["family"]) != (lhs[seeds[0],i]["domain"], lhs[seeds[0],i]["family"]):
+                    raise ValueError("Task metadata disagree across seeds")
         effects[domain] = np.array([[float(lhs[s,i][metric])-float(rhs[s,i][metric]) for i in ids] for s in seeds])
     point = float(np.mean([values.mean() for values in effects.values()]))
     rng = np.random.default_rng(seed)
@@ -64,11 +67,16 @@ def paired_effect(left: list[dict], right: list[dict], metric: str, *, replicate
 
 
 def wilson(successes: int, n: int) -> list[float]:
-    """Finite-sample proportion interval, useful for small constructed audits."""
+    """Wilson score interval; approximate coverage, not an exact small-sample guarantee.
+
+    Source: https://doi.org/10.1080/01621459.1927.10502953
+    """
+    if not 0 <= successes <= n:
+        raise ValueError("Require 0 <= successes <= n")
     if not n:
         return [0.0, 1.0]
     z, p = 1.959963984540054, successes/n
     denominator = 1 + z*z/n
     center = (p + z*z/(2*n)) / denominator
     half = z * np.sqrt(p*(1-p)/n + z*z/(4*n*n)) / denominator
-    return [float(center-half), float(center+half)]
+    return [max(0.0, float(center-half)), min(1.0, float(center+half))]

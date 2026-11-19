@@ -1,5 +1,7 @@
 # Installation and execution
 
+Current audit boundary (2026-11-19): use existing evidence only; the model commands below are a reference for future authorized experiments, not steps to run during this audit. The original pilot cannot select a retained budget because it recorded no tensor changes. See [resume.md](../reports/resume.md).
+
 Use an Ubuntu WSL shell in the cloned repository. All commands below assume published source, Python 3.12, `uv`, a working NVIDIA CUDA driver and Docker. Never run model commands with a dirty or unpushed checkout. The CLI and pytest session enforce the Git publication gate.
 
 ```bash
@@ -72,7 +74,7 @@ uv run --frozen occam publish --run occam-seed17
 # Publish first-occam.json before baseline execution.
 ```
 
-Full state is saved at optimizer boundaries, periodically and on a clean signal. An abrupt restart resumes from the latest completed checkpoint; any work since it is repeated. Preserve raw logs, including repeated attempts, rather than treating them as independent evaluation samples. Resume checks reject changed scientific configuration. The first pilot is excluded from retained comparisons.
+The implementation saves checkpoint state at optimizer boundaries, periodically and on a clean signal. It requests resumption from the latest checkpoint after interruption; actual interrupted-training resumption has not been demonstrated. Work since a saved checkpoint may be repeated, so preserve raw logs and do not count repeated attempts as independent samples. Identity checks reject changed scientific configuration. The first pilot is excluded from retained comparisons.
 
 If startup failed before the first model prompt or rollout, `--resume` can restart from the original seed while preserving the failed log. It requires the same run identity. If any rollout or optimizer work exists, a full checkpoint is required; the command will not silently reset training. Frozen tasks are parsed before loading model weights.
 
@@ -104,3 +106,5 @@ uv run --frozen occam report
 The live view polls saved events and labels training accuracy as training accuracy. Static GitHub Pages uses generated `site/data.json`, with no remote model computation. The report command creates every measured table, plot, example list, aggregate report, per-run report, Markdown paper and PDF. Investigator notes belong in each run's `notes.md`; include what failed, why a fix was chosen, and whether an analysis was planned or post hoc. Inspect the rendered PDF before publication. No fabricated benchmark scores, sample outputs, uncertainty bars or training curves are included.
 
 The generated PDF is `output/pdf/paper.pdf`; the editable report and template are in `paper/`.
+
+`occam report` also regenerates model cards under `docs/model-cards/` and the independent audit measurements/register report. The audit requires the original frozen JSONL splits and run/checkpoint files at the configured artifact paths; retrieve them from the existing [artifact dataset](https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts) and [pilot model](https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot) for a full reconstruction. Do not rerun `prepare` to overwrite those frozen files. Legacy evaluation records with missing provenance stay readable but are labeled unverified and excluded from primary inference. For renderer regressions, run `node --test tests/ui.test.cjs` after publishing changes; browser layout inspection is a separate check.

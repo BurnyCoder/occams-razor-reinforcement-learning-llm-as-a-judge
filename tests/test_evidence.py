@@ -1,8 +1,6 @@
 """Independent counterexamples to completeness and evidence-label claims."""
 
 import json
-from types import SimpleNamespace
-
 import pytest
 
 from occam_rl import reporting
@@ -21,7 +19,9 @@ def evaluation_fixture(tmp_path, monkeypatch, mutation=None):
                     judge_hash="e" * 64, adapter_sha256="f" * 64))
     rows = [dict(task_id=t["id"], domain=t["domain"], family=t["family"], arm="occam", seed=17,
                  git_commit="c" * 40, correct=1, adequate=1, simplicity=1, quality=1,
-                 tokens=10, formal_length=2, seconds=1, truncated=False) for t in tasks]
+                 tokens=10, formal_length=2, seconds=1, truncated=False, judge_invalid=False,
+                 judgment=dict(adequate=True, assumptions=4, concepts=4, steps=4, clarity=4,
+                               missing=[], rationale="Fixture evidence")) for t in tasks]
     if mutation:
         mutation(manifest, rows)
     directory = tmp_path / "runs/occam-seed17/eval-test"
@@ -40,6 +40,9 @@ def evaluation_fixture(tmp_path, monkeypatch, mutation=None):
     lambda m, r: r[2].update(family="different"),
     lambda m, r: m.pop("provenance"),
     lambda m, r: m["data"].update(sha256="0" * 64),
+    lambda m, r: r[2]["judgment"].update(missing=["essential premise"]),
+    lambda m, r: r[2].pop("judgment"),
+    lambda m, r: r[2].update(quality=.5),
 ])
 def test_equal_row_count_cannot_certify_evaluation(tmp_path, monkeypatch, mutation):
     """The same number of rows is not proof of population or provenance identity."""
@@ -60,6 +63,15 @@ def test_missing_domain_is_not_a_three_domain_macro_average(tmp_path, monkeypatc
     evaluation_fixture(tmp_path, monkeypatch, lambda m, r: r.pop())
     rows = reporting.snapshot()["evaluations"]
     assert {r["domain"] for r in rows} == {"math", "physics"}
+    table = reporting.score_table(rows)
+    assert "test / math" in table and "partial" in table and "not evaluated" not in table
+
+
+def test_explicit_failed_judgment_remains_zero_scored_evidence(tmp_path, monkeypatch):
+    """Preserve the registered failure policy, rather than silently dropping failures."""
+    evaluation_fixture(tmp_path, monkeypatch, lambda m, r: r[2].update(
+        judgment=None, judge_invalid=True, adequate=0, simplicity=0, quality=0))
+    assert all(r["complete"] for r in reporting.snapshot()["evaluations"])
 
 
 def test_partial_status_is_not_hidden_by_exploratory_flag():
@@ -95,3 +107,62 @@ def test_wilson_boundary_and_known_value():
     assert 0 <= wilson(0, 10)[0] <= wilson(0, 10)[1] <= 1
     assert 0 <= wilson(10, 10)[0] <= wilson(10, 10)[1] <= 1
     assert wilson(5, 10) == pytest.approx([0.2365930905, 0.7634069095])
+
+
+def test_recount_rejects_invented_judge_summary():
+    """A contradictory JSON object must not masquerade as a valid omission rejection."""
+    from occam_rl.readiness import recount_audit
+    row = dict(rows=[dict(id="audit/omission/0", judgment=None)], wins=0, pair_count=0,
+               rejected=1, omission_count=1, invalid=1, passed=False)
+    with pytest.raises(ValueError, match="disagrees"):
+        recount_audit(row)
+
+
+def test_missing_evidence_blocks_primary_inference(tmp_path, monkeypatch):
+    """Even favorable mocked statistics cannot bypass invalid evidence."""
+    evaluation_fixture(tmp_path, monkeypatch, lambda m, r: m.pop("provenance"))
+    monkeypatch.setattr(reporting, "paired_effect", lambda *a, **k: pytest.fail("Invalid input reached inference"))
+    assert reporting.comparisons({})["status"] == "blocked_invalid_evidence"
+
+
+@pytest.mark.parametrize("changes", [{"seed": 29}, {"pilot": True}, {"pilot": None}])
+def test_first_occam_receipt_must_be_retained_seed17(tmp_path, monkeypatch, changes):
+    """A complete pilot or another seed cannot unlock standalone baselines."""
+    from occam_rl import publication
+    monkeypatch.setattr(publication, "ROOT", tmp_path)
+    receipt = dict(complete=True, hf_commit="receipt", arm="occam", seed=17, pilot=False)
+    write_json(tmp_path / "manifests/first-occam.json", receipt | changes)
+    with pytest.raises(RuntimeError):
+        publication.require_first_occam()
+    write_json(tmp_path / "manifests/first-occam.json", receipt)
+    publication.require_first_occam()
+
+
+def test_registered_algebra_with_independent_fractions():
+    """Explicit examples fix expectations independently of implementation arithmetic."""
+    from fractions import Fraction
+    from occam_rl.rewards import reward
+    from occam_rl.schema import Judgment
+    j = Judgment(adequate=True, assumptions=1, concepts=2, steps=3, clarity=4, missing=[], rationale="fixture")
+    assert j.simplicity == Fraction(5, 8)
+    assert reward(True, j, "occam", 9, 9) == float(Fraction(9, 8))
+    assert reward(True, j, "formal", 99, 3, {"formal": 2}) == pytest.approx(float(Fraction(27, 25)))
+
+
+def test_domain_macro_mean_is_not_a_pooled_task_mean():
+    """Unequal domain sizes must not silently change the registered estimand."""
+    left = [dict(task_id=str(i), seed=17, domain=d, family=str(i), quality=q)
+            for i, (d, q) in enumerate([("math", 1), ("math", 1), ("physics", 0), ("code", 0)])]
+    right = [r | {"quality": 0} for r in left]
+    result = paired_effect(left, right, "quality", replicates=30, seed=7)
+    assert result["effect"] == pytest.approx(1/3)
+    assert result["ci95"] == pytest.approx([1/3, 1/3])
+
+
+def test_conciserl_primitive_root_counterexample():
+    """Exact polynomial division verifies the literature example, without a model."""
+    from sympy import Symbol, rem
+    z = Symbol("z")
+    assert rem(z**4 + z**2 + 1, z**2 + z + 1, z) == 0
+    assert rem(z**3 - 1, z**2 + z + 1, z) == 0
+    assert rem(z - 1, z**2 + z + 1, z) != 0

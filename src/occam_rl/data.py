@@ -60,7 +60,11 @@ def _math(rng: random.Random, variant: int, ood: bool) -> dict:
 
 
 def _physics(rng: random.Random, variant: int, ood: bool) -> dict:
-    """Introductory idealized laws, with units and assumptions in the specification."""
+    """Idealized textbook laws with units and assumptions in the specification.
+
+    References: OpenStax University Physics vol. 1 §§3.4, 5.3, 7.1, 9.5;
+    vol. 2 §§8.1, 9.4, 10.2: https://openstax.org/subjects/science
+    """
     a, b, c = (rng.randint(2, 60) for _ in range(3))
     common = dict(rtol=1e-5, atol=1e-8, requirements=["Identify the applicable law", "Substitute given quantities", "State the result with units"])
     if ood:

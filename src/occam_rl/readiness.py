@@ -3,6 +3,31 @@
 from collections import Counter
 
 from .io import ROOT, digest, read_json, write_json
+from .schema import Judgment
+from .statistics import wilson
+
+
+def recount_audit(row: dict) -> dict:
+    """Recompute counts from validated judgments; never infer omission detection from null."""
+    pairs = [r for r in row["rows"] if r["id"].startswith("audit/pair/")]
+    omissions = [r for r in row["rows"] if r["id"].startswith("audit/omission/")]
+    wins, rejected, invalid = 0, 0, 0
+    for pair in pairs:
+        better, worse = [Judgment.model_validate(pair[k]) if pair[k] is not None else None
+                         for k in ("better", "worse")]
+        wins += bool(better and worse and better.adequate and better.simplicity > worse.simplicity)
+        invalid += int(better is None) + int(worse is None)
+    for omission in omissions:
+        judged = Judgment.model_validate(omission["judgment"]) if omission["judgment"] is not None else None
+        rejected += bool(judged and not judged.adequate)
+        invalid += judged is None
+    measured = dict(wins=wins, pair_count=len(pairs), rejected=rejected,
+                    omission_count=len(omissions), invalid=invalid,
+                    passed=bool(pairs and omissions and wins/len(pairs) >= .8 and rejected/len(omissions) >= .9))
+    if any(row.get(k) != v for k, v in measured.items()):
+        raise ValueError("Stored judge summary disagrees with raw judgment rows")
+    return row | measured | {"dominance_ci95": wilson(wins, len(pairs)),
+                             "omission_ci95": wilson(rejected, len(omissions))}
 
 
 def collect() -> dict:
@@ -14,7 +39,7 @@ def collect() -> dict:
         row = read_json(path)
         key = digest(row)
         if key not in seen:
-            audits.append(row | {"artifact": path.relative_to(ROOT).as_posix()})
+            audits.append(recount_audit(row) | {"artifact": path.relative_to(ROOT).as_posix()})
             seen.add(key)
     manifest = ROOT / "manifests/data.json"
     tasks = read_json(manifest)["tasks"] if manifest.exists() else []
@@ -27,7 +52,7 @@ def collect() -> dict:
 
 def audit_table(audits: list[dict]) -> str:
     """Use raw counts and declared decisions, distinct from held-out model scores."""
-    lines = ["| Judge | Dominance | Omission rejection | Invalid JSON | Qualified |",
+    lines = ["| Judge | Dominance | Omission rejection | Invalid judgments | Qualified |",
              "|---|---:|---:|---:|---|"]
     for row in audits:
         model = row["model"].split("/")[-1]
@@ -49,13 +74,14 @@ def write_reports(data: dict) -> str:
         table += "| Check | Recorded result |\n|---|---|\n"
         for label, key in (("Backward minimum free VRAM (MiB)", "backward_minimum_free_mib"),
                            ("Generation minimum free VRAM (MiB)", "generation_minimum_free_mib"),
-                           ("Role-switch weights unchanged", "switch_weights_unchanged"),
-                           ("Role-switch RNG unchanged", "switch_rng_unchanged"),
-                           ("Optimizer serialization round trip", "optimizer_roundtrip"),
+                           ("Role-switch trainable tensors unchanged", "switch_weights_unchanged"),
+                           ("Role-switch CUDA RNG unchanged", "switch_rng_unchanged"),
+                           ("Optimizer state-entry count preserved after reload", "optimizer_roundtrip"),
                            ("Profile passed", "passed")):
             table += f"| {label} | {profile[key]} |\n"
     text = "# Readiness evidence\n\n" + table
-    text += "\n\nConstructed specification checks are not held-out policy accuracy or human preference validation. Invalid or contradictory JSON does not count as a successful omission rejection.\n"
+    text += "\n\nConstructed specification checks are not held-out policy accuracy or human preference validation. Invalid judgments include JSON syntax errors, schema violations and contradictory adequacy/missing-reasoning fields; they do not count as successful omission rejections.\n"
+    text += "\nProfile evidence: [recorded measurements](../manifests/preflight.json). The optimizer check compares state-entry counts after loading; it does not compare every tensor or test interrupted training. Role-switch equality covers trainable tensors and the current CUDA RNG, not every model buffer or every RNG.\n"
     text += "\n| Split | Domain | Source | Tasks |\n|---|---|---|---:|\n"
     for row in data["data_counts"]:
         text += f"| {row['split']} | {row['domain']} | {row['source']} | {row['count']} |\n"

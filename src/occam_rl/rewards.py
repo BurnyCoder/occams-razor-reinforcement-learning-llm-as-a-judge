@@ -23,6 +23,8 @@ def formal_length(text: str) -> int:
 
     Python tokenize distinguishes '#' in a string from a comment:
     https://docs.python.org/3/library/tokenize.html
+    Whitespace inside string literals is removed too. Overlapping tagged/fenced
+    regions can count twice. This frozen lexical control is not semantic complexity.
     """
     codes = code_regions(text)
     total = 0

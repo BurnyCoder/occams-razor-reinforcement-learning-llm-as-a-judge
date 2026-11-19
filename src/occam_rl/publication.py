@@ -46,5 +46,6 @@ def require_data_manifest(path: Path) -> dict:
 def require_first_occam() -> None:
     """Prompt-only inference and baseline training cannot precede published Occam."""
     marker = read_json(ROOT / "manifests/first-occam.json")
-    if not marker.get("complete") or not marker.get("hf_commit") or marker.get("arm") != "occam":
+    if (not marker.get("complete") or not marker.get("hf_commit") or marker.get("arm") != "occam"
+            or marker.get("seed") != 17 or marker.get("pilot") is not False):
         raise RuntimeError("Complete and publish Occam seed 17 before baseline execution")

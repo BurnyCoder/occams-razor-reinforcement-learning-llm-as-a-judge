@@ -178,7 +178,7 @@ class QwenJudge:
         return self
 
     def assess(self, task: Task, trace: str) -> Judgment | None:
-        """Invalid JSON receives no adequacy bonus, with the complete failure retained."""
+        """Invalid judgments receive no bonus; retain syntax/schema/consistency failures."""
         from .structured import judgment_prefix
         raw = generate(self.model, self.tokenizer, judge_messages(task, trace), self.cfg, self.log,
                        role="judge", thinking=False,

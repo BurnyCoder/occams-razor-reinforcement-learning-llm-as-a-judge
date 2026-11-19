@@ -1,14 +1,14 @@
 # Occam RL
 
-Can a local language-model judge reward **simpler, fully justified solutions** better than merely rewarding short outputs? This project studies that question with Qwen3.5, group-relative reinforcement learning, deterministic correctness checks, and an independent Gemma 4 evaluator across mathematics, introductory physics, and Python programming.
+Can a local language-model judge reward **simpler, fully justified solutions** better than merely rewarding short outputs? This project studies that question with Qwen3.5, group-relative reinforcement learning and deterministic correctness checks across mathematics, introductory physics, and Python programming. Independent Gemma 4 evaluation is planned and has not run.
 
-**Status: the exploratory Occam pilot completed and saved a checkpoint, but did not learn: all sampled traces were truncated and incorrect, with zero reward variation, gradients and parameter changes.** Data splits are frozen and the full GPU profile passes. The training judge still fails qualification; the explicit training-only waiver preserves that failure. No retained training or benchmark comparison is complete. Correct final answers can omit essential reasoning; such answers earn correctness credit but **no simplicity bonus**. All model computation runs locally on the available GPU. Retained Occam training must precede standalone baseline inference and baseline training.
+**Status: the exploratory Occam pilot finished its scheduled updates and saved a checkpoint, without a demonstrated learning signal.** All sampled traces hit the completion cap and failed verification; this does not establish that every mathematical statement in them was wrong. The log records zero reward variation and gradients, and the runtime comparison records no changed trainable tensors. Initial tensors were not separately saved for independent reconstruction. See the [generated diagnostics](#generated-results) and [independent fact-check](reports/independent-fact-check.md). Data splits are frozen. The training judge still fails qualification; the training-only waiver preserves that failure. No retained training or benchmark comparison is complete. Under the [reward rule](docs/rubric.md), correct answers missing essential reasoning earn correctness credit but **no simplicity bonus**. Model execution is configured for the local GPU; retained Occam training must precede standalone baseline inference and baseline training.
 
 The initial startup attempt stopped before rollouts on a Unicode JSONL reader bug; the [documented fix](reports/runtime-integration.md) preserved the frozen data. The completed retry repeatedly reached the output limit without a finished answer. The correctness gate never admitted a trace to the training judge, so this pilot **did not test the semantic reward's effectiveness**. See the [pilot report](reports/experiment-occam-seed17-pilot.md) and [complete raw log](results/runtime/occam-pilot-thinking-events.jsonl).
 
 [Qwen's model card](https://huggingface.co/Qwen/Qwen3.5-0.8B#thinking-mode) documents thinking-loop susceptibility in this small model. This is a candidate explanation, not a tested cause. The next proposed experiment disables thinking mode while retaining explicit necessary reasoning and the other pilot settings. It requires a published amendment and a separate run identity; it has not been implemented or run.
 
-Work is paused at the user's request. The [resume instructions](reports/resume.md) preserve the next controlled experiment and publication order. The [pilot adapter and full checkpoint](https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot) are published as a negative research artifact, with no claim of improved performance.
+Further model experiments remain paused; this independent audit uses existing artifacts only. The [resume instructions](reports/resume.md) preserve the next proposed experiment and publication order. The [pilot adapter and checkpoint files](https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot) are published as a negative research artifact, with no claim of improved performance.
 
 The proposed contribution is the controlled comparison of an adequacy-gated semantic simplicity reward against adequacy-gated token and formal-length rewards. Short-reasoning RL already exists: see [ShorterBetter](https://arxiv.org/abs/2504.21370), [StepPruner](https://arxiv.org/abs/2510.03805), and [Dr. GRPO](https://arxiv.org/abs/2503.20783). This project does not claim to invent concise reasoning, compute Kolmogorov complexity, or establish that simpler answers are generally truer.
 
@@ -20,7 +20,7 @@ The proposed contribution is the controlled comparison of an adequacy-gated sema
 flowchart LR
     D[Frozen tasks and splits] --> P[Qwen3.5 policy: group of solutions]
     P --> V[Exact or executable correctness check]
-    P --> J[Frozen local Qwen judge]
+    V -->|If correct| J[Frozen local Qwen judge]
     J --> A[Necessary reasoning present?]
     J --> S[Assumptions, concepts, steps, clarity]
     V --> R[Correctness plus gated simplicity]
@@ -28,7 +28,7 @@ flowchart LR
     S --> R
     R --> G[Dr. GRPO / LoRA update]
     G --> P
-    P --> E[Held-out tasks and independent Gemma judge]
+    P --> E[Planned: held-out tasks and independent Gemma judge]
     E --> O[Reports, paper, interactive results]
 ```
 
@@ -61,7 +61,7 @@ The policy is [Qwen/Qwen3.5-0.8B](https://huggingface.co/Qwen/Qwen3.5-0.8B), BF1
 
 The planned independent evaluator is [Gemma 4 E4B Q4_0](https://huggingface.co/google/gemma-4-E4B-it-qat-q4_0-gguf), with [Gemma 4 E2B Q4_0](https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf) as the preregistered memory fallback. Model revisions are already [pinned](manifests/revisions.json); measured Gemma selection and qualification remain pending. No held-out Gemma evaluation has run. See [Google's releases](https://ai.google.dev/gemma/docs/releases).
 
-The initial policy profile exposed a processor/tokenizer mismatch before its backward pass. Selecting Unsloth's existing text-only path resolved it. The full synthetic GPU/state profile now passes; this establishes runtime feasibility, not policy learning. See the [generated measurements](reports/readiness.md), [profile artifact](manifests/preflight.json) and [runtime integration record](reports/runtime-integration.md).
+Selecting Unsloth's text-only path allowed the synthetic profile to finish after a processor/tokenizer failure. It checks sampled GPU headroom, trainable tensors and current CUDA RNG across a role switch, and optimizer state-entry counts after reload. It does not establish all-buffer equality, worst-case judge-context fit, or interrupted-training resumption. See the [generated measurements](reports/readiness.md), [profile artifact](manifests/preflight.json) and [profile implementation](src/occam_rl/preflight.py).
 
 Target machine: RTX 5070 Laptop GPU, approximately 8 GiB VRAM. Model names and weight sizes do not establish fit: the preflight must measure generation, backward, and judge peaks with at least 750 MiB free. Roles run sequentially. Inactive policy weights may be staged in RAM; inference is never silently moved to CPU. Long traces are never truncated to fit the judge. [Unsloth's Qwen3.5 guide](https://unsloth.ai/docs/models/qwen3.5/fine-tune) recommends BF16 LoRA and documents local GRPO with `fast_inference=False`.
 
@@ -95,11 +95,10 @@ The target confirmatory evaluation has equal domain weights and paired task comp
 
 ## Roadmap
 
-- [x] Publish research documents and preregistration before any results.
-- [x] Publish the complete implementation, tests, lockfile, and README before testing.
+- [x] Retain the original preregistration and implementation history; historical push timing is not independently established by commit dates alone.
 - [x] Pass core CPU/container checks and freeze validated data and model revisions.
 - [x] Complete training-judge audits, preserve their failures, and document the exploratory waiver.
-- [x] Pass the current full GPU profile and state-preservation/serialization checks.
+- [x] Finish the current synthetic GPU profile and its limited state checks.
 - [x] Complete and publish the exploratory pilot, including its negative result and full checkpoint.
 - [x] Generate current readiness/pilot tables, plots, reports, and PDF paper from artifacts.
 - [x] Deploy the interactive GitHub Pages explorer and implement the live local dashboard; the local server is stopped while work is paused.
@@ -118,7 +117,7 @@ Project code is Apache-2.0. See [source and license notes](docs/sources.md). Res
 
 ![Pilot training accuracy, reward, length and loss](site/figures/occam-seed17-pilot.png)
 
-These are sampled training groups, not held-out scores. A completed optimizer step does not establish learning. Full checkpoint serialization has succeeded; real interruption/resumption is still untested.
+These are sampled training groups, not held-out scores. Rollout points use the count of updates completed **before sampling**; loss points use completed-update indices. A completed optimizer step does not establish learning. Checkpoint files were saved; real interruption/resumption is still untested. Counts, rejection reasons and figures are regenerated by `occam report` from [raw events](results/runtime/occam-pilot-thinking-events.jsonl).
 
 <!-- RESULTS:START -->
 

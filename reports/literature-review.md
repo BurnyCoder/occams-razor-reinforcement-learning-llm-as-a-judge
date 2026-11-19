@@ -46,4 +46,6 @@ Use [TRL](https://huggingface.co/docs/trl/grpo_trainer) rather than reimplementi
 
 ## Reading and fact-check record
 
+2026-11-19 independent update: see [source verification](source-verification.md) for exact inspected revisions, sections, reading depth and remaining limits. Earlier audit prose supplies no authority. The contextual references below are not claims that every external experiment or derivation has been independently reproduced.
+
 Primary papers were retrieved as PDFs in a local, untracked literature cache. Technical decisions are checked against paper methods and current official documentation; sections not yet fully inspected remain on the implementation checklist. Numerical performance claims from prior papers are deliberately not transferred to this hardware or model family. The review is not an exhaustive novelty search and does not establish absence of similar work. Sources may be updated; resolved revisions belong in the experiment manifest.

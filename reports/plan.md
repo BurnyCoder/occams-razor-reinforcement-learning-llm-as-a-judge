@@ -1,8 +1,8 @@
 # Implementation and experiment plan
 
-Updated 2026-11-17. Preserve the preregistration; record deviations separately. The full original scope remains active.
+Updated 2026-11-19. Preserve the preregistration; record deviations separately. Model experiments remain paused. The active task is the independent evidence audit below; it authorizes no training or inference.
 
-Execution constraint added by the user: preserve at least 10% of the weekly Codex allowance. Check the account-wide usage tool regularly and before substantial new work; save a resume point and stop with a rounding/cleanup buffer above that floor. This can pause the project before the training-time budget expires; it does not change any scientific success criterion.
+The user explicitly overrides the weekly usage reserve for this audit. The ordinary reserve instruction still applies to future model work. Scientific success criteria are unchanged.
 
 ## Phase order
 
@@ -34,6 +34,8 @@ Add a matched local replication of ConciseRL before making comparisons against s
 
 ## Progress record
 
+The following entries are historical investigator notes, not independent proof of publication timing or general runtime validity. The [independent fact-check](independent-fact-check.md) supersedes their broad language: profile equality is limited to trainable tensors/current CUDA RNG; optimizer reload compares state-entry counts; pilot rejection does not prove every statement wrong; tensor changes are a recorded runtime comparison. Commit dates alone do not prove when a push occurred.
+
 - Workspace initialized with uv; literature retrieved; hardware/account inventory complete.
 - Research documents and preregistration published at commit 2994ef3167660b981c64fb18f55ae6df01c39e79.
 - Initial modular implementation, counterexample tests, dependency lock, site, paper template and command guide written; implementation push precedes the first test.
@@ -52,4 +54,14 @@ During runs, inspect progress according to expected run duration: five minutes f
 
 ## Current stopping point
 
-The user requested a wrap-up after the completed pilot, near the weekly usage reserve. No new experiment should start during wrap-up. See [resume instructions](resume.md) for the preserved state, interpretation and next implementation steps. The original research objective and uncompleted phases remain pending.
+No new model experiment is authorized in this audit. See [resume instructions](resume.md) for the preserved state and proposed next experiment. The original research phases remain pending.
+
+## Independent audit, 2026-11-19
+
+- Inventory substantive claims in [the register](claim-register.json), separating observations, deductions, hypotheses, implementation and instructions; previous audit conclusions are not evidence.
+- Correct evidence validation, reporting generators and templates before regenerating outputs. Preserve raw/frozen artifacts and original preregistration, with hashes in results/independent-fact-check.json.
+- Recompute task membership, split/family overlap, pilot diagnostics and judge decisions; check source claims against primary papers, pinned implementations and cards. Record gaps in [source verification](source-verification.md).
+- Run regression, CPU and container checks after pushing implementation. Regenerate with `occam report`, verify stable measured content, inspect every PDF page and desktop/mobile/empty/partial/live UI.
+- Publish generated artifacts, merge the feature PR, refresh Pages and existing Hugging Face collection/cards, and verify current remote content. Record evidence in [publication verification](publication-verification.md).
+
+Completion evidence and remaining limitations are generated into [the independent fact-check](independent-fact-check.md). Passing software checks cannot qualify the failed judge, establish semantic reward efficacy, reconstruct unsaved initial tensors, validate public reference answers universally, or prove historical push order.
