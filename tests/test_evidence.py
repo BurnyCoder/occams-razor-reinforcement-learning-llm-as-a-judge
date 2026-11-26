@@ -22,6 +22,9 @@ def evaluation_fixture(tmp_path, monkeypatch, mutation=None):
                  tokens=10, formal_length=2, seconds=1, truncated=False, judge_invalid=False,
                  judgment=dict(adequate=True, assumptions=4, concepts=4, steps=4, clarity=4,
                                missing=[], rationale="Fixture evidence")) for t in tasks]
+    manifest["protocol"] = {"scorer": "test-version"}
+    for row in rows:
+        row["verifier"] = {"correct": True, "reason": "matched", "extracted": "fixture"}
     if mutation:
         mutation(manifest, rows)
     directory = tmp_path / "runs/occam-seed17/eval-test"

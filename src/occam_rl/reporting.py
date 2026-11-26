@@ -15,7 +15,8 @@ from xml.sax.saxutils import escape
 from .io import ROOT, now, read_json, read_jsonl, runs_dir, write_json
 from .schema import DOMAINS, PROMPT_ARMS, TRAINED_ARMS
 from .readiness import collect, write_reports
-from .statistics import holm, paired_effect
+from .statistics import paired_effect
+from .inference import analyze
 from .evidence import evaluation_issues
 
 START, END = "<!-- RESULTS:START -->", "<!-- RESULTS:END -->"
@@ -77,66 +78,8 @@ def snapshot() -> dict:
 
 
 def comparisons(cfg: dict) -> dict:
-    """Only complete, un-limited test evaluations can enter primary paired analysis."""
-    arms = defaultdict(list)
-    judge_override = False
-    invalid, identities = [], set()
-    frozen_path = ROOT / "manifests/data.json"
-    frozen = read_json(frozen_path) if frozen_path.exists() else {}
-    for path in runs_dir().glob("*-seed*/eval-test/results.jsonl"):
-        manifest = read_json(path.parent / "manifest.json")
-        rows = read_jsonl(path)
-        if manifest.get("arm") not in ("occam", "accuracy", "token", "formal"):
-            continue
-        issues = evaluation_issues(manifest, rows, frozen)
-        if "-pilot" in path.parent.parent.name:
-            issues.append("Pilot cannot enter retained comparisons")
-        if issues:
-            invalid.append({"run": path.parent.parent.name, "issues": issues})
-        elif manifest["limit_per_domain"] is None:
-            arms[manifest["arm"]].extend(rows)
-            identities.add(json.dumps({k: manifest[k] for k in ("config_hash", "data")} | {
-                "policy_revision": manifest["provenance"]["policy_revision"],
-                "judge_hash": manifest["provenance"]["judge_hash"]}, sort_keys=True))
-            judge_override |= manifest.get("exploratory_judge_override", False)
-    result = {"status": "pending", "comparisons": {}}
-    if invalid or len(identities) > 1:
-        return result | {"status": "blocked_invalid_evidence", "invalid": invalid,
-                         "matched_provenance": len(identities) <= 1}
-    if not all(arm in arms for arm in ("occam", "accuracy", "token", "formal")):
-        return result
-    common_seeds = set(cfg["seeds"])
-    for arm in ("occam", "accuracy", "token", "formal"):
-        common_seeds &= {r["seed"] for r in arms[arm]}
-    if not common_seeds:
-        return result
-    arm_rows = {arm: [r for r in rows if r["seed"] in common_seeds] for arm,rows in arms.items()}
-    primary = []
-    for baseline in ("token", "formal"):
-        effect = paired_effect(arm_rows["occam"], arm_rows[baseline], "quality",
-                               replicates=cfg["bootstrap_replicates"], seed=cfg["bootstrap_seed"])
-        effect["seed_sensitivity"] = paired_effect(arm_rows["occam"], arm_rows[baseline], "quality",
-            replicates=cfg["bootstrap_replicates"], seed=cfg["bootstrap_seed"], resample_seeds=True)
-        result["comparisons"][baseline] = effect
-        primary.append(effect["p_one_sided"])
-    for baseline, adjusted in zip(("token", "formal"), holm(primary), strict=True):
-        result["comparisons"][baseline]["p_holm"] = adjusted
-    accuracy = {}
-    for domain in ("all", *DOMAINS):
-        left = arm_rows["occam"] if domain == "all" else [r for r in arm_rows["occam"] if r["domain"] == domain]
-        right = arm_rows["accuracy"] if domain == "all" else [r for r in arm_rows["accuracy"] if r["domain"] == domain]
-        accuracy[domain] = paired_effect(left, right, "correct", replicates=cfg["bootstrap_replicates"], seed=cfg["bootstrap_seed"])
-    result["accuracy_noninferiority"] = accuracy
-    quality_pass = all(r["ci95"][0] > 0 and r["p_holm"] < .05 for r in result["comparisons"].values())
-    accuracy_pass = all(r["ci95"][0] > -.02 for r in accuracy.values())
-    result["status"] = "criteria_met" if quality_pass and accuracy_pass else "not_established"
-    result["seeds"] = sorted(common_seeds)
-    result["confirmatory_seed_target_met"] = set(common_seeds) == set(cfg["seeds"])
-    if not result["confirmatory_seed_target_met"]:
-        result["status"] = "exploratory_incomplete_seeds"
-    if judge_override:
-        result["status"] = "exploratory_judge_override"
-    return result
+    """Keep the original reporting entry point and expose all registered contrasts."""
+    return analyze(cfg, ROOT, runs_dir(), paired_effect)
 
 
 def score_table(rows: list[dict], pending_arms=None) -> str:

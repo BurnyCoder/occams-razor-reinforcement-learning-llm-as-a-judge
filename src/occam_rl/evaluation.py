@@ -10,14 +10,14 @@ from .prompts import policy_messages
 from .publication import require_data_manifest, require_first_occam
 from .rewards import code_structure, formal_length
 from .schema import DOMAINS, PROMPT_ARMS
-from .training import require_qualification
+from .protocol import evaluation_protocol
+from .scoring import unresolved
 from .verify import verify
 
 
 def evaluate(cfg: dict, log, commit: str, arm: str, seed: int, split: str, limit: int | None = None) -> None:
     """Resume by task ID; each task gets a stable RNG seed independent of interruption."""
     require_data_manifest(data_dir() / f"{split}.jsonl")
-    judge_identity = require_qualification("gemma", cfg)
     if arm != "occam":
         require_first_occam()
     tasks = load_tasks(split)
@@ -25,15 +25,17 @@ def evaluate(cfg: dict, log, commit: str, arm: str, seed: int, split: str, limit
         # Equal-domain exploratory subset; never silently label a limited run confirmatory.
         tasks = [t for d in DOMAINS for t in [x for x in tasks if x.domain == d][:limit]]
     suffix = f"-limit{limit}" if limit is not None else ""
+    disputed = unresolved(tasks)
+    if disputed:
+        raise ValueError(f"Unresolved scientific references in requested population: {disputed}")
+    protocol = evaluation_protocol(cfg, arm, seed, ROOT, runs_dir())
     output = runs_dir() / f"{arm}-seed{seed}" / f"eval-{split}{suffix}"
     output.mkdir(parents=True, exist_ok=True)
     manifest = {"arm": arm, "seed": seed, "split": split, "limit_per_domain": limit, "tasks": [t.id for t in tasks],
-                "git_commit": commit, "provenance": {
-                    "policy_revision": read_json(ROOT / "manifests/revisions.json")["revisions"][cfg["policy"]],
-                    "judge_hash": digest(judge_identity),
-                    "adapter_sha256": None if arm in PROMPT_ARMS else file_hash(
-                        runs_dir() / f"{arm}-seed{seed}/adapter/adapter_model.safetensors")},
-                "exploratory_judge_override": cfg.get("allow_unqualified_training_judge", False),
+                "git_commit": commit, "protocol": protocol, "provenance": {
+                    "policy_revision": protocol["base"], "judge_hash": protocol["evaluator"],
+                    "adapter_sha256": protocol["adapter"]},
+                "exploratory_judge_override": protocol["waiver"],
                 "config_hash": digest(cfg), "data": read_json(ROOT / "manifests/data.json")["files"][f"{split}.jsonl"]}
     if (output / "manifest.json").exists() and read_json(output / "manifest.json") != manifest:
         raise RuntimeError("Evaluation resume mismatch")
@@ -43,7 +45,7 @@ def evaluate(cfg: dict, log, commit: str, arm: str, seed: int, split: str, limit
     saved = {row["task_id"]: row for row in read_jsonl(generations_log.path)}
     if any(t.id not in saved for t in tasks):
         adapter = None if arm in PROMPT_ARMS else runs_dir() / f"{arm}-seed{seed}" / "adapter"
-        model, tokenizer = load_policy(cfg, seed, adapter)
+        model, tokenizer = load_policy(cfg, seed, adapter, base_only=arm in PROMPT_ARMS)
         from transformers import set_seed
         try:
             for task in tasks:

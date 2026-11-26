@@ -45,7 +45,7 @@ def assert_gpu_model(model) -> None:
         raise RuntimeError(f"Model is not wholly on GPU: {sorted(devices)}")
 
 
-def load_policy(cfg: dict, seed: int, adapter: Path | None = None):
+def load_policy(cfg: dict, seed: int, adapter: Path | None = None, *, base_only=False):
     """Use documented BF16 LoRA with local Transformers generation, no vLLM."""
     from unsloth import FastLanguageModel
     import torch
@@ -57,11 +57,11 @@ def load_policy(cfg: dict, seed: int, adapter: Path | None = None):
         # Unsloth's existing text-only route returns a tokenizer and skips the vision tower.
         # https://github.com/unslothai/unsloth/blob/3384411d336a5b43cf81e8fdbf73c010eee08e6b/unsloth/models/loader.py
         text_only=True, fast_inference=False, device_map={"": 0}, trust_remote_code=False)
-    if adapter is None:
+    if adapter is None and not base_only:
         model = FastLanguageModel.get_peft_model(model, r=cfg["lora_rank"], lora_alpha=cfg["lora_alpha"],
             target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
             lora_dropout=0, bias="none", use_gradient_checkpointing="unsloth", random_state=seed)
-    else:
+    elif adapter is not None:
         from peft import PeftModel
         model = PeftModel.from_pretrained(model, str(adapter), is_trainable=False)
     tokenizer.padding_side = "left"

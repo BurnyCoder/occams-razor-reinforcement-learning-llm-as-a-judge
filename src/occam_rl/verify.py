@@ -4,7 +4,7 @@ No generated program executes in the host interpreter. Docker isolation follows
 https://docs.docker.com/engine/containers/run/ and is defense in depth, not a proof
 against container-runtime vulnerabilities. Procedural expected outputs stay on the
 host; benchmark assertions (including their expectations) execute in the container.
-Tests are withheld from the policy prompt, not secret from executing candidate code.
+Procedural cases and training assertions are withheld. Public MBPP+ prompts contain examples.
 """
 
 import json
@@ -20,6 +20,7 @@ import pint
 
 from .rewards import regions
 from .schema import Task, Verification
+from .scoring import EVAL_IMAGE, MBPP, UG, mbpp_spec, physics_review, unresolved
 
 UNITS = pint.UnitRegistry()
 NUMBER = r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?"
@@ -73,15 +74,16 @@ def numeric(answer: str) -> tuple[Fraction, str]:
 
 def run_code(code: str, *, entrypoint: str = "", inputs: list | None = None,
              tests: list[str] | None = None, preserve_inputs: bool = False,
-             image: str = "occam-verifier:1", timeout: int = 8):
+             image: str = "occam-verifier:1", timeout: int = 8, mbpp: dict | None = None):
     """Run under a nonroot user, no network/mounts/capabilities, bounded resources."""
     name = "occam-" + uuid.uuid4().hex
     command = ["docker", "run", "--rm", "--name", name, "--network", "none", "--read-only",
                "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--pids-limit", "32",
                "--memory", "256m", "--memory-swap", "256m", "--cpus", "1", "--user", "65534:65534",
-               "--tmpfs", "/tmp:rw,noexec,nosuid,size=8m", "-i", image, "python", "-I", "-c", RUNNER]
+               "--tmpfs", "/tmp:rw,noexec,nosuid,size=8m", "-i", image, "python", "-I"]
+    command.extend(["/opt/evalplus_runner.py"] if mbpp is not None else ["-c", RUNNER])
     payload = json.dumps({"code": code, "entrypoint": entrypoint, "inputs": inputs or [], "tests": tests or [],
-                          "preserve_inputs": preserve_inputs})
+                          "preserve_inputs": preserve_inputs, "mbpp": mbpp})
     # Limit regular-file output outside the container. communicate(capture_output=True)
     # would otherwise let a noisy candidate allocate unbounded host RAM.
     with tempfile.TemporaryFile() as stdout, tempfile.TemporaryFile() as stderr:
@@ -98,7 +100,7 @@ def run_code(code: str, *, entrypoint: str = "", inputs: list | None = None,
         output, errors = stdout.read().decode(errors="replace"), stderr.read().decode(errors="replace")
     if result.returncode:
         # Infrastructure failures must not be misclassified as wrong model answers.
-        if result.returncode == 125 or "Cannot connect" in errors or "Unable to find image" in errors:
+        if mbpp is not None or result.returncode == 125 or "Cannot connect" in errors or "Unable to find image" in errors:
             raise RuntimeError(errors)
         raise ValueError("Code failed: " + errors[-2000:])
     if len(output) > 1_000_000:
@@ -115,6 +117,11 @@ def verify(task: Task, trace: str, image: str = "occam-verifier:1") -> Verificat
             if len(blocks) != 1:
                 return Verification(correct=False, reason="Expected exactly one code submission")
             extracted = blocks[0]
+            if task.source == MBPP:
+                accepted = run_code(extracted, entrypoint=task.entrypoint, inputs=task.inputs,
+                                    mbpp=mbpp_spec(task), image=EVAL_IMAGE, timeout=150)
+                return Verification(correct=accepted, reason="tests_passed" if accepted else "hidden_case_failed",
+                                    extracted=extracted)
             result = run_code(extracted, entrypoint=task.entrypoint, inputs=task.inputs, tests=task.tests,
                               preserve_inputs=task.preserve_inputs, image=image)
             correct = result is True if task.tests else result == task.expected
@@ -126,14 +133,23 @@ def verify(task: Task, trace: str, image: str = "occam-verifier:1") -> Verificat
         extracted = answers[0].strip()
         value, unit = numeric(extracted)
         expected, _ = numeric(task.answer)
-        if task.unit:
+        target_unit, rtol, atol = task.unit, task.rtol, task.atol
+        if task.source == UG:
+            if unresolved([task]):
+                raise RuntimeError(f"Unresolved scientific reference: {task.id}")
+            ruling = physics_review()[task.id]
+            target_unit = ruling["unit"] if ruling["unit"] not in ("1", "coordinate") else ""
+            # Half the declared last reporting increment, in target units. Never apply
+            # the legacy universal 1e-8 tolerance to tiny physical quantities.
+            rtol, atol = 0.0, float(ruling["rounding_increment"]) / 2
+        if target_unit:
             if not unit:
                 return Verification(correct=False, reason="Missing units", extracted=extracted)
-            converted = UNITS.Quantity(float(value), unit).to(task.unit).magnitude
-            correct = math.isclose(converted, float(expected), rel_tol=task.rtol, abs_tol=task.atol)
+            converted = UNITS.Quantity(float(value), unit).to(target_unit).magnitude
+            correct = math.isclose(converted, float(expected), rel_tol=max(rtol, 1e-12), abs_tol=atol)
         else:
-            correct = not unit and (math.isclose(float(value), float(expected), rel_tol=task.rtol, abs_tol=task.atol)
-                                    if task.rtol or task.atol else value == expected)
+            correct = not unit and (math.isclose(float(value), float(expected), rel_tol=rtol, abs_tol=atol)
+                                    if rtol or atol else value == expected)
         return Verification(correct=bool(correct), reason="matched" if correct else "mismatch", extracted=extracted)
     # Pint uses Python's tokenizer, which also raises TokenError on malformed
     # expressions: https://docs.python.org/3.12/library/tokenize.html

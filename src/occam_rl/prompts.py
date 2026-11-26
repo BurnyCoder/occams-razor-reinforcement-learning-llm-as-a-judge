@@ -71,7 +71,10 @@ def policy_messages(task: Task, arm: str = "occam") -> list[dict]:
     if arm == "prompt_concise":
         instruction += "Be as concise as possible while preserving all necessary reasoning.\n"
     elif arm == "prompt_occam":
-        instruction += OCCAM
+        # Share the actual rated dimensions and adequacy criteria. The scoring protocol
+        # and JSON response instructions belong only to the evaluator.
+        criteria = JUDGE[JUDGE.index("First check reasoning"):JUDGE.index("Return ONLY valid JSON")]
+        instruction += OCCAM + "\nYour solution will be assessed using these criteria:\n" + criteria
     return [{"role": "system", "content": instruction}, {"role": "user", "content": task.question}]
 
 
