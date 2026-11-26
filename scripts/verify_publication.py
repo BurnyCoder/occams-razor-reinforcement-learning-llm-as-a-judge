@@ -42,10 +42,12 @@ def main():
         if path.is_file():
             name = path.relative_to(root).as_posix()
             expected = subprocess.check_output(["git", "show", f"{commit}:{name}"], cwd=root)
-            compare(pages + path.relative_to(root / "site").as_posix(), expected, "pages")
+            compare(pages + path.relative_to(root / "site").as_posix() + "?audit=" + commit, expected, "pages")
 
     dataset = cfg["hf_artifacts_repo"]
-    hub_root = f"https://huggingface.co/datasets/{dataset}/resolve/main/"
+    api = HfApi()
+    revision = receipt["hf_commit"]
+    hub_root = f"https://huggingface.co/datasets/{dataset}/resolve/{revision}/"
     files = {"README.md": "docs/hf-artifacts.md", "research-README.md": "README.md"}
     for name in ("paper/paper.md", "output/pdf/paper.pdf", "reports/independent-fact-check.md",
                  "reports/claim-register.json", "reports/amendment-004-scoring.md", "configs/physics-review.psv",
@@ -54,6 +56,27 @@ def main():
         files[name] = name
     for remote, local in files.items():
         compare(hub_root + remote, (root / local).read_bytes(), "huggingface-source")
+    # The Hub exposes content identities for both Git blobs and large-file objects.
+    # Compare the complete tracked inventory as well as fetching the principal surfaces.
+    tree = {item.path:item for item in api.list_repo_tree(dataset,repo_type="dataset",revision=revision,recursive=True)}
+    for local in subprocess.check_output(["git","ls-files"],cwd=root,text=True).splitlines():
+        name = "research-README.md" if local=="README.md" else local
+        url = hub_root+name
+        expected = (root/local).read_bytes()
+        if local == ".gitattributes":
+            # The Hub appends LFS rules for uploaded binaries to the source attributes.
+            actual = fetch(url)
+            extra = actual.removeprefix(expected).splitlines()
+            if not actual.startswith(expected) or not all(line.endswith(b" filter=lfs diff=lfs merge=lfs -text") for line in extra):
+                raise RuntimeError("Unexpected Hub changes to .gitattributes")
+            checks.append(dict(surface="source-attributes-with-hub-lfs-rules",url=url,sha256=hashlib.sha256(actual).hexdigest()))
+            continue
+        item = tree[name]
+        sha = hashlib.sha256(expected).hexdigest()
+        git_blob = hashlib.sha1(f"blob {len(expected)}\0".encode()+expected).hexdigest()
+        if (item.lfs.sha256 != sha if item.lfs else item.blob_id != git_blob):
+            raise RuntimeError(f"Hub source identity differs: {name}")
+        checks.append(dict(surface="tracked-source",url=url,sha256=sha))
     for row in audit["frozen"]["files"]:
         url = hub_root + "frozen-data/" + row["file"]
         actual = hashlib.sha256(fetch(url)).hexdigest()
@@ -64,7 +87,6 @@ def main():
     model = "BurnyCoder/occam-rl-occam-seed17-pilot"
     compare(f"https://huggingface.co/{model}/resolve/main/README.md",
             (root / "docs/model-cards/occam-seed17-pilot.md").read_bytes(), "model-card")
-    api = HfApi()
     checkpoint_path = "training-state/checkpoint-4"
     tree = {item.path: item for item in api.list_repo_tree(model, path_in_repo=checkpoint_path, recursive=True)}
     for name, expected in audit["preserved"]["checkpoint_sha256"].items():
