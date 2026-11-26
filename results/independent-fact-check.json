@@ -94,6 +94,34 @@
   },
   "tests": [
     {
+      "file": "results/tests/contracts-revised.xml",
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/core.xml",
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/eos-after.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/eos-before.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
       "file": "results/tests/independent-after.xml",
       "tests": 66,
       "failures": 0,
@@ -133,6 +161,104 @@
       "tests": 2,
       "failures": 0,
       "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/io-resume-after.xml",
+      "tests": 37,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/io-resume-before.xml",
+      "tests": 9,
+      "failures": 9,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/pilot-report-after.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/pilot-report-before.xml",
+      "tests": 2,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/publication.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/qualification-before.xml",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/quantity-after.xml",
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/quantity-before.xml",
+      "tests": 3,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/readiness-contracts.xml",
+      "tests": 22,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/scientific-before-timeout.xml",
+      "tests": 79,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/scientific-cpu.xml",
+      "tests": 81,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/scientific-ui.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/structured-after.xml",
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "results/tests/structured-before.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 1,
       "skipped": 0
     }
   ],
@@ -176,10 +302,20 @@
       "C07",
       "C17"
     ],
+    "configs/physics-review.psv": [
+      "C38"
+    ],
     "docker/Dockerfile": [
       "C18"
     ],
+    "docker/EvalPlus.Dockerfile": [
+      "C37"
+    ],
+    "docker/evalplus_runner.py": [
+      "C37"
+    ],
     "docs/data.md": [
+      "C38",
       "C14",
       "C15",
       "C16",
@@ -197,6 +333,7 @@
       "C24"
     ],
     "docs/rubric.md": [
+      "C39",
       "C07",
       "C08",
       "C09",
@@ -288,6 +425,11 @@
     "reports/amendment-003-evidence-reporting.md": [
       "C29"
     ],
+    "reports/amendment-004-scoring.md": [
+      "C37",
+      "C40",
+      "C29"
+    ],
     "reports/claim-register.json": [
       "C36"
     ],
@@ -333,6 +475,9 @@
       "C27",
       "C28"
     ],
+    "reports/paper.pdf": [
+      "C40"
+    ],
     "reports/plan.md": [
       "C01",
       "C29"
@@ -342,6 +487,9 @@
       "C08",
       "C21",
       "C29"
+    ],
+    "reports/progress.md": [
+      "C39"
     ],
     "reports/publication-verification.md": [
       "C31",
@@ -358,6 +506,11 @@
       "C04",
       "C29"
     ],
+    "reports/reviews/2026-11-26-scientific-audit.md": [
+      "C38",
+      "C39",
+      "C40"
+    ],
     "reports/runtime-integration.md": [
       "C12",
       "C32"
@@ -368,6 +521,10 @@
     "reports/state-of-the-art-review.md": [
       "C25",
       "C27"
+    ],
+    "reports/summary.md": [
+      "C39",
+      "C40"
     ],
     "results/independent-fact-check.json": [
       "C14",
@@ -396,6 +553,10 @@
     ],
     "results/runtime/occam-pilot-thinking-status.json": [
       "C35"
+    ],
+    "results/scientific-audit.json": [
+      "C37",
+      "C38"
     ],
     "results/summary.json": [
       "C02",
@@ -458,6 +619,15 @@
     "results/tests/readiness-contracts.xml": [
       "C34"
     ],
+    "results/tests/scientific-before-timeout.xml": [
+      "C34"
+    ],
+    "results/tests/scientific-cpu.xml": [
+      "C34"
+    ],
+    "results/tests/scientific-ui.xml": [
+      "C34"
+    ],
     "results/tests/structured-after.xml": [
       "C34"
     ],
@@ -480,6 +650,7 @@
       "C33"
     ],
     "site/app.js": [
+      "C39",
       "C05",
       "C12",
       "C23"
@@ -503,6 +674,9 @@
     ],
     "src/occam_rl/__init__.py": [
       "C35"
+    ],
+    "src/occam_rl/audit_data.py": [
+      "C37"
     ],
     "src/occam_rl/cli.py": [
       "C30",
@@ -532,6 +706,9 @@
       "C12",
       "C13"
     ],
+    "src/occam_rl/inference.py": [
+      "C40"
+    ],
     "src/occam_rl/io.py": [
       "C15",
       "C35"
@@ -546,6 +723,9 @@
     "src/occam_rl/prompts.py": [
       "C07"
     ],
+    "src/occam_rl/protocol.py": [
+      "C40"
+    ],
     "src/occam_rl/publication.py": [
       "C30"
     ],
@@ -557,6 +737,9 @@
       "C05",
       "C06",
       "C24"
+    ],
+    "src/occam_rl/reference_replay.py": [
+      "C37"
     ],
     "src/occam_rl/reporting.py": [
       "C20",
@@ -572,6 +755,9 @@
       "C06",
       "C08"
     ],
+    "src/occam_rl/scoring.py": [
+      "C37"
+    ],
     "src/occam_rl/statistics.py": [
       "C21",
       "C22"
@@ -579,12 +765,16 @@
     "src/occam_rl/structured.py": [
       "C06"
     ],
+    "src/occam_rl/study_audit.py": [
+      "C39"
+    ],
     "src/occam_rl/training.py": [
       "C03",
       "C10",
       "C11"
     ],
     "src/occam_rl/verify.py": [
+      "C38",
       "C18",
       "C19"
     ],
@@ -623,6 +813,9 @@
     "tests/test_sandbox.py": [
       "C34"
     ],
+    "tests/test_scientific_audit.py": [
+      "C34"
+    ],
     "tests/test_structured_judgment.py": [
       "C34"
     ],
@@ -631,6 +824,6 @@
       "C34"
     ]
   },
-  "claims": 36,
-  "generated_at": "2026-11-19T09:49:43.362+00:00"
+  "claims": 40,
+  "generated_at": "2026-11-26T12:47:27.100+00:00"
 }

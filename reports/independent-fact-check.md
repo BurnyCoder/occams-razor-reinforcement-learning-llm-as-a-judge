@@ -1,12 +1,12 @@
 # Independent fact-check
 
-Libor “Burny” Burian · 2026-11-19
+Libor “Burny” Burian · 2026-11-26
 
 This audit uses source code, raw records, frozen data and primary sources. Previous prose audits are not evidence. No training or model inference was performed.
 
 ## Recomputed evidence
 
-Reviewed inventory: 124 files mapped to 36 deduplicated substantive claim groups. Mapping is a coverage aid, not proof of semantic correctness.
+Reviewed inventory: 143 files mapped to 40 deduplicated substantive claim groups. Mapping is a coverage aid, not proof of semantic correctness.
 
 | Frozen split | Records | SHA-256 |
 |---|---:|---|
@@ -24,6 +24,10 @@ Original tracked experiment artifacts and preregistration match the pre-audit co
 
 | ID | Claim / correction | Status | Evidence |
 |---|---|---|---|
+| C37 | Public MBPP+ examples overlap scored cases. Native comparison depends on task and Python types. Count exposed examples and additional cases separately. Recompute typed expectations, compare their frozen JSON projection, and run every canonical program through EvalPlus. Equivalence is bounded by the selected input suites and resource limits. | corrected | [src/occam_rl/audit_data.py](../src/occam_rl/audit_data.py); [results/scientific-audit.json](../results/scientific-audit.json); [source](https://github.com/evalplus/evalplus/blob/v0.3.1/evalplus/eval/__init__.py); [source](https://github.com/evalplus/evalplus/blob/v0.3.1/evalplus/eval/_special_oracle.py); [source](https://github.com/evalplus/mbppplus_release/releases/tag/v0.2.0) |
+| C38 | Numeric-looking physics targets can omit units, encode a coefficient instead of a quantity, or conflict with the problem. Every selected public task has a source-record link, original answer, dimension, rounding policy, justification or adjudication flag. Evaluation blocks on disputed targets. | corrected | [configs/physics-review.psv](../configs/physics-review.psv); [results/scientific-audit.json](../results/scientific-audit.json); [source](https://huggingface.co/datasets/UGPhysics/ugphysics/blob/523e71bc4e33356bb19de4af38c128796e8a8770/ClassicalElectromagnetism/en.jsonl#L217); [source](https://www.bipm.org/en/publications/si-brochure) |
+| C39 | The constructed judge preferences systematically favor shorter responses and math markup. Replay complete raw responses including invalid judgments and ties; retain partial attempts separately. The observed association does not identify a causal judge bias. Future stimuli must cross preference, length and format. | qualified | [results/scientific-audit.json](../results/scientific-audit.json); [configs/judge-audit.json](../configs/judge-audit.json); [source](https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/tree/main/operations); [source](https://arxiv.org/abs/2306.05685) |
+| C40 | Registered primary and secondary effects require complete matched evidence and provenance. All three hypotheses are untested in present evidence. H1 requires two corrected tests, H2 requires strict overall and domain bounds, and H3 contains three secondary paired contrasts. Training-waiver and judge provenance qualify future verdicts. | corrected | [reports/preregistration.md](../reports/preregistration.md); [src/occam_rl/inference.py](../src/occam_rl/inference.py); [src/occam_rl/protocol.py](../src/occam_rl/protocol.py); [tests/test_scientific_audit.py](../tests/test_scientific_audit.py); [results/summary.json](../results/summary.json); [source](https://www.jstor.org/stable/4615733) |
 | C01 | Adequacy-gated simplicity may improve quality while preserving accuracy. Untested hypothesis; no retained comparison or held-out evaluation exists. | qualified | [reports/preregistration.md](../reports/preregistration.md); [results/summary.json](../results/summary.json) |
 | C02 | The pilot completed scheduled updates without a demonstrated learning signal. Report verifier rejections separately from mathematical errors; count distinct tasks separately from repeated rollouts. | corrected | [results/runtime/occam-pilot-thinking-events.jsonl](../results/runtime/occam-pilot-thinking-events.jsonl); [results/runtime/occam-pilot-thinking-status.json](../results/runtime/occam-pilot-thinking-status.json); [src/occam_rl/factcheck.py](../src/occam_rl/factcheck.py) |
 | C03 | No trainable tensors changed in the pilot. Recorded runtime comparison only; initial tensors were not separately retained for independent reconstruction. | qualified | [results/runtime/occam-pilot-thinking-status.json](../results/runtime/occam-pilot-thinking-status.json); [src/occam_rl/training.py](../src/occam_rl/training.py) |
@@ -65,12 +69,30 @@ Original tracked experiment artifacts and preregistration match the pre-audit co
 
 | Artifact | Tests | Failures | Errors | Skipped |
 |---|---:|---:|---:|---:|
+| [results/tests/contracts-revised.xml](../results/tests/contracts-revised.xml) | 19 | 0 | 0 | 0 |
+| [results/tests/core.xml](../results/tests/core.xml) | 16 | 0 | 0 | 0 |
+| [results/tests/eos-after.xml](../results/tests/eos-after.xml) | 3 | 0 | 0 | 0 |
+| [results/tests/eos-before.xml](../results/tests/eos-before.xml) | 1 | 0 | 1 | 0 |
 | [results/tests/independent-after.xml](../results/tests/independent-after.xml) | 66 | 0 | 0 | 0 |
 | [results/tests/independent-before.xml](../results/tests/independent-before.xml) | 12 | 10 | 0 | 0 |
 | [results/tests/independent-first-pass.xml](../results/tests/independent-first-pass.xml) | 65 | 0 | 0 | 0 |
 | [results/tests/independent-pdf.xml](../results/tests/independent-pdf.xml) | 1 | 0 | 0 | 0 |
 | [results/tests/independent-ui-first-pass.xml](../results/tests/independent-ui-first-pass.xml) | 2 | 0 | 0 | 0 |
 | [results/tests/independent-ui.xml](../results/tests/independent-ui.xml) | 2 | 0 | 0 | 0 |
+| [results/tests/io-resume-after.xml](../results/tests/io-resume-after.xml) | 37 | 0 | 0 | 0 |
+| [results/tests/io-resume-before.xml](../results/tests/io-resume-before.xml) | 9 | 9 | 0 | 0 |
+| [results/tests/pilot-report-after.xml](../results/tests/pilot-report-after.xml) | 2 | 0 | 0 | 0 |
+| [results/tests/pilot-report-before.xml](../results/tests/pilot-report-before.xml) | 2 | 2 | 0 | 0 |
+| [results/tests/publication.xml](../results/tests/publication.xml) | 3 | 0 | 0 | 0 |
+| [results/tests/qualification-before.xml](../results/tests/qualification-before.xml) | 1 | 1 | 0 | 0 |
+| [results/tests/quantity-after.xml](../results/tests/quantity-after.xml) | 18 | 0 | 0 | 0 |
+| [results/tests/quantity-before.xml](../results/tests/quantity-before.xml) | 3 | 3 | 0 | 0 |
+| [results/tests/readiness-contracts.xml](../results/tests/readiness-contracts.xml) | 22 | 0 | 0 | 0 |
+| [results/tests/scientific-before-timeout.xml](../results/tests/scientific-before-timeout.xml) | 79 | 1 | 0 | 0 |
+| [results/tests/scientific-cpu.xml](../results/tests/scientific-cpu.xml) | 81 | 0 | 0 | 0 |
+| [results/tests/scientific-ui.xml](../results/tests/scientific-ui.xml) | 2 | 0 | 0 | 0 |
+| [results/tests/structured-after.xml](../results/tests/structured-after.xml) | 26 | 0 | 0 | 0 |
+| [results/tests/structured-before.xml](../results/tests/structured-before.xml) | 1 | 0 | 1 | 0 |
 
 ## Limits
 

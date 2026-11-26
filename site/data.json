@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T09:49:43.362+00:00",
+  "generated_at": "2026-11-26T12:47:27.100+00:00",
   "runs": [
     {
       "name": "occam-seed17-pilot",
@@ -199,6 +199,7 @@
     }
   ],
   "evaluations": [],
+  "invalid_evaluations": [],
   "readiness": {
     "audits": [
       {
@@ -1333,7 +1334,73 @@
   },
   "analysis": {
     "status": "pending",
-    "comparisons": {}
+    "comparisons": {},
+    "hypotheses": {
+      "H1": {
+        "status": "untested",
+        "comparisons": {
+          "token": {
+            "status": "untested"
+          },
+          "formal": {
+            "status": "untested"
+          }
+        }
+      },
+      "H2": {
+        "status": "untested",
+        "domains": {
+          "all": {
+            "status": "untested"
+          },
+          "math": {
+            "status": "untested"
+          },
+          "physics": {
+            "status": "untested"
+          },
+          "code": {
+            "status": "untested"
+          }
+        }
+      },
+      "H3": {
+        "status": "untested",
+        "comparisons": {
+          "prompt_ordinary": {
+            "status": "untested"
+          },
+          "prompt_concise": {
+            "status": "untested"
+          },
+          "prompt_occam": {
+            "status": "untested"
+          }
+        }
+      }
+    }
+  },
+  "scientific_audit": {
+    "summary": "The frozen MBPP+ prompts contain assertions in 150/150 tasks. Examples share scored input values in 149 tasks, including 146 matches with the same argument types. The physics reference review flags 39/150 public targets for adjudication. Choosing the candidate with fewer characters selects the designated preference on 36/36 constructed pairs. Qualification passed in 0/3 completed sets. H1 is untested. H2 is untested. H3 is untested.",
+    "counts": {
+      "mbpp_tasks": 150,
+      "with_assert": 150,
+      "with_overlap": 149,
+      "exact_overlap": 146,
+      "scored": 16115,
+      "base_visible": 149,
+      "plus_visible": 25,
+      "additional": 15941,
+      "canonical_pass": 150,
+      "physics": 150,
+      "blocked": 39,
+      "missing_original_unit": 70,
+      "shorter": 36,
+      "pairs": 36,
+      "formatting": 24,
+      "completed": 3,
+      "qualified": 0
+    }
   },
   "examples": []
 }

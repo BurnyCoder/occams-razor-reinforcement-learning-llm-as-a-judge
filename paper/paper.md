@@ -2,7 +2,7 @@
 
 Libor “Burny” Burian
 
-2026-11-19. Living research report with a preserved preregistration and dated amendments. Artifact regeneration: 2026-11-19T09:49:43.362+00:00.
+2026-11-26. Living research report with a preserved preregistration and dated amendments. Artifact regeneration: 2026-11-26T12:47:27.100+00:00.
 
 ## Abstract
 
@@ -24,9 +24,13 @@ The reward is R=C(1+0.2 A S): binary verified correctness C, a binary adequacy j
 
 The token and formal-length arms use the same adequacy gate and S=k/(k+L). Length normalizers are fixed by calibration after the first Occam run and before length-arm training. Correctness-only uses C. The shuffled control permutes eligible simplicity scores within each question group. Prompt-only controls leave model weights unchanged and use ordinary, concise-but-complete, or full Occam instructions. Decoding, task IDs, and output budgets are held constant.
 
+The local TRL configuration centers rewards within each sampled group, omits division by the group reward standard deviation, and divides the masked token-loss sum by a constant generation-budget denominator. A nonzero reference-policy KL penalty remains in the local objective. Dr. GRPO's reported training omitted that penalty [4,9]. These differences concern the estimator and objective. The stored pilot supplies no empirical comparison of them.
+
 The implementation reuses TRL, Unsloth, PEFT, Transformers, and local llama.cpp [9,10]. Models run sequentially on the local GPU. BF16 LoRA policy training and four-bit frozen judging reduce resource requirements; measured headroom, full traces, failures, environment versions, and resumable states are recorded. The exact configuration and model revisions reside in published manifests, not an unstated default.
 
 ## Data and experimental design
+
+The public MBPP+ prompts include a worked assertion. Prospective scoring uses the pinned EvalPlus native comparator, including task-specific equivalences. The public physics subset has a task-level adjudication of units, rounding and ambiguous targets. Unresolved references block evaluation of the affected frozen population. These changes preceded any retained evaluation [20,21].
 
 Procedural tasks combine exact references, analytic physics laws and finite Python function tests withheld from policy prompts. Public sources are GSM8K, MBPP, eligible numerical UGPhysics, and MBPP+ [11-14]. Source licenses remain in force; UGPhysics is evaluation-only and noncommercial/share-alike. Split IDs and normalized question hashes are in manifests/data.json; revisions are in manifests/revisions.json; exclusion reasons are in preparation logs. These artifacts remain frozen. Family-OOD tasks are distinguished from new parameters of a seen family. Public pretraining contamination remains unknown. Expected MBPP assertions execute with candidate code inside the container; passing finite tests is not a proof of program correctness or resistance to harness manipulation [16].
 
@@ -35,6 +39,8 @@ Judge qualification uses constructed dominance and omission examples, including 
 ## Results
 
 ### Prerequisite checks
+
+The frozen MBPP+ prompts contain assertions in 150/150 tasks. Examples share scored input values in 149 tasks, including 146 matches with the same argument types. The physics reference review flags 39/150 public targets for adjudication. Choosing the candidate with fewer characters selects the designated preference on 36/36 constructed pairs. Qualification passed in 0/3 completed sets. H1 is untested. H2 is untested. H3 is untested. The systematically shorter labeled preferences and unbalanced math formatting confound an interpretation of the qualification exercise as measuring semantic simplicity [20].
 
 | Judge | Dominance | Omission rejection | Invalid judgments | Qualified |
 |---|---:|---:|---:|---|
@@ -144,6 +150,10 @@ The original preregistration specifies the primary metric, falsification criteri
 [18] Holm (1979), a simple sequentially rejective multiple test procedure. https://www.jstor.org/stable/4615733
 
 [19] Efron and Tibshirani (1986), bootstrap methods. The project's domain/family/seed hierarchy is its own registered choice. https://doi.org/10.1214/ss/1177013815
+
+[20] Independent scoring review, qualification recount and prospective amendment. https://github.com/BurnyCoder/occams-razor-reinforcement-learning-llm-as-a-judge/blob/main/reports/reviews/2026-11-26-scientific-audit.md
+
+[21] EvalPlus v0.3.1, native checking and task-specific oracles. https://github.com/evalplus/evalplus/tree/v0.3.1/evalplus/eval
 
 ## AI statement
 

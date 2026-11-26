@@ -1,6 +1,6 @@
 # Experiment summary
 
-Generated from run artifacts at 2026-11-19T09:49:43.362+00:00.
+Generated from run artifacts at 2026-11-26T12:47:27.100+00:00.
 
 | Run | Split | N | Accuracy | Adequacy | C × A × S | Tokens | Status |
 |---|---|---:|---:|---:|---:|---:|---|
@@ -31,6 +31,8 @@ occam-seed17-pilot: 16 recorded rollouts across 4 distinct tasks. Repeated rollo
 Accuracy is the fraction verified correct. Adequacy asks whether necessary reasoning is present. Simplicity summarizes four judge dimensions. C × A × S is zero for wrong or inadequate solutions. Training rollout accuracy is not held-out accuracy.
 
 Primary analysis status: `pending`. See results/summary.json for paired intervals, multiplicity adjustments, and seed sensitivity when available.
+
+The frozen MBPP+ prompts contain assertions in 150/150 tasks. Examples share scored input values in 149 tasks, including 146 matches with the same argument types. The physics reference review flags 39/150 public targets for adjudication. Choosing the candidate with fewer characters selects the designated preference on 36/36 constructed pairs. Qualification passed in 0/3 completed sets. H1 is untested. H2 is untested. H3 is untested. [Independent scientific audit](reviews/2026-11-26-scientific-audit.md)
 
 ## Prerequisite audits
 

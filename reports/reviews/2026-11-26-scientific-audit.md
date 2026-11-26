@@ -6,15 +6,15 @@ The frozen MBPP+ prompts contain assertions in 150/150 tasks. Examples share sco
 
 ## What the pilot measured
 
-The trace and token records reproduce 0/16 verifier acceptances on 4 distinct training tasks, with 0 semantic judgments. The observed reward gate prevented a test of the semantic bonus. The saved status reports the trainable-tensor comparison. A cause for the unsuccessful completions and a population performance effect remain open.
+The trace and token records reproduce 0/16 verifier acceptances on 4 distinct training tasks, with 0 semantic judgments. The observed reward gate prevented a test of the semantic bonus. The saved status reports the trainable-tensor comparison. Of the 16 completions, 16 reached the recorded 2048-token limit, and 16 earned zero reward. A cause for the unsuccessful completions and a population performance effect remain open. [Rollout and prompt events](../../results/runtime/occam-pilot-thinking-events.jsonl) · [Recorded training status](../../results/runtime/occam-pilot-thinking-status.json)
 
 ## Qualification replay
 
 | Set | Valid outputs | Invalid outputs | Valid pairs | Strict wins | Simplicity ties among valid pairs | Valid omissions | Omissions rejected |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| judge-audit.json | 18/34 | 16 | 2/12 | 1 | 1 | 8/10 | 7 |
-| judge-audit-v2.json | 16/34 | 18 | 1/12 | 0 | 0 | 6/10 | 5 |
-| judge-audit-v3.json | 25/34 | 9 | 6/12 | 4 | 1 | 8/10 | 8 |
+| [judge-audit.json](../../configs/judge-audit.json) · [outputs](https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/blob/2137b853953b54a261bb82d23be0196f037da0cb/operations/2026-11-17T01-54-43.932+00-00-qualify.jsonl) | 18/34 | 16 | 2/12 | 1 | 1 | 8/10 | 7 |
+| [judge-audit-v2.json](../../configs/judge-audit-v2.json) · [outputs](https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/blob/2137b853953b54a261bb82d23be0196f037da0cb/operations/2026-11-17T02-34-41.735+00-00-qualify.jsonl) | 16/34 | 18 | 1/12 | 0 | 0 | 6/10 | 5 |
+| [judge-audit-v3.json](../../configs/judge-audit-v3.json) · [outputs](https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/blob/2137b853953b54a261bb82d23be0196f037da0cb/operations/2026-11-17T04-46-15.804+00-00-qualify.jsonl) | 25/34 | 9 | 6/12 | 4 | 1 | 8/10 | 8 |
 
 Interrupted `2026-11-17T01-32-58.043+00-00-qualify.jsonl` recorded 0 prompts and 0 outputs (0 valid, 0 invalid). These attempts have no qualification verdict.
 
@@ -54,8 +54,9 @@ The frozen files contain 2856 distinct task IDs. Each selected public record was
 
 | Completed preparation · exclusion review | Events |
 |---|---:|
-| historical reference-execution failure; hardware timing and exception not independently reproduced | 6 |
 | native non-JSON input confirmed | 37 |
 | normalized duplicate confirmed | 37 |
 | official training ID confirmed | 108 |
+| reference failed again without a diagnostic; cause unresolved | 1 |
+| reference failure category reproduced | 5 |
 | source eligibility reproduced | 1048 |
