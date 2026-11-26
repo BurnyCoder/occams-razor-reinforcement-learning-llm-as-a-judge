@@ -1,0 +1,11 @@
+# Amendment 004 · prospective scoring and independent audit
+
+Libor “Burny” Burian · 2026-11-26. The [original registration](preregistration.md) governs H1, H2 and H3. This amendment follows the exploratory pilot and precedes any retained policy evaluation. Preserve all original task bodies, judge responses, checkpoints, and amendments.
+
+Use the [pinned EvalPlus evaluator](https://github.com/evalplus/evalplus/blob/v0.3.1/evalplus/eval/__init__.py) on the frozen MBPP+ inputs, with native Python reference types and the release tolerance. Run candidate and reference code inside the existing isolation boundary. Report the visible example assertions and their actual overlap with scored inputs.
+
+Review the question, solution, units and resolution of every selected UGPhysics target before policy outputs exist. Use a versioned per-task adjudication for unambiguous units and rounded answers. A conflict or underspecified target blocks confirmatory use of that population pending a published resolution. Preserve task IDs and denominators. A dimensional quantity requires a compatible unit unless the prompt explicitly requests a numerical coefficient. Document the scope of any upstream answer retained as a reference.
+
+Use the four anchored ratings in the full-rubric prompting arm. Evaluate H1 against both length arms with the registered paired intervals and Holm adjustment. Evaluate H2 overall and in each domain at the registered margin. Report the three H3 effect estimates and intervals separately as secondary comparisons. Bind all effects to the recorded task population, scorer, training history, evaluator and decoding. Keep missing, exploratory, inconclusive and adverse outcomes visible.
+
+Reconstruct qualification from original operations, including incomplete attempts. In any future construct-validation set, cross intended preference with shorter/longer/equal lengths and alternate equivalent math formatting within domains. Include cases where the longer solution supplies essential reasoning, same-content formatting swaps, and omissions at fixed answer. Freeze case labels and paired analysis before any judgments. This audit uses stored responses and CPU-only deterministic checks.
