@@ -67,6 +67,7 @@ The audit is complete: the claim register and source review are written, evidenc
 - Publish generated artifacts, merge the feature PR, refresh Pages and existing Hugging Face collection/cards, and verify current remote content. Record evidence in [publication verification](publication-verification.md).
 
 Completion evidence and remaining limitations are generated into [the independent fact-check](independent-fact-check.md). Passing software checks cannot qualify the failed judge, establish semantic reward efficacy, reconstruct unsaved initial tensors, validate public reference answers universally, or prove historical push order.
+
 ## November 26 scientific review
 
 The dated scoring amendment governs future comparability. The retained experiment awaits source adjudication and qualified evaluation. The independent audit reports its decisions and measured progress separately from the historical milestones above. [Amendment](amendment-004-scoring.md) · [Current evidence](reviews/2026-11-26-scientific-audit.md)

@@ -17,6 +17,7 @@ The [dated machine-readable receipt](../results/publication-verification.json) r
 The archived receipt refers to its explicitly recorded revision, before this receipt was added to the source snapshot. Subsequent final-snapshot verification writes `.local/publication-verification.json`; keeping that live receipt outside Git avoids a circular source-commit identity.
 
 The original pilot receipt identifies the adapter upload. The subsequent checkpoint upload is a separate Hub commit. Neither receipt alone proves successful interrupted-training resumption. Current model and dataset contents were checked without rewriting the original receipt or checkpoint.
+
 ## November 26 publication evidence
 
 The dated audit receipt binds the merged Git revision to the matching Hub source revision, every tracked source object, the frozen split hashes, the rendered site, the pilot card and checkpoint identities. The Hub appends its binary storage rules to the source attributes file. The receipt is stored separately so its contents can identify the exact published source commit. The November 19 receipt describes the earlier revision. [Dated publication receipt](https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/blob/main/verification/2026-11-26-publication.json) · [Verification program](../scripts/verify_publication.py)

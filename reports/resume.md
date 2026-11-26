@@ -4,6 +4,8 @@ Original resume point: 2026-11-17; evidence correction: 2026-11-19. Model experi
 
 ## Preserved state
 
+The November 26 audit records prospective verifier rulings and replayed judge responses. Any future retained evaluation must account for the flagged targets, the registered control prompts, and the independent judge qualification. [Scientific review](reviews/2026-11-26-scientific-audit.md) · [Scoring amendment](amendment-004-scoring.md)
+
 The original thinking-mode Occam pilot completed and saved its adapter plus full training state. Its source identity is recorded in `results/runtime/occam-pilot-thinking-status.json`; the exact prompts, outputs, verification decisions and optimizer metrics are in `results/runtime/occam-pilot-thinking-events.jsonl`. Generated measurements and interpretation are in [the pilot report](experiment-occam-seed17-pilot.md), [the experiment summary](experiments.md) and `results/summary.json`. The paper and interactive site use those artifacts.
 
 Local run: `D:/AI/occam-rl/runs/occam-seed17-pilot`. The `checkpoint-4` directory contains adapter weights, optimizer, scheduler, RNG and trainer state. It has not been tested by interrupting and resuming a real training run. Do not infer that property from serialization alone. The original startup failure remains in the appended event log.
