@@ -112,4 +112,3 @@ The generated PDF is `output/pdf/paper.pdf`; the editable report and template ar
 ## CPU-only scientific reporting
 
 From the published WSL checkout, build the existing CPU verifier image and then run `docker build -f docker/EvalPlus.Dockerfile -t occam-evalplus:0.3.1 docker`. Use the artifact paths in the project configuration. The report needs the frozen splits, operations logs, pilot checkpoint, pinned upstream dataset caches and policy tokenizer files. EvalPlus uses its v0.2.0 data release cache. With these available, `CUDA_VISIBLE_DEVICES=-1 HF_HUB_OFFLINE=1 uv run --no-sync occam report` regenerates both audit reports, per-task evidence, tables, figures, cards, PDF and explorer. The CPU replay executes public reference programs in the isolated container and tokenizes prompts without loading model weights. [Scoring amendment](../reports/amendment-004-scoring.md)
-

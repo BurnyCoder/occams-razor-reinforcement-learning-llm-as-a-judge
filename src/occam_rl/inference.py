@@ -1,7 +1,7 @@
 """Registered comparisons. Point estimates condition on eligible tasks and observed training seeds."""
 
 from .evidence import read_evaluation
-from .io import digest, file_hash, read_json, read_jsonl
+from .io import digest, file_hash, read_json
 from .protocol import evaluation_protocol
 from .schema import DOMAINS, PROMPT_ARMS
 from .scoring import analysis_family

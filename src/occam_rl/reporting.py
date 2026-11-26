@@ -221,8 +221,13 @@ def figures(data: dict) -> list[Path]:
 def examples() -> list[dict]:
     """Select by lexical task ID, not favorable scores; retain complete traces."""
     records = []
+    manifest = ROOT / "manifests/data.json"
+    frozen = read_json(manifest) if manifest.is_file() else {}
     for path in sorted(runs_dir().glob("*-seed*/eval-*/results.jsonl")):
-        rows = sorted(read_jsonl(path), key=lambda r: r["task_id"])
+        _, rows, issues = read_evaluation(path,frozen)
+        if issues:
+            continue
+        rows = sorted(rows,key=lambda r:r["task_id"])
         for domain in DOMAINS:
             records.extend(r for r in [x for x in rows if x["domain"] == domain][:3])
     return records
