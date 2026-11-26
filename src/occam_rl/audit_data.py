@@ -116,7 +116,7 @@ def exclusion_review(ug, mbpp, frozen, questions):
     from tokenize import TokenError
     from pint.errors import PintError
     from .data import _unbox, plain_json, procedural_tasks, question_hash
-    from .verify import UNITS, numeric
+    from .verify import UNITS, numeric, run_code
     cfg = read_json(ROOT/"configs/experiment.json")
     paths = [p for p in (runs_dir()/"operations").glob("*-prepare.jsonl")
              if any(r["event"]=="data_prepared" for r in read_jsonl(p))]
@@ -131,6 +131,7 @@ def exclusion_review(ug, mbpp, frozen, questions):
     out = []
     for r in skipped:
         key,source,reason = r["id"],r.get("source"),r["reason"]
+        replay_detail = None
         if key in frozen:
             raise ValueError(f"Excluded record appears in the frozen population: {key}")
         if source == UG:
@@ -162,7 +163,23 @@ def exclusion_review(ug, mbpp, frozen, questions):
                     raise ValueError(f"MBPP semantic exclusion disagrees: {key}")
                 status = "native non-JSON input confirmed"
             else:
-                status = "historical reference-execution failure; hardware timing and exception not independently reproduced"
+                code = row["canonical_solution"]
+                if not re.search(r"^def\s",code,re.M):
+                    code = row["prompt"]+code
+                try:
+                    run_code(code,entrypoint=row["entry_point"],inputs=row["base_input"]+row["plus_input"],
+                             image=cfg["docker_image"],timeout=30)
+                except ValueError as exc:
+                    replay_detail = str(exc).strip().splitlines()[-1]
+                    diagnostic = reason.strip().splitlines()[-1]
+                    if diagnostic == replay_detail and diagnostic == "Code failed:":
+                        status = "reference failed again without a diagnostic; cause unresolved"
+                    elif diagnostic == replay_detail:
+                        status = "reference failure category reproduced"
+                    else:
+                        status = "reference failed again with a different diagnostic"
+                else:
+                    status = "historically excluded reference completed on CPU replay"
         elif reason == "duplicate or prompt budget" and key in proc:
             duplicate = question_hash(proc[key].question) in questions
             if not (duplicate or r["prompt_tokens"] > cfg["max_prompt_tokens"]):
@@ -170,7 +187,7 @@ def exclusion_review(ug, mbpp, frozen, questions):
             status = "normalized duplicate confirmed" if duplicate else "recorded prompt over limit"
         else:
             raise ValueError(f"Unexplained exclusion: {key}")
-        out.append(dict(id=key, source=source, reason=reason, review=status))
+        out.append(dict(id=key, source=source, reason=reason, review=status,replay_detail=replay_detail))
     return out
 
 
