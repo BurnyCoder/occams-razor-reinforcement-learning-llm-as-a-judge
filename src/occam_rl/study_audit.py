@@ -117,6 +117,12 @@ def calculate(analysis):
     data = data_audit()
     trials = judge_audit()
     pilot = pilot_evidence()
+    events = read_jsonl(ROOT/"results/runtime/occam-pilot-thinking-events.jsonl")
+    rollouts = [r for r in events if r["event"]=="rollout"]
+    cap = read_json(runs_dir()/"occam-seed17-pilot/run.json")["config"]["max_completion_tokens"]
+    pilot.update(completion_cap=cap, at_cap=sum(r["tokens"]==cap for r in rollouts),
+                 zero_rewards=sum(r["reward"]==0 for r in rollouts),
+                 semantic_prompts=sum(r["event"]=="llm_prompt" and r["role"]!="policy" for r in events))
     data.update(scorer=VERSION, scorer_hash=scoring_identity(), qualifications=trials, pilot=pilot,
                 preparation=prepare_history(), inventory=inventory(), hypotheses=analysis["hypotheses"])
     data["decision_evidence"] = {"frozen_test_sha256": data["files"]["test.jsonl"],
@@ -161,13 +167,18 @@ def write_audit(data):
         f"The trace and token records reproduce {data['pilot']['correct']}/{data['pilot']['rollouts']} verifier acceptances "
         f"on {data['pilot']['distinct_tasks']} distinct training tasks, with {data['pilot']['reward_judgments']} semantic judgments. "
         "The observed reward gate prevented a test of the semantic bonus. The saved status reports the trainable-tensor comparison. "
-        "A cause for the unsuccessful completions and a population performance effect remain open.",
+        f"Of the {data['pilot']['rollouts']} completions, {data['pilot']['at_cap']} reached the recorded "
+        f"{data['pilot']['completion_cap']}-token limit, and {data['pilot']['zero_rewards']} earned zero reward. "
+        "A cause for the unsuccessful completions and a population performance effect remain open. "
+        "[Rollout and prompt events](../../results/runtime/occam-pilot-thinking-events.jsonl) · "
+        "[Recorded training status](../../results/runtime/occam-pilot-thinking-status.json)",
         "", "## Qualification replay", "",
         "| Set | Valid outputs | Invalid outputs | Valid pairs | Strict wins | Simplicity ties among valid pairs | Valid omissions | Omissions rejected |",
         "|---|---:|---:|---:|---:|---:|---:|---:|---:|"]
     for r in data["qualifications"]:
         if r["complete"]:
-            lines.append(f"| {r['suite']} | {r['valid_outputs']}/{r['outputs']} | {r['invalid']} | {r['valid_pairs']}/{r['pairs']} | "
+            log_url = "https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/blob/2137b853953b54a261bb82d23be0196f037da0cb/operations/" + r["log"]
+            lines.append(f"| [{r['suite']}](../../configs/{r['suite']}) · [outputs]({log_url}) | {r['valid_outputs']}/{r['outputs']} | {r['invalid']} | {r['valid_pairs']}/{r['pairs']} | "
                          f"{r['wins']} | {r['ties']} | {r['valid_omissions']}/{r['omissions']} | {r['rejected']} |")
     for r in data["qualifications"]:
         if not r["complete"]:
