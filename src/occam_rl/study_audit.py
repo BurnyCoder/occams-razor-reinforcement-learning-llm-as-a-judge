@@ -129,6 +129,7 @@ def calculate(analysis):
     done = [t for t in trials if t["complete"]]
     data["counts"] = dict(mbpp_tasks=len(mb), with_assert=sum(bool(r["assertions"]) for r in mb),
         with_overlap=sum(bool(r["base_matches"]+r["plus_matches"]) for r in mb),
+        exact_overlap=sum(bool(r["exact_base_matches"]+r["exact_plus_matches"]) for r in mb),
         scored=sum(r["base_inputs"]+r["plus_inputs"] for r in mb), base_visible=sum(r["base_matches"] for r in mb),
         plus_visible=sum(r["plus_matches"] for r in mb), additional=sum(r["additional_inputs"] for r in mb),
         canonical_pass=sum(r["canonical_pass"] for r in mb), physics=len(data["physics"]), blocked=sum(r["blocked"] for r in data["physics"]),
@@ -143,7 +144,7 @@ def audit_summary(data):
     """Shared prose for the README, paper and model card. All measured numbers come from records."""
     n = data["counts"]
     return (f"The frozen MBPP+ prompts contain assertions in {n['with_assert']}/{n['mbpp_tasks']} tasks. "
-            f"Literal example inputs overlap scored inputs in {n['with_overlap']} tasks. "
+            f"Examples share scored input values in {n['with_overlap']} tasks, including {n['exact_overlap']} matches with the same argument types. "
             f"The physics reference review flags {n['blocked']}/{n['physics']} public targets for adjudication. "
             f"Choosing the candidate with fewer characters selects the designated preference on {n['shorter']}/{n['pairs']} constructed pairs. "
             f"Qualification passed in {n['qualified']}/{n['completed']} completed sets. "
@@ -177,10 +178,11 @@ def write_audit(data):
               "Both semantic recognition and reliance on surface cues require counterbalanced evidence. "
               "The Wilson intervals in the JSON describe the constructed checks. The logs include interrupted attempts.",
               "", "## Public task scoring", "",
-              f"Across {n['scored']} scored input occurrences, literal prompt examples match {n['base_visible']} base and "
+              f"Across {n['scored']} scored input occurrences, visible argument values match {n['base_visible']} base and "
               f"{n['plus_visible']} additional-suite occurrences. The remaining {n['additional']} occurrences differ from matched examples. "
               f"The native checker accepted {n['canonical_pass']}/{n['mbpp_tasks']} frozen canonical programs. "
-              "Occurrences can repeat. The parser compares literal arguments and preserves an explicit unparsed list. "
+              f"Occurrences can repeat. In {n['with_overlap']-n['exact_overlap']} tasks, examples use tuples where the scorer supplies lists with the same elements. "
+              "Mbpp/87 supplies different dictionary arguments. Per-task records distinguish exact types from sequence values and retain any unparsed assertions. "
               "The original MBPP+ training/test ID exclusion still holds. Visible worked examples are part of the public task design.",
               "", "The prospective scorer runs the pinned EvalPlus comparator on native candidate and reference values in a CPU container. "
               "Mbpp/111 permits set-equivalent reordering, Mbpp/257 requires the returned tuple, and Mbpp/581 accepts an alternative pyramid-height interpretation. "

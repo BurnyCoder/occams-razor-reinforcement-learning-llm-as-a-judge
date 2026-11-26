@@ -134,3 +134,9 @@ def test_frozen_physics_has_full_review_and_records_empty_original_units():
     assert all(r["review"] and float(r["rounding_increment"])>=0 for r in physics_review().values())
     task = next(t for t in tasks if t.id.endswith("Electromagnetism/298"))
     assert not task.unit and physics_review()[task.id]["unit"]=="J"
+
+
+def test_visible_tuple_discloses_list_values_but_not_its_container_type():
+    from occam_rl.audit_data import example_coverage
+    r = example_coverage(frozen_task("Mbpp/98"))
+    assert r["base_matches"] and not r["exact_base_matches"] and not r["unparsed"]

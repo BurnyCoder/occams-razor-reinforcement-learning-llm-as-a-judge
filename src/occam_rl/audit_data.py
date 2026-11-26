@@ -17,7 +17,15 @@ def example_coverage(task):
     """Match literal call arguments in visible assertions to each scored input occurrence."""
     spec = mbpp_spec(task)
     assertions = [line.strip() for line in task.question.splitlines() if line.strip().startswith("assert ")]
-    visible, unparsed = set(), []
+    visible, projected, unparsed = set(), set(), []
+    def sequence_values(value):
+        # A worked tuple can expose every element of the scored list, even
+        # though a Python program can distinguish the two argument types.
+        if isinstance(value,(tuple,list)):
+            return [sequence_values(x) for x in value]
+        if isinstance(value,dict):
+            return {k:sequence_values(v) for k,v in value.items()}
+        return value
     for line in assertions:
         try:
             calls = [node for node in ast.walk(ast.parse(line)) if isinstance(node, ast.Call)
@@ -29,14 +37,20 @@ def example_coverage(task):
                     raise ValueError("Non-positional arguments")
                 args = [ast.literal_eval(arg) for arg in call.args]
                 from .data import plain_json
-                if not plain_json(args):
+                projected_args = sequence_values(args)
+                if not plain_json(projected_args):
                     raise ValueError("Non-JSON literal")
-                visible.add(digest(args))
+                projected.add(digest(projected_args))
+                if plain_json(args):
+                    visible.add(digest(args))
         except (ValueError, SyntaxError):
             unparsed.append(line)
-    hits = [digest(args) in visible for args in task.inputs]
+    exact = [digest(args) in visible for args in task.inputs]
+    hits = [digest(args) in projected for args in task.inputs]
     split = spec["base_count"]
-    return dict(id=task.id, assertions=len(assertions), visible_assertions=assertions, unparsed=unparsed, visible_distinct_inputs=len(visible),
+    return dict(id=task.id, assertions=len(assertions), visible_assertions=assertions, unparsed=unparsed,
+                visible_distinct_inputs=len(visible), sequence_value_inputs=len(projected),
+                exact_base_matches=sum(exact[:split]), exact_plus_matches=sum(exact[split:]),
                 base_inputs=split, plus_inputs=len(hits)-split, base_matches=sum(hits[:split]),
                 plus_matches=sum(hits[split:]), additional_inputs=len(hits)-sum(hits),
                 release_atol=spec["atol"], entrypoint=task.entrypoint,
