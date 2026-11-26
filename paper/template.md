@@ -28,6 +28,8 @@ The implementation reuses TRL, Unsloth, PEFT, Transformers, and local llama.cpp 
 
 ## Data and experimental design
 
+The public MBPP+ prompts include a worked assertion. Prospective scoring uses the pinned EvalPlus native comparator, including task-specific equivalences. The public physics subset has a task-level adjudication of units, rounding and ambiguous targets. Unresolved references block evaluation of the affected frozen population. These changes preceded any retained evaluation [20,21].
+
 Procedural tasks combine exact references, analytic physics laws and finite Python function tests withheld from policy prompts. Public sources are GSM8K, MBPP, eligible numerical UGPhysics, and MBPP+ [11-14]. Source licenses remain in force; UGPhysics is evaluation-only and noncommercial/share-alike. Split IDs and normalized question hashes are in manifests/data.json; revisions are in manifests/revisions.json; exclusion reasons are in preparation logs. These artifacts remain frozen. Family-OOD tasks are distinguished from new parameters of a seen family. Public pretraining contamination remains unknown. Expected MBPP assertions execute with candidate code inside the container; passing finite tests is not a proof of program correctness or resistance to harness manipulation [16].
 
 Judge qualification uses constructed dominance and omission examples, including fixed-answer omissions, unnecessary assumptions, redundant reasoning, obfuscation and injection. It is a specification audit, not independent human validation. Failed audits and prompt revisions must be disclosed. Confirmatory evaluation uses a different model family from the training judge.
@@ -35,6 +37,8 @@ Judge qualification uses constructed dominance and omission examples, including 
 ## Results
 
 ### Prerequisite checks
+
+{{SCIENTIFIC_AUDIT}} The systematically shorter labeled preferences and unbalanced math formatting confound an interpretation of the qualification exercise as measuring semantic simplicity [20].
 
 {{READINESS}}
 
@@ -109,6 +113,10 @@ The original preregistration specifies the primary metric, falsification criteri
 [18] Holm (1979), a simple sequentially rejective multiple test procedure. https://www.jstor.org/stable/4615733
 
 [19] Efron and Tibshirani (1986), bootstrap methods. The project's domain/family/seed hierarchy is its own registered choice. https://doi.org/10.1214/ss/1177013815
+
+[20] Independent scoring review, qualification recount and prospective amendment. https://github.com/BurnyCoder/occams-razor-reinforcement-learning-llm-as-a-judge/blob/main/reports/reviews/2026-11-26-scientific-audit.md
+
+[21] EvalPlus v0.3.1, native checking and task-specific oracles. https://github.com/evalplus/evalplus/tree/v0.3.1/evalplus/eval
 
 ## AI statement
 

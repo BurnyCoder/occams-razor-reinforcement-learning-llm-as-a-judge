@@ -135,7 +135,7 @@ def training_details(runs: list[dict]) -> str:
     return "\n\n".join(parts)
 
 
-def model_card(cfg: dict, run: dict, evaluations: list[dict]) -> str:
+def model_card(cfg: dict, run: dict, evaluations: list[dict], audit_text: str = "") -> str:
     """Use the same measured tables for the local card and the Hub publication."""
     status, name = run["status"], run["name"]
     text = f"""---
@@ -162,6 +162,12 @@ Completion denotes finished scheduled updates, not successful learning. Paramete
     text += "\n\n## Held-out evaluation\n\n" + score_table(evaluations, pending_arms=[name])
     text += f"\n\nCode, limitations, data rights, and the independent fact-check: https://github.com/{cfg['github_repo']}/blob/main/reports/independent-fact-check.md\n"
     text += "\nThe base model and project code are Apache-2.0; dataset records retain their separate source licenses. Checkpoint files are available under training-state; successful interrupted-training resumption has not been demonstrated.\n"
+    result = ROOT / "results/scientific-audit.json"
+    if not audit_text and result.is_file():
+        from .study_audit import audit_summary
+        audit_text = audit_summary(read_json(result))
+    if audit_text:
+        text += f"\n{audit_text} [Scientific audit](https://github.com/{cfg['github_repo']}/blob/main/reports/reviews/2026-11-26-scientific-audit.md)\n"
     return text
 
 
@@ -295,6 +301,11 @@ def report(cfg: dict, log) -> None:
     data = snapshot()
     readiness_table = write_reports(data["readiness"])
     data["analysis"] = comparisons(cfg)
+    from .study_audit import audit_summary, calculate, write_audit
+    audited = calculate(data["analysis"])
+    write_audit(audited)
+    audit_text = audit_summary(audited)
+    data["scientific_audit"] = {"summary": audit_text, "counts": audited["counts"]}
     data["examples"] = examples()
     write_json(ROOT / "site/data.json", data)
     write_json(ROOT / "results/summary.json", data)
@@ -304,8 +315,11 @@ def report(cfg: dict, log) -> None:
     summary += "\n\n## Training diagnostics\n\n" + training + "\n"
     summary += "\n\nAccuracy is the fraction verified correct. Adequacy asks whether necessary reasoning is present. Simplicity summarizes four judge dimensions. C × A × S is zero for wrong or inadequate solutions. Training rollout accuracy is not held-out accuracy.\n"
     summary += "\nPrimary analysis status: `" + data["analysis"]["status"] + "`. See results/summary.json for paired intervals, multiplicity adjustments, and seed sensitivity when available.\n"
+    summary += "\n" + audit_text + " [Independent scientific audit](reviews/2026-11-26-scientific-audit.md)\n"
     summary += "\n## Prerequisite audits\n\n" + readiness_table + "\n\nSee [readiness evidence](readiness.md) for data counts and individual audit reports.\n"
     (ROOT / "reports/experiments.md").write_text(summary, encoding="utf-8")
+    (ROOT / "reports/summary.md").write_text("# Scientific findings\n\n" + audit_text + "\n\n" + training +
+        "\n\n[Methods, scoring defects and qualification replay](reviews/2026-11-26-scientific-audit.md)\n", encoding="utf-8")
     for run in data["runs"]:
         notes_url = "https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/blob/main/runs/" + run["name"] + "/notes.md"
         text = f"# {run['name']}\n\n" + json.dumps(run["status"], indent=2)
@@ -319,9 +333,9 @@ def report(cfg: dict, log) -> None:
         if run["status"]:
             card_path = ROOT / "docs/model-cards" / f"{run['name']}.md"
             card_path.parent.mkdir(parents=True, exist_ok=True)
-            card_path.write_text(model_card(cfg, run, [r for r in data["evaluations"] if r["run"] == run["name"]]), encoding="utf-8")
+            card_path.write_text(model_card(cfg, run, [r for r in data["evaluations"] if r["run"] == run["name"]], audit_text), encoding="utf-8")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    generated = START + "\n\n### Training diagnostics\n\n" + training + "\n\n### Held-out evaluation\n\n" + table + "\n\n" + END
+    generated = START + "\n\n" + audit_text + " [Scientific audit](reports/reviews/2026-11-26-scientific-audit.md)\n\n### Training diagnostics\n\n" + training + "\n\n### Held-out evaluation\n\n" + table + "\n\n" + END
     if START in readme:
         readme = readme[:readme.index(START)] + generated + readme[readme.index(END)+len(END):]
     else:
@@ -330,11 +344,14 @@ def report(cfg: dict, log) -> None:
     paper = (ROOT / "paper/template.md").read_text(encoding="utf-8").replace("{{RESULTS}}", table)
     paper = paper.replace("{{ANALYSIS_STATUS}}", data["analysis"]["status"]).replace("{{GENERATED_AT}}", data["generated_at"])
     paper = paper.replace("{{READINESS}}", readiness_table)
+    paper = paper.replace("{{SCIENTIFIC_AUDIT}}", audit_text)
     paper = paper.replace("{{TRAINING}}", training)
     paper = paper.replace("{{REPORT_DATE}}", data["generated_at"][:10])
     (ROOT / "paper/paper.md").write_text(paper, encoding="utf-8")
     paths = figures(data)
     build_pdf(paper, paths)
+    from shutil import copyfile
+    copyfile(ROOT / "output/pdf/paper.pdf", ROOT / "reports/paper.pdf")
     from .factcheck import build_factcheck
     build_factcheck(data)
     log.emit("report_built", evaluations=len(data["evaluations"]), runs=len(data["runs"]), analysis=data["analysis"]["status"])

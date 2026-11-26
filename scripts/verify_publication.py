@@ -48,7 +48,9 @@ def main():
     hub_root = f"https://huggingface.co/datasets/{dataset}/resolve/main/"
     files = {"README.md": "docs/hf-artifacts.md", "research-README.md": "README.md"}
     for name in ("paper/paper.md", "output/pdf/paper.pdf", "reports/independent-fact-check.md",
-                 "reports/claim-register.json", "results/summary.json", "site/data.json"):
+                 "reports/claim-register.json", "reports/amendment-004-scoring.md", "configs/physics-review.psv",
+                 "results/scientific-audit.json", "reports/reviews/2026-11-26-scientific-audit.md",
+                 "reports/summary.md", "results/tests/scientific-cpu.xml", "results/summary.json", "site/data.json"):
         files[name] = name
     for remote, local in files.items():
         compare(hub_root + remote, (root / local).read_bytes(), "huggingface-source")

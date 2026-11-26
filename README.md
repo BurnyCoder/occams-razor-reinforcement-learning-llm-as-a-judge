@@ -10,7 +10,7 @@ The initial startup attempt stopped before rollouts on a Unicode JSONL reader bu
 
 Further model experiments remain paused; this independent audit uses existing artifacts only. The [resume instructions](reports/resume.md) preserve the next proposed experiment and publication order. The [pilot adapter and checkpoint files](https://huggingface.co/BurnyCoder/occam-rl-occam-seed17-pilot) are published as a negative research artifact, with no claim of improved performance.
 
-The proposed contribution is the controlled comparison of an adequacy-gated semantic simplicity reward against adequacy-gated token and formal-length rewards. Short-reasoning RL already exists: see [ShorterBetter](https://arxiv.org/abs/2504.21370), [StepPruner](https://arxiv.org/abs/2510.03805), and [Dr. GRPO](https://arxiv.org/abs/2503.20783). This project does not claim to invent concise reasoning, compute Kolmogorov complexity, or establish that simpler answers are generally truer.
+The proposed contribution is a controlled comparison of an adequacy-gated semantic simplicity reward against matched length and prompting alternatives. ConciseRL already used a correctness-gated semantic conciseness judge. The local trainer adopts Dr. GRPO's constant token denominator and omits within-group standard-deviation scaling, while retaining a nonzero reference-policy KL penalty. [ConciseRL](https://aclanthology.org/2025.findings-emnlp.927/) · [Dr. GRPO, §3 and Appendix G](https://arxiv.org/html/2503.20783v2) · [Local training configuration](src/occam_rl/training.py)
 
 ![Research architecture](site/figures/architecture.png)
 

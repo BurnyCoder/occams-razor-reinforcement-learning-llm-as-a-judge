@@ -47,23 +47,30 @@ def paired_effect(left: list[dict], right: list[dict], metric: str, *, replicate
                     raise ValueError("Task metadata disagree across seeds")
         effects[domain] = np.array([[float(lhs[s,i][metric])-float(rhs[s,i][metric]) for i in ids] for s in seeds])
     point = float(np.mean([values.mean() for values in effects.values()]))
+    # Keep the task-average estimand when family sizes differ. Each resampled family
+    # contributes its sum and its actual number of paired tasks.
+    clustered = {}
+    for domain, matrix in effects.items():
+        labels, indices, sizes = np.unique(families[domain], return_inverse=True, return_counts=True)
+        sums = np.stack([np.bincount(indices, weights=row, minlength=len(labels)) for row in matrix])
+        clustered[domain] = (sums, sizes)
     rng = np.random.default_rng(seed)
     draws = np.empty(replicates)
     for iteration in range(replicates):
         seed_indices = rng.integers(len(seeds), size=len(seeds)) if resample_seeds else np.arange(len(seeds))
         domain_means = []
         for domain in domains:
-            labels = np.unique(families[domain])
-            sampled = rng.choice(labels, size=len(labels), replace=True)
-            task_indices = np.concatenate([np.flatnonzero(families[domain] == family) for family in sampled])
-            domain_means.append(effects[domain][np.ix_(seed_indices, task_indices)].mean())
+            sums, sizes = clustered[domain]
+            sampled = rng.integers(len(sizes), size=len(sizes))
+            domain_means.append(sums[np.ix_(seed_indices, sampled)].sum() / (len(seed_indices)*sizes[sampled].sum()))
         draws[iteration] = np.mean(domain_means)
     # Centered bootstrap null: P(T* - T >= T) for a positive-effect alternative.
     pvalue = float((1 + np.count_nonzero(draws-point >= point)) / (replicates+1))
     return {"effect": point, "ci95": np.quantile(draws, [.025, .975]).tolist(), "p_one_sided": pvalue,
             "seeds": seeds, "per_seed": {str(s): float(np.mean([v[j].mean() for v in effects.values()])) for j,s in enumerate(seeds)},
             "clusters": {d: int(len(np.unique(families[d]))) for d in domains},
-            "resample_seeds": resample_seeds, "replicates": replicates}
+            "resample_seeds": resample_seeds, "replicates": replicates,
+            "degenerate_bootstrap": bool(np.allclose(draws, draws[0], rtol=0, atol=1e-14))}
 
 
 def wilson(successes: int, n: int) -> list[float]:

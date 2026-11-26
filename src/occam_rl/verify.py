@@ -110,6 +110,8 @@ def run_code(code: str, *, entrypoint: str = "", inputs: list | None = None,
 
 def verify(task: Task, trace: str, image: str = "occam-verifier:1") -> Verification:
     """Correctness cannot be supplied by the LLM judge or a number in the reasoning."""
+    if task.source == UG and unresolved([task]):
+        raise RuntimeError(f"Unresolved scientific reference: {task.id}")
     extracted = ""
     try:
         if task.domain == "code":
@@ -135,8 +137,6 @@ def verify(task: Task, trace: str, image: str = "occam-verifier:1") -> Verificat
         expected, _ = numeric(task.answer)
         target_unit, rtol, atol = task.unit, task.rtol, task.atol
         if task.source == UG:
-            if unresolved([task]):
-                raise RuntimeError(f"Unresolved scientific reference: {task.id}")
             ruling = physics_review()[task.id]
             target_unit = ruling["unit"] if ruling["unit"] not in ("1", "coordinate") else ""
             # Half the declared last reporting increment, in target units. Never apply
@@ -146,6 +146,8 @@ def verify(task: Task, trace: str, image: str = "occam-verifier:1") -> Verificat
             if not unit:
                 return Verification(correct=False, reason="Missing units", extracted=extracted)
             converted = UNITS.Quantity(float(value), unit).to(target_unit).magnitude
+            if task.source == UG and target_unit == "rad" and "modulo" in ruling["review"]:
+                converted = float(expected) + math.remainder(converted - float(expected), math.tau)
             correct = math.isclose(converted, float(expected), rel_tol=max(rtol, 1e-12), abs_tol=atol)
         else:
             correct = not unit and (math.isclose(float(value), float(expected), rel_tol=rtol, abs_tol=atol)

@@ -10,7 +10,7 @@ M2306|1|0|.|Ratio of final and initial energies.
 E451|A|0.001|.|!Terminal resistance and emf used in the solution require the omitted network arrangement.
 E165|J|1e-10|pulse-line|Total of electric and magnetic pulse energies.
 E196|s|0.001|solenoid-step|Time constant L/R; the requested time dependence belongs in the explanation.
-E298|J|0.001|image-charge|Work against the grounded plane from the initial separation to infinity.
+E298|J|0.01|image-charge|Work against the grounded plane from the initial separation to infinity, reported to hundredths of a joule.
 M1553|m/s|1|.|Ground-frame speed from the two velocity projections.
 M2100|rad/s^2|0.1|.|!Angular lever arm orientation unspecified. Even the tangential calculation gives 16.666… rather than the reported rounded value.
 M2222|1|0|wind-pipe|!A stationary resonator in moving air requires the propagation geometry and both directions; the one-way Doppler derivation is insufficient.
