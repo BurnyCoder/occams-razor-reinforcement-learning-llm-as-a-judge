@@ -8,7 +8,7 @@ from collections import Counter
 from fractions import Fraction
 from pathlib import Path
 
-from .io import ROOT, data_dir, digest, file_hash, read_json, read_jsonl
+from .io import ROOT, data_dir, digest, file_hash, read_json, read_jsonl, runs_dir
 from .schema import Task
 from .scoring import MBPP, UG, mbpp_release, mbpp_spec, physics_review
 
@@ -97,6 +97,69 @@ def procedural_reference(t):
     return results, ""
 
 
+def exclusion_review(ug, mbpp, frozen, questions):
+    """Recheck the successful preparation's actual exclusions independently of selected outcomes."""
+    from tokenize import TokenError
+    from pint.errors import PintError
+    from .data import _unbox, plain_json, procedural_tasks, question_hash
+    from .verify import UNITS, numeric
+    cfg = read_json(ROOT/"configs/experiment.json")
+    paths = [p for p in (runs_dir()/"operations").glob("*-prepare.jsonl")
+             if any(r["event"]=="data_prepared" for r in read_jsonl(p))]
+    if len(paths) != 1:
+        raise ValueError("Expected the original completed preparation run")
+    log = read_jsonl(paths[0])
+    counts = dict(train=cfg["train_per_domain"],dev=cfg["dev_per_domain"],calibration=cfg["calibration_per_domain"],
+                  test=cfg["test_procedural_per_domain"],ood=cfg["ood_per_domain"])
+    skipped = [r for r in log if r["event"]=="exclude"]
+    needed = {r["id"].split("/")[1] for r in skipped if str(r["id"]).startswith("proc/")}
+    proc = {t.id:t for k in needed for t in procedural_tasks(k,4*counts[k])}
+    out = []
+    for r in skipped:
+        key,source,reason = r["id"],r.get("source"),r["reason"]
+        if key in frozen:
+            raise ValueError(f"Excluded record appears in the frozen population: {key}")
+        if source == UG:
+            raw = ug[key][0]
+            if raw["answer_type"]!="NV" or raw["is_multiple_answer"] or re.search("figure|diagram|image|shown",raw["problem"],re.I):
+                actual = "unsupported answer type or figure-dependent wording"
+            else:
+                try:
+                    _,tail = numeric(_unbox(raw["answers"]))
+                    if tail:
+                        raise ValueError("unit embedded in answer")
+                    unit = re.sub(r"\\(?:mathrm|text)\{([^}]+)\}",r"\1",raw["unit"] or "").replace("$","").strip()
+                    if unit:
+                        UNITS.Unit(unit)
+                    actual = "eligible"
+                except (ValueError,TypeError,KeyError,ArithmeticError,SyntaxError,TokenError,PintError) as exc:
+                    actual = str(exc)
+            if actual != reason:
+                raise ValueError(f"Historical physics exclusion disagrees: {key}: {actual} / {reason}")
+            status = "source eligibility reproduced"
+        elif source == "MBPP+":
+            row = mbpp_release()[key]
+            if reason == "MBPP official training ID":
+                if int(key.split("/")[1]) not in mbpp:
+                    raise ValueError(f"MBPP training exclusion disagrees: {key}")
+                status = "official training ID confirmed"
+            elif reason == "non-JSON input semantics":
+                if plain_json(row["base_input"]+row["plus_input"]):
+                    raise ValueError(f"MBPP semantic exclusion disagrees: {key}")
+                status = "native non-JSON input confirmed"
+            else:
+                status = "historical reference-execution failure; hardware timing and exception not independently reproduced"
+        elif reason == "duplicate or prompt budget" and key in proc:
+            duplicate = question_hash(proc[key].question) in questions
+            if not (duplicate or r["prompt_tokens"] > cfg["max_prompt_tokens"]):
+                raise ValueError(f"Unjustified population exclusion: {key}")
+            status = "normalized duplicate confirmed" if duplicate else "recorded prompt over limit"
+        else:
+            raise ValueError(f"Unexplained exclusion: {key}")
+        out.append(dict(id=key, source=source, reason=reason, review=status))
+    return out
+
+
 def data_audit():
     """Check all public transfers, every native procedural reference, and the complete split inventory."""
     import pyarrow.parquet as pq
@@ -183,6 +246,7 @@ def data_audit():
     for row in code:
         row.update(replay[row["id"]])
     return dict(files=files, sources=dict(sources), independent_procedural=dict(proc), total_tasks=len(ids),
+                exclusions=exclusion_review(ug,mbpp,ids,questions),
                 reference_sandbox=image, prompt_budgets=prompt_budgets(heldout),
                 public_reference_scope="Source fidelity; public solutions can be wrong or underspecified.",
                 physics=physics, mbpp=code)

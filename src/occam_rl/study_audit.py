@@ -204,6 +204,14 @@ def write_audit(data):
               "| Control | Test prompts | Maximum tokens | Configured limit | Over limit |","|---|---:|---:|---:|---:|"]
     for arm,b in data["prompt_budgets"].items():
         lines.append(f"| {arm} | {b['tasks']} | {b['max_tokens']} | {b['limit']} | {len(b['over_limit'])} |")
+    lines += ["","## Frozen selection and generalization","",
+              f"The frozen files contain {data['total_tasks']} distinct task IDs. Each selected public record was reconciled with its upstream source. "
+              "The native procedural answers were independently recomputed from the questions or input lists. "
+              "Normalized questions do not repeat and the held-out family split shares no frozen family labels with training. "
+              "This check cannot identify benchmark examples encountered in model pretraining or every pair of semantically similar tasks.",
+              "", "| Completed preparation · exclusion review | Events |", "|---|---:|"]
+    for reason,count in sorted(Counter(r["review"] for r in data["exclusions"]).items()):
+        lines.append(f"| {reason} | {count} |")
     out = ROOT/"reports/reviews/2026-11-26-scientific-audit.md"
     out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text("\n".join(lines)+"\n",encoding="utf-8")
