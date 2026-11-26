@@ -69,8 +69,11 @@ def analyze(cfg, root, runs, estimate):
     result["evidence"] = evidence
     if invalid:
         return result | {"status": "blocked_invalid_evidence", "invalid": invalid}
-    target = set(cfg["seeds"])
-    kwargs = {"replicates": cfg["bootstrap_replicates"], "seed": cfg["bootstrap_seed"]}
+    # A CLI configuration with fewer seeds cannot redefine confirmatory completeness.
+    registered = read_json(root / "configs/experiment.json")
+    target = set(registered["seeds"])
+    kwargs = {"replicates": registered["bootstrap_replicates"], "seed": registered["bootstrap_seed"]}
+    result["registered_design"] = {"seeds": sorted(target),**kwargs,"configuration_sha256":digest(registered)}
     def contrast(arm, metric, domain=None):
         seeds = sorted(target & arms.get(arm, {}).keys() & arms.get("occam", {}).keys())
         if not seeds:
@@ -96,7 +99,7 @@ def analyze(cfg, root, runs, estimate):
                 return [r | {"family": analysis_family(r["task_id"],r["family"])} for r in rows]
             effect["template_cluster_sensitivity"] = estimate(regroup(left),regroup(right),metric,**kwargs)
         effect["evidence"] = {str(s): [f"occam-seed{s}",f"{arm}-seed{s}"] for s in seeds}
-        effect.update(seeds=seeds, waiver=waived, exploratory=bool(waived or set(seeds) != target))
+        effect.update(seeds=seeds, waiver=waived, exploratory=bool(waived or set(seeds) != target or cfg != registered))
         effect["interval_decision"] = interval_decision(effect["ci95"], -.02 if metric == "correct" else 0)
         effect["status"] = "exploratory" if effect["exploratory"] else effect["interval_decision"]
         return effect
@@ -132,6 +135,8 @@ def analyze(cfg, root, runs, estimate):
             result["status"] = "criteria_met" if h1["status"] == h2["status"] == "supported" else "not_established"
             if not result["confirmatory_seed_target_met"]:
                 result["status"] = "exploratory_incomplete_seeds"
+            if cfg != registered:
+                result["status"] = "exploratory_configuration"
             if any(e["waiver"] for e in effects):
                 result["status"] = "exploratory_judge_override"
     except ValueError as exc:

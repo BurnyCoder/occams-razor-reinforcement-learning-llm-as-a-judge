@@ -73,6 +73,7 @@ def test_exploratory_evidence_cannot_satisfy_confirmatory_claim(tmp_path, monkey
     protocol = dict(scorer="test-version", evaluator="e"*64, base="d"*40, adapter="f"*64,
                     waiver=override, instruction="instruction", decoding="decoding", matched_training="training")
     manifest.update(protocol=protocol, config_hash=digest(cfg))
+    write_json(tmp_path/"configs/experiment.json",cfg)
     monkeypatch.setattr(inference, "evaluation_protocol", lambda *args: protocol)
     for arm in ("occam", "accuracy", "token", "formal"):
         directory = tmp_path / f"runs/{arm}-seed17/eval-test"

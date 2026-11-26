@@ -73,6 +73,7 @@ def test_secondary_contrasts_and_accuracy_survive_missing_length_arms(tmp_path, 
     from test_evidence import evaluation_fixture
     manifest, rows = evaluation_fixture(tmp_path,monkeypatch)
     cfg = {"seeds":[17], "bootstrap_replicates":40, "bootstrap_seed":7}
+    write_json(tmp_path/"configs/experiment.json",cfg)
     def protocol(cfg,arm,*args):
         return dict(scorer="v",evaluator="e"*64,base="d"*40,decoding="common",matched_training="matched",
                     instruction=arm if arm.startswith("prompt") else "ordinary", waiver=False,
@@ -92,6 +93,10 @@ def test_secondary_contrasts_and_accuracy_survive_missing_length_arms(tmp_path, 
     assert result["H1"]["status"]=="untested"
     assert result["H2"]["status"]=="adverse" and result["H2"]["domains"]["code"]["effect"]==-1
     assert all(r["effect"]==pytest.approx(2/3) for r in result["H3"]["comparisons"].values())
+    write_json(tmp_path/"configs/experiment.json",cfg | {"seeds":[17,29,43]})
+    restricted = reporting.comparisons(cfg)
+    assert restricted["registered_design"]["seeds"]==[17,29,43]
+    assert restricted["hypotheses"]["H3"]["status"]=="exploratory"
 
 
 def test_unresolved_reference_cannot_be_scored_as_incorrect():
