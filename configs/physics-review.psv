@@ -1,0 +1,151 @@
+key|unit|rounding_increment|cluster|review
+M1600|Hz|0|fork-beats|Beat count divided by elapsed time.
+M1629|m|0|.|Horizontal relative speed times fall time.
+M2273|J|100|.|Energy integrated over the segment between nodes.
+E38|N/m^2|1e15|.|Electrostatic surface pressure.
+M2039|rad|0|.|Zero phase modulo a full turn.
+M2366|m|1e-7|critical-spring|!Initial displacement already exceeds the reference maximum. The reference measures overshoot after crossing.
+E27|V/m|0|.|Electrostatic field inside conducting material.
+M2306|1|0|.|Ratio of final and initial energies.
+E451|A|0.001|.|!Terminal resistance and emf used in the solution require the omitted network arrangement.
+E165|J|1e-10|pulse-line|Total of electric and magnetic pulse energies.
+E196|s|0.001|solenoid-step|Time constant L/R; the requested time dependence belongs in the explanation.
+E298|J|0.01|image-charge|Work against the grounded plane from the initial separation to infinity, reported to hundredths of a joule.
+M1553|m/s|1|.|Ground-frame speed from the two velocity projections.
+M2100|rad/s^2|0.1|.|!Angular lever arm orientation unspecified. Even the tangential calculation gives 16.666… rather than the reported rounded value.
+M2222|1|0|wind-pipe|!A stationary resonator in moving air requires the propagation geometry and both directions; the one-way Doppler derivation is insufficient.
+M2221|m|0|fixed-string-modes|!String length and frequency alone do not identify the mode.
+M2324|kg/s|0.01|.|Pressure-driven mass flow under the reference flow assumptions.
+M1684|kg|0.1|fork-string-mass|Standing wave with two antinodes.
+M1990|m/s|0.1|.|Receding speed from the lowered received frequency using line of sight from observer to source.
+M1591|m|0.1|.|Pulse transit time and tension from hanging mass.
+M2239|Hz|1|speaker-doppler|Frequency after reflection at the stationary building.
+M2062|min|0.1|.|Uniform-density Earth harmonic half period.
+E62|1|0|lc-scaling|Dimensionless inductance scale factor.
+E335|V/m|0|.|!Uniform nonzero volume charge in the metal conflicts with the zero-field electrostatic conductor assumption.
+M1745|m^3/s|1e-5|tank-pipe|Volumetric flow Q in the solution.
+M2585|J|0.0001|forced-oscillator|Steady-state energy per cycle is pi times damping times squared driven amplitude times angular frequency.
+M1602|cm|0.01|oscillating-platform|Vertical coordinate relative to equilibrium at loss of contact.
+E344|T|0|.|Ideal long-core exterior field approximation.
+M1634|N|1000|jump-landing|Mean ground reaction during deceleration.
+M1555|m|0|wave-phase|Smallest positive separation at equal time for the specified phase offset.
+M1536|m|0.01|.|No-slip upper bound from static friction.
+E63|J|1e-9|.|Difference of charged-sphere self energies.
+E50|J|1e-5|.|Change in electrostatic field energy after connection.
+M1662|1|0|.|!Answer is 23 times m a squared. A number alone cannot represent the requested inertia.
+M2673|m/s|0.001|.|!The stated functions give a maximum relative speed of 1.2 pi sin(pi/16), about 0.7355 m/s. The label drops the pi factor.
+M1618|m|1|.|Fundamental quarter-wave resonance in the well.
+M2131|N|0|.|Zero drag in the ideal inviscid potential-flow model.
+E102|1|0|lc-scaling|Dimensionless resonance-frequency ratio.
+M1788|m/s|0.01|tank-pipe|Centerline speed in laminar tube flow.
+M2294|m/s^2|0|.|!Source derives g/7; its numerical coefficient is stored as an SI acceleration.
+E240|V|100|coax-capacitor|!Condition (b) is missing from the question.
+E58|F|1e-13|.|Capacitance from permittivity, conductivity, resistance.
+M2127|N|1|.|!Contact geometry needed for the static friction calculation.
+M2407|N|10|snowplow|Longitudinal momentum flow.
+M1565|m|0.1|projectile-meeting|!The reference subtracts horizontal displacements; the text does not specify whether both projectiles travel in the same horizontal direction.
+M2223|kg|0.1|fork-string-mass|Resonance with one antinode.
+M2242|Hz|0.1|fork-beats|Beat change determines which fork started above standard.
+M2298|1|0.001|.|!The displayed stationarity equation has no root for z greater than one: derivative of log(z)-2(z-1)/(z+1) is (z-1)^2/[z(z+1)^2].
+E307|C|1e-11|.|Integrated current following change of flux linkage.
+M1645|N|10|snowplow|Lateral momentum flow.
+M2045|1|0.0001|.|Dimensionless flattening parameter.
+M1978|m/s|0|triangle-pulse|Zero particle velocity outside the pulse.
+M1539|W|0|.|Engine power for declared speed and resistance law.
+M2653|rad/s|0|.|!The contact arrangement for the disk constraints is not specified in the text.
+E410|m/s|1e-6|.|!The prompt requests an electric field and a velocity but only the velocity is stored.
+M1596|cm|0|wave-equation|Coefficient of the displacement wave.
+M1560|s|0.01|critical-spring|First zero of the critically damped displacement.
+M1972|1|0|.|Restitution is a dimensionless relative speed ratio.
+M2632|Hz|1|.|!For an observer inside the circle, the maximum radial speed is bounded by the angular speed times the observer offset. The reference uses the larger rim speed.
+M2357|1/s|0.1|gyroscope|!Refers to a previously calculated nutation range.
+M2099|kg|1|.|Equilibrium load on hydraulic piston.
+M2253|m|100000|.|!The open-ended request to describe an orbit has no unique scalar answer.
+M1680|N|1|bucket-flow|Weight and incoming vertical momentum flux.
+E234|s|0|.|RL decay time.
+M2819|J|1e6|sliding-wheel|!Initial kinetic energy and flywheel parameters used by the reference are absent.
+M1578|J|0|jump-landing|!Reference is proportional to mass times gravity; the literal unit mg would mean milligrams.
+E93|J|100|solenoid-step|Magnetic energy for current specified.
+M2172|m|0.001|fixed-string-modes|!Frequency and string length alone do not identify the mode.
+E23|T|0.001|.|!Prompt asks for magnetic flux; solution computes flux density.
+M1643|Hz|0|wave-equation|Frequency from angular frequency.
+E21|C|1e-13|.|Charge of conducting bubble from radius and potential.
+M1637|N*s/m|0|.|Viscous damping coefficient in force per velocity.
+E367|C|0|.|Net charge from total flux at infinity.
+M1573|m/s|0|.|Fundamental longitudinal resonance.
+M1650|1|10|piano-decay|Dimensionless oscillator quality factor.
+E456|C|1e-5|cloud-dipole|Charge magnitude inferred by method of images.
+M1621|m/s|0.01|.|Magnitude threshold for resolvable shift.
+M1628|m/s|0.1|.|Power balance with the specified drag.
+M2313|1|0.001|.|!Reference is 1.653 times the symbolic length a.
+M2229|cm|0.01|oscillating-platform|Height difference between two maxima.
+E519|1|0|reflection-line|Dimensionless voltage reflection coefficient.
+M2558|N|0.1|.|!Question asks for a force vector but the label is only its magnitude.
+E74|A|0.01|pulse-line|Pulse current from characteristic impedance.
+E11|N|0.01|image-charge|Image-force magnitude toward the grounded plane.
+M1587|m/s|0|wave-equation|Group velocity of wave envelope.
+E47|V|0|.|Fixed charge capacitor voltage change.
+M2086|coordinate|0|tetra-centroid|Coordinate in the units of the given plane equations.
+E108|H|1e-7|.|Ideal long-coil inductance.
+M1583|cm/s|0|wave-equation|Wave propagation speed.
+M1632|Hz|10|cliff-echo|Doppler frequency after reflection.
+E460|J|1e-8|.|!Capacitance alone does not determine stored energy; the solution supplies an absent voltage.
+M2166|N|0.01|.|Weight of water in the evacuated vessel system.
+M2082|N|100|.|Archimedes' principle for half a cubic meter of displaced water.
+M2611|m/s|0.1|triangle-pulse|Negative velocity during the specified second half of the pulse passage.
+M1715|coordinate|0|fluid-field|Coordinate-unit acceleration in the specified polynomial field.
+E395|V|0.1|.|!Capacitances alone do not determine the referenced network voltage.
+E68|V/m|0|.|Point lies outside the ideal coaxial cable with grounded shield.
+M2108|rad/s|100|.|Angular speed from rotational energy.
+M2187|m|0.001|incline-brick|Net distance relative to the starting position.
+M2056|coordinate|0|.|Symmetric centroid in the coordinate system supplied.
+M2256|m|0|fixed-string-modes|!Standing-wave mode or propagation speed required.
+M1544|cm|0|wave-equation|Wavelength from wave number.
+E265|1|0|reflection-line|Voltage reflection at open circuit.
+M1577|m|0.01|.|!Parameter b/m alone does not state the quadratic drag law used to obtain exponential speed decay with depth.
+M1663|km|1e7|.|Aphelion distance in the specified orbital model.
+M2612|W/m^2|0|.|Destructive interference along the specified extension.
+M1638|1|0|wind-pipe|!Same standing-wave versus one-way Doppler ambiguity as M2222.
+M2213|1|10|piano-decay|Dimensionless quality factor from energy decay time.
+M2272|m/s|0.1|projectile-meeting|!Geometry of path intersection must specify both launch angles.
+E383|N|0.00001|cloud-dipole|!The label encodes a signed component while the question requests direction and magnitude.
+M1622|m/s|0|.|Wave speed from tension and linear density.
+M2381|kg/s|0.01|.|!Check availability of the areas and levels required by the Bernoulli construction.
+M1592|m|0.0001|wave-phase|Maximum displacement difference for fixed phase.
+M1726|N|1|bucket-flow|Bucket and accumulated water plus momentum flux.
+E264|V|10000|.|Relativistic change in charge-to-inertial-mass ratio.
+E248|V|1000|coax-capacitor|!Condition (a) is missing from the question.
+M2705|m|1000|sliding-wheel|!Initial angular velocity and radius used in the stopping distance are absent.
+M2227|1|0.01|.|!Definition of quality factor requires care at the stated strong damping.
+M2170|J|1|gyroscope|Rotational kinetic energy in Euler angles plus gravitational energy at the specified inclination.
+M2301|1|0|.|!The given stand-alone motion must identify the mechanism for kinetic-energy loss.
+M1545|m|0.001|.|Air-column length from the selected odd harmonic.
+M2255|kg|0.1|fork-string-mass|Resonance with three antinodes.
+M2252|m|0.001|.|Finger placement measured from nearer end.
+M2048|W|0.001|forced-oscillator|Mean input power over one period.
+E87|J|1e-6|.|Mechanical work for plate separation.
+M2206|cm|0.01|.|Radius of curvature in the stated polar orbit.
+E6|H|0.01|.|Inductance from flux linkage per current.
+M2642|rad/s|0.1|.|Final small-flywheel angular speed.
+M2159|Hz|0|speaker-doppler|Difference between the two received frequencies.
+E409|kg|0.1|.|Conductor mass from the winding and current-density constraints.
+M2087|coordinate|0|tetra-centroid|Centroid y coordinate in the supplied coordinate units.
+M1670|N|0.1|.|String tension from linear density and wave speed.
+E461|A|0|.|!The flux-linkage geometry of the pickup coil is absent.
+M2016|m/s|0|.|Fundamental speed of transverse waves on a fixed string.
+M1598|m|0.0001|wave-phase|Maximum displacement difference across the given time separation.
+M2364|rad|0|wave-equation|Initial phase measured modulo a full turn.
+M1660|Hz|1|speaker-doppler|Directly received frequency from moving speaker.
+M1744|min|1|.|Orbital period expressed in minutes in the reference.
+M1566|m/s|10|.|Escape speed at the lunar surface.
+M1649|N|0.01|.|Transverse component of string tension.
+M1644|N|1|.|Tension from the fundamental frequency and string linear density.
+M2116|coordinate|0|tetra-centroid|Centroid x coordinate in the supplied coordinate units.
+M1764|coordinate|0|fluid-field|Zero acceleration component in the specified field units.
+M1588|s|0|.|First nonnegative crossing of the x axis.
+M2310|m|1e5|.|Distance from surface in the reference collision orbit.
+M1571|s|0.001|incline-brick|Time to upper turning point.
+M1844|1|0|.|!Interior field-energy integral lacks the exterior field or a boundary term for a general finite gravitating sphere.
+M1815|coordinate|0|.|!The solution is 6a for symbolic a; the stored a also parses as a time unit in Pint.
+E190|V|0|.|Closed electrostatic line integral.
+M2331|m|0.001|.|Pipe radius from mass flow and available power.

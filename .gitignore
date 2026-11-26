@@ -17,6 +17,7 @@ checkpoints/
 *.pdf
 !paper/paper.pdf
 !output/pdf/paper.pdf
+!reports/paper.pdf
 .publication.json
 .local/
 unsloth_compiled_cache/

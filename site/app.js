@@ -31,7 +31,7 @@ function renderScores(){
   const rows=data.evaluations.filter(r=>r.domain===$('domain').value);
   for(const r of rows){const tr=node('tr','',body);const state=(r.complete?'Complete':'Partial / unverified')+(r.exploratory?'; exploratory':'');for(const value of [r.run,r.split,r.n,format(r.correct),format(r.adequate),format(r.quality),format(r.tokens,1),state])node('td',String(value),tr);tr.title=(r.evidence_issues||[]).join('; ');}
   if(!rows.length){const message=data.evaluations.length?'No results for this selection. Select an available domain; an overall score requires every domain.':'No evaluation results have been published.';const td=node('td',message,node('tr','',body));td.colSpan=8;}
-  $('analysis').textContent=`Primary paired analysis: ${data.analysis?.status||'pending'}. Accuracy preservation requires the registered confidence interval criteria, including each domain.`;
+  $('analysis').textContent=data.scientific_audit?.summary || `Primary paired analysis: ${data.analysis?.status||'pending'}. Accuracy preservation requires the registered confidence interval criteria, including each domain.`;
 }
 function renderExample(){const r=data.examples?.[Number($('example').value)];$('trace').textContent=r?.trace||'No evaluated examples yet.';$('example-info').textContent=r?`${r.arm} · ${r.domain} · ${r.task_id} · correct ${r.correct} · adequate ${r.adequate} · quality ${format(r.quality)}`:'';}
 function renderAudits(){

@@ -12,6 +12,8 @@ tags:
 ---
 # Occam RL research artifacts
 
+H1, H2 and H3 await retained, independently judged held-out comparisons. The prospective scoring amendment records prompt-visible code examples, corrected physics units and unresolved references. The stored training and qualification evidence retains its original scoring history. [Scientific audit](https://github.com/BurnyCoder/occams-razor-reinforcement-learning-llm-as-a-judge/blob/main/reports/reviews/2026-11-26-scientific-audit.md)
+
 Research author: Libor “Burny” Burian. This dataset repository mirrors published source, frozen task splits, complete model outputs and evaluation records for the [research repository](https://github.com/BurnyCoder/occams-razor-reinforcement-learning-llm-as-a-judge). Uploads do not imply that training or evaluation succeeded. Inspect run status and raw records.
 
 The implementation and original procedural generators are Apache-2.0. Public task records retain their original licenses and attribution: [GSM8K](https://huggingface.co/datasets/openai/gsm8k) MIT, [MBPP](https://huggingface.co/datasets/google-research-datasets/mbpp) CC-BY-4.0, and [UGPhysics](https://huggingface.co/datasets/UGPhysics/ugphysics) CC-BY-NC-SA-4.0. UGPhysics is used only for evaluation. Records and logs containing those tasks retain the source's conditions; this mixed collection is not covered by a blanket Apache license. See each task's source/license fields and the linked source notes before reuse.

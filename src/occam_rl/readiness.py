@@ -89,6 +89,7 @@ def write_reports(data: dict) -> str:
         report = "# Judge audit\n\n" + audit_table([row])
         report += f"\n\nEvidence: [{row['artifact']}](../{row['artifact']}).\n"
         report += f"\nDominance Wilson interval: {row['dominance_ci95']}. Omission Wilson interval: {row['omission_ci95']}. These intervals do not establish population-wide validity from constructed examples.\n"
+        report += "\nThe [qualification replay](reviews/2026-11-26-scientific-audit.md) reports valid pairs, ties, omission judgments, surface cues and interrupted attempts.\n"
         report += "\nThe declared qualification decision is retained. The training-only override in amendment 002 permits exploratory rewards after a failed current audit; it does not qualify the judge or waive runtime checks. Independent evaluation still requires a passing audit.\n"
         (ROOT / f"reports/experiment-judge-{index}.md").write_text(report, encoding="utf-8")
     (ROOT / "reports/readiness.md").write_text(text, encoding="utf-8")

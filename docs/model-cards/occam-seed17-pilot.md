@@ -38,3 +38,5 @@ occam-seed17-pilot: 16 recorded rollouts across 4 distinct tasks. Repeated rollo
 Code, limitations, data rights, and the independent fact-check: https://github.com/BurnyCoder/occams-razor-reinforcement-learning-llm-as-a-judge/blob/main/reports/independent-fact-check.md
 
 The base model and project code are Apache-2.0; dataset records retain their separate source licenses. Checkpoint files are available under training-state; successful interrupted-training resumption has not been demonstrated.
+
+The frozen MBPP+ prompts contain assertions in 150/150 tasks. Examples share scored input values in 149 tasks, including 146 matches with the same argument types. The physics reference review flags 39/150 public targets for adjudication. Choosing the candidate with fewer characters selects the designated preference on 36/36 constructed pairs. Qualification passed in 0/3 completed sets. H1 is untested. H2 is untested. H3 is untested. [Scientific audit](https://github.com/BurnyCoder/occams-razor-reinforcement-learning-llm-as-a-judge/blob/main/reports/reviews/2026-11-26-scientific-audit.md)

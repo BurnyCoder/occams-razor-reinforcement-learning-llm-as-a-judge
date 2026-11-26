@@ -12,3 +12,4 @@ uv sync --frozen --all-extras
 .venv/bin/python scripts/backport_transformers.py
 if [[ ! -f .env ]]; then cp .env.example .env; fi
 docker build -t occam-verifier:1 docker
+docker build -f docker/EvalPlus.Dockerfile -t occam-evalplus:0.3.1 docker

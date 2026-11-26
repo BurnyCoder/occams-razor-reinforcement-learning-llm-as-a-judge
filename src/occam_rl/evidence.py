@@ -10,6 +10,31 @@ import re
 from pydantic import ValidationError
 
 from .schema import DOMAINS, PROMPT_ARMS, TRAINED_ARMS, Judgment
+from .io import read_json, read_jsonl
+
+
+def read_evaluation(path, frozen):
+    """Keep broken records visible to reporting without assigning them a scientific verdict."""
+    manifest, rows, issues = {}, [], []
+    try:
+        manifest = read_json(path.parent/"manifest.json")
+        if not isinstance(manifest,dict):
+            raise ValueError("Manifest must be an object")
+    except (OSError,ValueError) as exc:
+        manifest = {}
+        issues.append(f"Unreadable evaluation manifest: {exc}")
+    try:
+        rows = read_jsonl(path)
+        if not all(isinstance(r,dict) for r in rows):
+            raise ValueError("Evaluation rows must be objects")
+    except (OSError,ValueError) as exc:
+        rows = []
+        issues.append(f"Unreadable evaluation results: {exc}")
+    try:
+        issues.extend(evaluation_issues(manifest, rows, frozen))
+    except (KeyError,AttributeError,TypeError) as exc:
+        issues.append(f"Malformed evaluation record: {exc}")
+    return manifest,rows,issues
 
 
 def evaluation_issues(manifest: dict, rows: list[dict], frozen: dict) -> list[str]:
@@ -31,6 +56,8 @@ def evaluation_issues(manifest: dict, rows: list[dict], frozen: dict) -> list[st
     if manifest.get("data") != frozen.get("files", {}).get(f"{split}.jsonl") or not manifest.get("data"):
         issues.append("Missing or mismatched frozen data provenance")
     provenance = manifest.get("provenance", {})
+    if not isinstance(manifest.get("protocol"), dict) or not manifest["protocol"].get("scorer"):
+        issues.append("Missing prospective scoring protocol")
     hashes = [(manifest.get("config_hash"), 64), (manifest.get("git_commit"), 40),
               (provenance.get("policy_revision"), 40), (provenance.get("judge_hash"), 64)]
     if arm not in PROMPT_ARMS:
@@ -42,6 +69,11 @@ def evaluation_issues(manifest: dict, rows: list[dict], frozen: dict) -> list[st
         issues.append("Required domain coverage is incomplete or invalid")
     for row in rows:
         task = population.get(row.get("task_id"), {})
+        verifier = row.get("verifier")
+        if (not isinstance(verifier, dict) or type(verifier.get("correct")) is not bool
+                or verifier["correct"] != row.get("correct") or not verifier.get("reason")
+                or row.get("source") != task.get("source")):
+            issues.append("Correctness or source disagrees with primary evidence")
         if (row.get("arm"), row.get("seed"), row.get("git_commit")) != (
                 arm, manifest.get("seed"), manifest.get("git_commit")):
             issues.append("Result identity disagrees with evaluation manifest")

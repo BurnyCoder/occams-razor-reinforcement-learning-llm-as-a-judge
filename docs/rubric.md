@@ -20,3 +20,9 @@ The [judge prompt](../src/occam_rl/prompts.py) receives the problem, stored refe
 The [formal-length control](../src/occam_rl/rewards.py) is lexical: it omits unmarked mathematics, removes whitespace even inside code strings, and can count overlapping tagged/fenced regions twice. Those frozen choices are representation-dependent limitations, not semantic complexity or a proof-length measure.
 
 All shaping arms share the adequacy gate. Correctness comes from independent verifiers. The judge cannot make a wrong answer correct, even if it assigns high simplicity scores. Prompt-only Occam baseline receives these same conceptual criteria, without training or test answers.
+
+## Qualification scope
+
+The original constructed preferences vary response length and mathematical formatting with the designated answer. The score therefore cannot distinguish semantic economy from those surface cues. Future construct validation should cross preference with longer, shorter and matched lengths, and randomize equivalent formatting within each domain. Include complete long solutions and short omissions at fixed answers. [Qualification replay](../reports/reviews/2026-11-26-scientific-audit.md) · [Prospective design](../reports/amendment-004-scoring.md)
+
+The registered composite gives the four ordinal ratings equal weights and treats neighboring rating levels as equally spaced. This defines an operational index. The qualification records do not supply a calibration of those distances or a validation against independent human judgments. [Score definition](../src/occam_rl/schema.py) · [Registered metric](../reports/preregistration.md)

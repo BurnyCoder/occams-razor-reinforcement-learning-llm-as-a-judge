@@ -15,15 +15,16 @@ from xml.sax.saxutils import escape
 from .io import ROOT, now, read_json, read_jsonl, runs_dir, write_json
 from .schema import DOMAINS, PROMPT_ARMS, TRAINED_ARMS
 from .readiness import collect, write_reports
-from .statistics import holm, paired_effect
-from .evidence import evaluation_issues
+from .statistics import paired_effect
+from .inference import analyze
+from .evidence import read_evaluation
 
 START, END = "<!-- RESULTS:START -->", "<!-- RESULTS:END -->"
 
 
 def snapshot() -> dict:
     """A shared data model powers the static explorer and live local dashboard."""
-    runs, evaluations = [], []
+    runs, evaluations, invalid = [], [], []
     frozen_path = ROOT / "manifests/data.json"
     frozen = read_json(frozen_path) if frozen_path.exists() else {}
     for directory in sorted(runs_dir().glob("*")):
@@ -52,91 +53,33 @@ def snapshot() -> dict:
                          "groups": len(groups), "nonzero_reward_groups": sum(r["reward_spread"] > 0 for r in groups),
                          "rollouts": len(rollouts), "training_accuracy": statistics.mean(r["correct"] for r in rollouts) if rollouts else None})
         for path in sorted(directory.glob("eval-*/results.jsonl")):
-            manifest = read_json(path.parent / "manifest.json")
-            rows = read_jsonl(path)
-            issues = evaluation_issues(manifest, rows, frozen)
+            manifest, rows, issues = read_evaluation(path,frozen)
+            if issues:
+                invalid.append({"directory":str(path.parent.relative_to(runs_dir())),"issues":issues})
             for domain in ("all", *DOMAINS):
                 if domain == "all" and {r.get("domain") for r in rows} != set(DOMAINS):
                     continue
-                selected = rows if domain == "all" else [r for r in rows if r["domain"] == domain]
+                selected = rows if domain == "all" else [r for r in rows if r.get("domain") == domain]
                 if not selected:
                     continue
                 # Equal-domain macro weighting for the overall row.
                 groups = [[r for r in selected if r["domain"] == d] for d in DOMAINS] if domain == "all" else [selected]
                 groups = [group for group in groups if group]
-                record = {"run": directory.name, "split": manifest["split"], "domain": domain,
-                          "arm": manifest["arm"], "seed": manifest["seed"], "n": len(selected),
+                record = {"run": directory.name, "split": manifest.get("split","unknown"), "domain": domain,
+                          "arm": manifest.get("arm"), "seed": manifest.get("seed"), "n": len(selected),
                           "complete": not issues, "evidence_issues": issues,
-                          "exploratory": manifest["limit_per_domain"] is not None or manifest.get("exploratory_judge_override", False)}
+                          "exploratory": manifest.get("limit_per_domain") is not None or manifest.get("exploratory_judge_override", False)}
                 for key in ("correct", "adequate", "simplicity", "quality", "tokens", "formal_length", "seconds", "truncated"):
                     values = [r.get(key) for group in groups for r in group]
                     record[key] = (statistics.mean(statistics.mean(r[key] for r in group) for group in groups)
                                    if all(isinstance(v, (int, float)) and math.isfinite(v) for v in values) else None)
                 evaluations.append(record)
-    return {"generated_at": now(), "runs": runs, "evaluations": evaluations, "readiness": collect()}
+    return {"generated_at": now(), "runs": runs, "evaluations": evaluations, "invalid_evaluations":invalid, "readiness": collect()}
 
 
 def comparisons(cfg: dict) -> dict:
-    """Only complete, un-limited test evaluations can enter primary paired analysis."""
-    arms = defaultdict(list)
-    judge_override = False
-    invalid, identities = [], set()
-    frozen_path = ROOT / "manifests/data.json"
-    frozen = read_json(frozen_path) if frozen_path.exists() else {}
-    for path in runs_dir().glob("*-seed*/eval-test/results.jsonl"):
-        manifest = read_json(path.parent / "manifest.json")
-        rows = read_jsonl(path)
-        if manifest.get("arm") not in ("occam", "accuracy", "token", "formal"):
-            continue
-        issues = evaluation_issues(manifest, rows, frozen)
-        if "-pilot" in path.parent.parent.name:
-            issues.append("Pilot cannot enter retained comparisons")
-        if issues:
-            invalid.append({"run": path.parent.parent.name, "issues": issues})
-        elif manifest["limit_per_domain"] is None:
-            arms[manifest["arm"]].extend(rows)
-            identities.add(json.dumps({k: manifest[k] for k in ("config_hash", "data")} | {
-                "policy_revision": manifest["provenance"]["policy_revision"],
-                "judge_hash": manifest["provenance"]["judge_hash"]}, sort_keys=True))
-            judge_override |= manifest.get("exploratory_judge_override", False)
-    result = {"status": "pending", "comparisons": {}}
-    if invalid or len(identities) > 1:
-        return result | {"status": "blocked_invalid_evidence", "invalid": invalid,
-                         "matched_provenance": len(identities) <= 1}
-    if not all(arm in arms for arm in ("occam", "accuracy", "token", "formal")):
-        return result
-    common_seeds = set(cfg["seeds"])
-    for arm in ("occam", "accuracy", "token", "formal"):
-        common_seeds &= {r["seed"] for r in arms[arm]}
-    if not common_seeds:
-        return result
-    arm_rows = {arm: [r for r in rows if r["seed"] in common_seeds] for arm,rows in arms.items()}
-    primary = []
-    for baseline in ("token", "formal"):
-        effect = paired_effect(arm_rows["occam"], arm_rows[baseline], "quality",
-                               replicates=cfg["bootstrap_replicates"], seed=cfg["bootstrap_seed"])
-        effect["seed_sensitivity"] = paired_effect(arm_rows["occam"], arm_rows[baseline], "quality",
-            replicates=cfg["bootstrap_replicates"], seed=cfg["bootstrap_seed"], resample_seeds=True)
-        result["comparisons"][baseline] = effect
-        primary.append(effect["p_one_sided"])
-    for baseline, adjusted in zip(("token", "formal"), holm(primary), strict=True):
-        result["comparisons"][baseline]["p_holm"] = adjusted
-    accuracy = {}
-    for domain in ("all", *DOMAINS):
-        left = arm_rows["occam"] if domain == "all" else [r for r in arm_rows["occam"] if r["domain"] == domain]
-        right = arm_rows["accuracy"] if domain == "all" else [r for r in arm_rows["accuracy"] if r["domain"] == domain]
-        accuracy[domain] = paired_effect(left, right, "correct", replicates=cfg["bootstrap_replicates"], seed=cfg["bootstrap_seed"])
-    result["accuracy_noninferiority"] = accuracy
-    quality_pass = all(r["ci95"][0] > 0 and r["p_holm"] < .05 for r in result["comparisons"].values())
-    accuracy_pass = all(r["ci95"][0] > -.02 for r in accuracy.values())
-    result["status"] = "criteria_met" if quality_pass and accuracy_pass else "not_established"
-    result["seeds"] = sorted(common_seeds)
-    result["confirmatory_seed_target_met"] = set(common_seeds) == set(cfg["seeds"])
-    if not result["confirmatory_seed_target_met"]:
-        result["status"] = "exploratory_incomplete_seeds"
-    if judge_override:
-        result["status"] = "exploratory_judge_override"
-    return result
+    """Keep the original reporting entry point and expose all registered contrasts."""
+    return analyze(cfg, ROOT, runs_dir(), paired_effect)
 
 
 def score_table(rows: list[dict], pending_arms=None) -> str:
@@ -192,7 +135,7 @@ def training_details(runs: list[dict]) -> str:
     return "\n\n".join(parts)
 
 
-def model_card(cfg: dict, run: dict, evaluations: list[dict]) -> str:
+def model_card(cfg: dict, run: dict, evaluations: list[dict], audit_text: str = "") -> str:
     """Use the same measured tables for the local card and the Hub publication."""
     status, name = run["status"], run["name"]
     text = f"""---
@@ -219,6 +162,12 @@ Completion denotes finished scheduled updates, not successful learning. Paramete
     text += "\n\n## Held-out evaluation\n\n" + score_table(evaluations, pending_arms=[name])
     text += f"\n\nCode, limitations, data rights, and the independent fact-check: https://github.com/{cfg['github_repo']}/blob/main/reports/independent-fact-check.md\n"
     text += "\nThe base model and project code are Apache-2.0; dataset records retain their separate source licenses. Checkpoint files are available under training-state; successful interrupted-training resumption has not been demonstrated.\n"
+    result = ROOT / "results/scientific-audit.json"
+    if not audit_text and result.is_file():
+        from .study_audit import audit_summary
+        audit_text = audit_summary(read_json(result))
+    if audit_text:
+        text += f"\n{audit_text} [Scientific audit](https://github.com/{cfg['github_repo']}/blob/main/reports/reviews/2026-11-26-scientific-audit.md)\n"
     return text
 
 
@@ -272,8 +221,13 @@ def figures(data: dict) -> list[Path]:
 def examples() -> list[dict]:
     """Select by lexical task ID, not favorable scores; retain complete traces."""
     records = []
+    manifest = ROOT / "manifests/data.json"
+    frozen = read_json(manifest) if manifest.is_file() else {}
     for path in sorted(runs_dir().glob("*-seed*/eval-*/results.jsonl")):
-        rows = sorted(read_jsonl(path), key=lambda r: r["task_id"])
+        _, rows, issues = read_evaluation(path,frozen)
+        if issues:
+            continue
+        rows = sorted(rows,key=lambda r:r["task_id"])
         for domain in DOMAINS:
             records.extend(r for r in [x for x in rows if x["domain"] == domain][:3])
     return records
@@ -352,6 +306,11 @@ def report(cfg: dict, log) -> None:
     data = snapshot()
     readiness_table = write_reports(data["readiness"])
     data["analysis"] = comparisons(cfg)
+    from .study_audit import audit_summary, calculate, write_audit
+    audited = calculate(data["analysis"])
+    write_audit(audited)
+    audit_text = audit_summary(audited)
+    data["scientific_audit"] = {"summary": audit_text, "counts": audited["counts"]}
     data["examples"] = examples()
     write_json(ROOT / "site/data.json", data)
     write_json(ROOT / "results/summary.json", data)
@@ -361,8 +320,11 @@ def report(cfg: dict, log) -> None:
     summary += "\n\n## Training diagnostics\n\n" + training + "\n"
     summary += "\n\nAccuracy is the fraction verified correct. Adequacy asks whether necessary reasoning is present. Simplicity summarizes four judge dimensions. C × A × S is zero for wrong or inadequate solutions. Training rollout accuracy is not held-out accuracy.\n"
     summary += "\nPrimary analysis status: `" + data["analysis"]["status"] + "`. See results/summary.json for paired intervals, multiplicity adjustments, and seed sensitivity when available.\n"
+    summary += "\n" + audit_text + " [Independent scientific audit](reviews/2026-11-26-scientific-audit.md)\n"
     summary += "\n## Prerequisite audits\n\n" + readiness_table + "\n\nSee [readiness evidence](readiness.md) for data counts and individual audit reports.\n"
     (ROOT / "reports/experiments.md").write_text(summary, encoding="utf-8")
+    (ROOT / "reports/summary.md").write_text("# Scientific findings\n\n" + audit_text + "\n\n" + training +
+        "\n\n[Methods, scoring defects and qualification replay](reviews/2026-11-26-scientific-audit.md)\n", encoding="utf-8")
     for run in data["runs"]:
         notes_url = "https://huggingface.co/datasets/BurnyCoder/occam-rl-artifacts/blob/main/runs/" + run["name"] + "/notes.md"
         text = f"# {run['name']}\n\n" + json.dumps(run["status"], indent=2)
@@ -376,9 +338,9 @@ def report(cfg: dict, log) -> None:
         if run["status"]:
             card_path = ROOT / "docs/model-cards" / f"{run['name']}.md"
             card_path.parent.mkdir(parents=True, exist_ok=True)
-            card_path.write_text(model_card(cfg, run, [r for r in data["evaluations"] if r["run"] == run["name"]]), encoding="utf-8")
+            card_path.write_text(model_card(cfg, run, [r for r in data["evaluations"] if r["run"] == run["name"]], audit_text), encoding="utf-8")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    generated = START + "\n\n### Training diagnostics\n\n" + training + "\n\n### Held-out evaluation\n\n" + table + "\n\n" + END
+    generated = START + "\n\n" + audit_text + " [Scientific audit](reports/reviews/2026-11-26-scientific-audit.md)\n\n### Training diagnostics\n\n" + training + "\n\n### Held-out evaluation\n\n" + table + "\n\n" + END
     if START in readme:
         readme = readme[:readme.index(START)] + generated + readme[readme.index(END)+len(END):]
     else:
@@ -387,11 +349,14 @@ def report(cfg: dict, log) -> None:
     paper = (ROOT / "paper/template.md").read_text(encoding="utf-8").replace("{{RESULTS}}", table)
     paper = paper.replace("{{ANALYSIS_STATUS}}", data["analysis"]["status"]).replace("{{GENERATED_AT}}", data["generated_at"])
     paper = paper.replace("{{READINESS}}", readiness_table)
+    paper = paper.replace("{{SCIENTIFIC_AUDIT}}", audit_text)
     paper = paper.replace("{{TRAINING}}", training)
     paper = paper.replace("{{REPORT_DATE}}", data["generated_at"][:10])
     (ROOT / "paper/paper.md").write_text(paper, encoding="utf-8")
     paths = figures(data)
     build_pdf(paper, paths)
+    from shutil import copyfile
+    copyfile(ROOT / "output/pdf/paper.pdf", ROOT / "reports/paper.pdf")
     from .factcheck import build_factcheck
     build_factcheck(data)
     log.emit("report_built", evaluations=len(data["evaluations"]), runs=len(data["runs"]), analysis=data["analysis"]["status"])
