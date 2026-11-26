@@ -24,6 +24,8 @@ The reward is R=C(1+0.2 A S): binary verified correctness C, a binary adequacy j
 
 The token and formal-length arms use the same adequacy gate and S=k/(k+L). Length normalizers are fixed by calibration after the first Occam run and before length-arm training. Correctness-only uses C. The shuffled control permutes eligible simplicity scores within each question group. Prompt-only controls leave model weights unchanged and use ordinary, concise-but-complete, or full Occam instructions. Decoding, task IDs, and output budgets are held constant.
 
+The local TRL configuration centers rewards within each sampled group, omits division by the group reward standard deviation, and divides the masked token-loss sum by a constant generation-budget denominator. A nonzero reference-policy KL penalty remains in the local objective. Dr. GRPO's reported training omitted that penalty [4,9]. These differences concern the estimator and objective. The stored pilot supplies no empirical comparison of them.
+
 The implementation reuses TRL, Unsloth, PEFT, Transformers, and local llama.cpp [9,10]. Models run sequentially on the local GPU. BF16 LoRA policy training and four-bit frozen judging reduce resource requirements; measured headroom, full traces, failures, environment versions, and resumable states are recorded. The exact configuration and model revisions reside in published manifests, not an unstated default.
 
 ## Data and experimental design

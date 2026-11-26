@@ -145,7 +145,7 @@ def audit_summary(data):
     return (f"The frozen MBPP+ prompts contain assertions in {n['with_assert']}/{n['mbpp_tasks']} tasks. "
             f"Literal example inputs overlap scored inputs in {n['with_overlap']} tasks. "
             f"The physics reference review flags {n['blocked']}/{n['physics']} public targets for adjudication. "
-            f"Choosing the shorter candidate selects the designated preference on {n['shorter']}/{n['pairs']} constructed pairs. "
+            f"Choosing the candidate with fewer characters selects the designated preference on {n['shorter']}/{n['pairs']} constructed pairs. "
             f"Qualification passed in {n['qualified']}/{n['completed']} completed sets. "
             + " ".join(f"{h} is {r['status']}." for h,r in data["hypotheses"].items()))
 
