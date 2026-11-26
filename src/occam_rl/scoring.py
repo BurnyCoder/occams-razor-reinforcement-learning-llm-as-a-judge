@@ -3,6 +3,7 @@
 import csv
 import subprocess
 from functools import lru_cache
+from pathlib import Path
 
 from .io import ROOT, digest, file_hash
 
@@ -61,6 +62,12 @@ def verified_eval_image():
 def mbpp_release():
     """Use EvalPlus' native input deserialization for precisely the frozen release."""
     from evalplus.data import get_mbpp_plus
+    from evalplus.data.mbpp import _ready_mbpp_plus_path
+    # SHA-256 of the decompressed official v0.2.0 MbppPlus.jsonl.gz release.
+    # https://github.com/evalplus/mbppplus_release/releases/tag/v0.2.0
+    release = Path(_ready_mbpp_plus_path(mini=False,noextreme=False,version="v0.2.0"))
+    if file_hash(release) != "b54e762755248ca411b523c917fa9f93c07b5ff2966bf60b3917b853926a3dad":
+        raise ValueError("MBPP+ release bytes differ from the pinned public archive")
     return get_mbpp_plus(version="v0.2.0")
 
 
