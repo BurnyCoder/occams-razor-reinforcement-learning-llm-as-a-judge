@@ -145,3 +145,12 @@ def test_visible_tuple_discloses_list_values_but_not_its_container_type():
     from occam_rl.audit_data import example_coverage
     r = example_coverage(frozen_task("Mbpp/98"))
     assert r["base_matches"] and not r["exact_base_matches"] and not r["unparsed"]
+
+
+def test_missing_retained_manifest_is_visible_and_blocks_inference(tmp_path,monkeypatch):
+    from occam_rl import reporting
+    from test_evidence import evaluation_fixture
+    evaluation_fixture(tmp_path,monkeypatch)
+    (tmp_path/"runs/occam-seed17/eval-test/manifest.json").unlink()
+    assert reporting.snapshot()["invalid_evaluations"]
+    assert all(v["status"]=="blocked_invalid_evidence" for v in reporting.comparisons({})["hypotheses"].values())

@@ -17,14 +17,14 @@ from .schema import DOMAINS, PROMPT_ARMS, TRAINED_ARMS
 from .readiness import collect, write_reports
 from .statistics import paired_effect
 from .inference import analyze
-from .evidence import evaluation_issues
+from .evidence import read_evaluation
 
 START, END = "<!-- RESULTS:START -->", "<!-- RESULTS:END -->"
 
 
 def snapshot() -> dict:
     """A shared data model powers the static explorer and live local dashboard."""
-    runs, evaluations = [], []
+    runs, evaluations, invalid = [], [], []
     frozen_path = ROOT / "manifests/data.json"
     frozen = read_json(frozen_path) if frozen_path.exists() else {}
     for directory in sorted(runs_dir().glob("*")):
@@ -53,28 +53,28 @@ def snapshot() -> dict:
                          "groups": len(groups), "nonzero_reward_groups": sum(r["reward_spread"] > 0 for r in groups),
                          "rollouts": len(rollouts), "training_accuracy": statistics.mean(r["correct"] for r in rollouts) if rollouts else None})
         for path in sorted(directory.glob("eval-*/results.jsonl")):
-            manifest = read_json(path.parent / "manifest.json")
-            rows = read_jsonl(path)
-            issues = evaluation_issues(manifest, rows, frozen)
+            manifest, rows, issues = read_evaluation(path,frozen)
+            if issues:
+                invalid.append({"directory":str(path.parent.relative_to(runs_dir())),"issues":issues})
             for domain in ("all", *DOMAINS):
                 if domain == "all" and {r.get("domain") for r in rows} != set(DOMAINS):
                     continue
-                selected = rows if domain == "all" else [r for r in rows if r["domain"] == domain]
+                selected = rows if domain == "all" else [r for r in rows if r.get("domain") == domain]
                 if not selected:
                     continue
                 # Equal-domain macro weighting for the overall row.
                 groups = [[r for r in selected if r["domain"] == d] for d in DOMAINS] if domain == "all" else [selected]
                 groups = [group for group in groups if group]
-                record = {"run": directory.name, "split": manifest["split"], "domain": domain,
-                          "arm": manifest["arm"], "seed": manifest["seed"], "n": len(selected),
+                record = {"run": directory.name, "split": manifest.get("split","unknown"), "domain": domain,
+                          "arm": manifest.get("arm"), "seed": manifest.get("seed"), "n": len(selected),
                           "complete": not issues, "evidence_issues": issues,
-                          "exploratory": manifest["limit_per_domain"] is not None or manifest.get("exploratory_judge_override", False)}
+                          "exploratory": manifest.get("limit_per_domain") is not None or manifest.get("exploratory_judge_override", False)}
                 for key in ("correct", "adequate", "simplicity", "quality", "tokens", "formal_length", "seconds", "truncated"):
                     values = [r.get(key) for group in groups for r in group]
                     record[key] = (statistics.mean(statistics.mean(r[key] for r in group) for group in groups)
                                    if all(isinstance(v, (int, float)) and math.isfinite(v) for v in values) else None)
                 evaluations.append(record)
-    return {"generated_at": now(), "runs": runs, "evaluations": evaluations, "readiness": collect()}
+    return {"generated_at": now(), "runs": runs, "evaluations": evaluations, "invalid_evaluations":invalid, "readiness": collect()}
 
 
 def comparisons(cfg: dict) -> dict:

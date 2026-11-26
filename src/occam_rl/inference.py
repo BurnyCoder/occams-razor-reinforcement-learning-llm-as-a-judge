@@ -1,6 +1,6 @@
 """Registered comparisons. Point estimates condition on eligible tasks and observed training seeds."""
 
-from .evidence import evaluation_issues
+from .evidence import read_evaluation
 from .io import digest, file_hash, read_json, read_jsonl
 from .protocol import evaluation_protocol
 from .schema import DOMAINS, PROMPT_ARMS
@@ -18,6 +18,8 @@ def interval_decision(interval, threshold):
 
 def joint(decisions):
     """All registered contrasts are required to support a conjunctive claim."""
+    if "blocked_invalid_evidence" in decisions:
+        return "blocked_invalid_evidence"
     if "adverse" in decisions:
         return "adverse"
     if "untested" in decisions:
@@ -38,11 +40,12 @@ def analyze(cfg, root, runs, estimate):
     frozen = read_json(root / "manifests/data.json")
     arms, invalid, evidence = {}, [], {}
     for path in paths:
-        manifest, rows = read_json(path.parent / "manifest.json"), read_jsonl(path)
-        arm, seed = manifest.get("arm"), manifest.get("seed")
-        if arm not in ("occam", *slots):
+        name = path.parent.parent.name
+        directory_arm = name.rsplit("-seed",1)[0]
+        if directory_arm not in ("occam",*slots):
             continue
-        issues = evaluation_issues(manifest, rows, frozen)
+        manifest, rows, issues = read_evaluation(path,frozen)
+        arm, seed = manifest.get("arm"), manifest.get("seed")
         if path.parent.parent.name != f"{arm}-seed{seed}" or manifest.get("split") != "test":
             issues.append("Directory disagrees with retained test identity")
         if manifest.get("limit_per_domain") is not None:
@@ -56,7 +59,7 @@ def analyze(cfg, root, runs, estimate):
                         or prov.get("adapter_sha256") != actual["adapter"]
                         or manifest.get("exploratory_judge_override") != actual["waiver"]):
                     issues.append("Evaluation disagrees with source protocol or training history")
-            except (OSError, KeyError, TypeError, ValueError) as exc:
+            except (OSError, KeyError, TypeError, ValueError, RuntimeError) as exc:
                 issues.append(f"Unverified protocol: {exc}")
         if issues:
             invalid.append({"run": path.parent.parent.name, "issues": issues})
@@ -67,14 +70,23 @@ def analyze(cfg, root, runs, estimate):
                           "evaluation_commit": manifest["git_commit"], "result_sha256": file_hash(path),
                           "manifest_sha256": file_hash(path.parent / "manifest.json")}
     result["evidence"] = evidence
+    blocked = {r["run"].rsplit("-seed",1)[0] for r in invalid}
     if invalid:
-        return result | {"status": "blocked_invalid_evidence", "invalid": invalid}
+        result["invalid"] = invalid
+    if "occam" in blocked:
+        for hypothesis in (h1,h2,h3):
+            hypothesis["status"] = "blocked_invalid_evidence"
+            for entry in hypothesis.get("comparisons",hypothesis.get("domains",{})).values():
+                entry["status"] = "blocked_invalid_evidence"
+        return result | {"status":"blocked_invalid_evidence"}
     # A CLI configuration with fewer seeds cannot redefine confirmatory completeness.
     registered = read_json(root / "configs/experiment.json")
     target = set(registered["seeds"])
     kwargs = {"replicates": registered["bootstrap_replicates"], "seed": registered["bootstrap_seed"]}
     result["registered_design"] = {"seeds": sorted(target),**kwargs,"configuration_sha256":digest(registered)}
     def contrast(arm, metric, domain=None):
+        if arm in blocked:
+            return {"status":"blocked_invalid_evidence"}
         seeds = sorted(target & arms.get(arm, {}).keys() & arms.get("occam", {}).keys())
         if not seeds:
             return {"status": "untested"}
@@ -120,6 +132,8 @@ def analyze(cfg, root, runs, estimate):
             for e in primary.values():
                 if e["status"] == "supported":
                     e["status"] = "awaiting_holm_family"
+        if blocked.intersection(slots[:2]):
+            h1["status"] = "blocked_invalid_evidence"
         result["comparisons"] = {k: v for k, v in primary.items() if "ci95" in v}
         h2["domains"] = {d: contrast("accuracy", "correct", None if d == "all" else d) for d in ("all", *DOMAINS)}
         ds = list(h2["domains"].values())
@@ -142,4 +156,6 @@ def analyze(cfg, root, runs, estimate):
     except ValueError as exc:
         return {"status": "blocked_invalid_evidence", "invalid": [str(exc)], "comparisons": {},
                 "hypotheses": {h: {"status": "blocked_invalid_evidence"} for h in ("H1", "H2", "H3")}}
+    if blocked.intersection(slots[:3]):
+        result["status"] = "blocked_invalid_evidence"
     return result
