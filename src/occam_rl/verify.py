@@ -80,7 +80,12 @@ def run_code(code: str, *, entrypoint: str = "", inputs: list | None = None,
     command = ["docker", "run", "--rm", "--name", name, "--network", "none", "--read-only",
                "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--pids-limit", "32",
                "--memory", "256m", "--memory-swap", "256m", "--cpus", "1", "--user", "65534:65534",
-               "--tmpfs", "/tmp:rw,noexec,nosuid,size=8m", "-i", image, "python", "-I"]
+               "--tmpfs", "/tmp:rw,noexec,nosuid,size=8m", "-i", image]
+    if mbpp is None:
+        # Bound candidate runtime inside the container. Docker startup latency is
+        # infrastructure and cannot justify assigning a false correctness score.
+        command.extend(["timeout", "--kill-after=1", str(timeout)])
+    command.extend(["python", "-I"])
     command.extend(["/opt/evalplus_runner.py"] if mbpp is not None else ["-c", RUNNER])
     payload = json.dumps({"code": code, "entrypoint": entrypoint, "inputs": inputs or [], "tests": tests or [],
                           "preserve_inputs": preserve_inputs, "mbpp": mbpp})
@@ -89,9 +94,9 @@ def run_code(code: str, *, entrypoint: str = "", inputs: list | None = None,
     with tempfile.TemporaryFile() as stdout, tempfile.TemporaryFile() as stderr:
         try:
             result = subprocess.run(["prlimit", "--fsize=1048576", "--", *command], input=payload.encode(),
-                                    stdout=stdout, stderr=stderr, timeout=timeout)
+                                    stdout=stdout, stderr=stderr, timeout=timeout+60)
         except subprocess.TimeoutExpired:
-            raise ValueError("Code exceeded wall-clock limit") from None
+            raise RuntimeError("Sandbox startup or execution infrastructure exceeded its deadline") from None
         finally:
             # Terminating the Docker CLI does not guarantee container termination.
             subprocess.run(["docker", "rm", "-f", name], capture_output=True, timeout=15)
@@ -100,8 +105,10 @@ def run_code(code: str, *, entrypoint: str = "", inputs: list | None = None,
         output, errors = stdout.read().decode(errors="replace"), stderr.read().decode(errors="replace")
     if result.returncode:
         # Infrastructure failures must not be misclassified as wrong model answers.
-        if mbpp is not None or result.returncode == 125 or "Cannot connect" in errors or "Unable to find image" in errors:
+        if mbpp is not None or result.returncode in (125,126,127) or "Cannot connect" in errors or "Unable to find image" in errors:
             raise RuntimeError(errors)
+        if result.returncode == 124:
+            raise ValueError("Code exceeded wall-clock limit")
         raise ValueError("Code failed: " + errors[-2000:])
     if len(output) > 1_000_000:
         raise ValueError("Code output too large")
