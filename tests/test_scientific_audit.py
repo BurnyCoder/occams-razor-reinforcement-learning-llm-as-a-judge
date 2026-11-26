@@ -53,6 +53,7 @@ def test_full_rubric_is_visible_without_judge_output_instructions():
         if " rates " in line:
             assert line in instruction
     assert "Return ONLY valid JSON" not in instruction
+    assert "Set adequate=false" not in instruction
 
 
 def test_unequal_family_sizes_match_enumerated_task_average():

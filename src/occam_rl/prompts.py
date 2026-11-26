@@ -73,8 +73,12 @@ def policy_messages(task: Task, arm: str = "occam") -> list[dict]:
     elif arm == "prompt_occam":
         # Share the actual rated dimensions and adequacy criteria. The scoring protocol
         # and JSON response instructions belong only to the evaluator.
-        criteria = JUDGE[JUDGE.index("First check reasoning"):JUDGE.index("Return ONLY valid JSON")]
-        instruction += OCCAM + "\nYour solution will be assessed using these criteria:\n" + criteria
+        adequacy = ("Connect the givens to the result and explain requested conditions, units and edge cases. "
+                    "A complete one-line derivation is sufficient. Standard results and trivial arithmetic need no "
+                    "elaboration. For code, explain explicitly requested invariants and nontrivial cases. "
+                    "A brief valid explanation anywhere in your solution counts. Redundancy alone affects simplicity.\n")
+        anchors = JUDGE[JUDGE.index("4 = best"):JUDGE.index("Return ONLY valid JSON")]
+        instruction += OCCAM + "\nYour reasoning will be assessed for adequacy and four graded qualities.\n" + adequacy + anchors
     return [{"role": "system", "content": instruction}, {"role": "user", "content": task.question}]
 
 
