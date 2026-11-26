@@ -18,3 +18,6 @@ The proposed experiment asks a narrower unresolved question: **does a qualified 
 | Structural formal proofs | [Lean expressions](https://lean-lang.org/doc/api/Lean/Expr.html), [proof validation](https://lean-lang.org/doc/reference/latest/ValidatingProofs/) | Proof-term and dependency measurements are future construct-validation work, not an implemented current reward. |
 
 Main risks are weak small-model judges, reward exploitation, zero-variance rollout groups, insufficient statistical power, model-family dependence, public-data contamination, quantization effects, and compute limits. Each requires measurement; none is resolved merely by using Occam's razor as a label. See the frozen [analysis plan](preregistration.md).
+# Scope of comparison · 2026-11-26
+
+ConciseRL supplies a direct semantic-conciseness precedent. The local experimental design adds explicit adequacy and four graded simplicity dimensions with independent paired controls. The available pilot data supply no ranking against ConciseRL or any registered baseline. [ConciseRL](https://aclanthology.org/2025.findings-emnlp.927/) · [Registered design](preregistration.md) · [Pilot record](../results/runtime/occam-pilot-thinking-events.jsonl)

@@ -105,7 +105,7 @@ def preserved_evidence() -> dict:
 def test_records() -> list[dict]:
     """Parse actual test artifacts; never type test totals into reports."""
     records = []
-    for path in sorted((ROOT / "results/tests").glob("independent-*.xml")):
+    for path in sorted((ROOT / "results/tests").glob("*.xml")):
         cases = list(ElementTree.parse(path).getroot().iter("testcase"))
         # Count leaf records: Node emits direct testcases, pytest wraps a suite.
         totals = {"tests": len(cases), **{key: sum(c.find(tag) is not None for c in cases)

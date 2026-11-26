@@ -66,8 +66,10 @@ def paired_effect(left: list[dict], right: list[dict], metric: str, *, replicate
         draws[iteration] = np.mean(domain_means)
     # Centered bootstrap null: P(T* - T >= T) for a positive-effect alternative.
     pvalue = float((1 + np.count_nonzero(draws-point >= point)) / (replicates+1))
+    per_seed = {str(s): float(np.mean([v[j].mean() for v in effects.values()])) for j,s in enumerate(seeds)}
     return {"effect": point, "ci95": np.quantile(draws, [.025, .975]).tolist(), "p_one_sided": pvalue,
-            "seeds": seeds, "per_seed": {str(s): float(np.mean([v[j].mean() for v in effects.values()])) for j,s in enumerate(seeds)},
+            "seeds": seeds, "per_seed": per_seed,
+            "between_seed_sample_sd": float(np.std(list(per_seed.values()),ddof=1)) if len(seeds)>1 else None,
             "clusters": {d: int(len(np.unique(families[d]))) for d in domains},
             "resample_seeds": resample_seeds, "replicates": replicates,
             "degenerate_bootstrap": bool(np.allclose(draws, draws[0], rtol=0, atol=1e-14))}

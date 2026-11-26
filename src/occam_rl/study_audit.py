@@ -14,6 +14,15 @@ from .scoring import VERSION, scoring_identity
 from .statistics import wilson
 
 
+def parse_judgment(text):
+    """Reapply the recorded JSON schema after stripping the documented chat terminators."""
+    text = re.sub(r"<\|(?:im_end|endoftext|end)\|>|<end_of_turn>|<turn\|>", "", text).strip()
+    try:
+        return Judgment.model_validate_json(text)
+    except ValidationError:
+        return None
+
+
 def judge_audit():
     """Pair original prompt/output events with frozen stimuli and replay the recorded strict parser."""
     suites = {digest(read_json(p)): (p.name, read_json(p)) for p in (ROOT/"configs").glob("judge-audit*.json")}
@@ -28,6 +37,13 @@ def judge_audit():
                     complete=summary is not None, end=rows[-1]["event"])
         attempts.append(info)
         if not summary:
+            parsed = [parse_judgment(out["trace"]) for out in outputs]
+            info.update(valid_outputs=sum(x is not None for x in parsed), invalid=parsed.count(None))
+            if len(parsed) == 2 and len(prompts) == 3:
+                # This run records only the better and worse responses of the first pair.
+                a,b = parsed
+                info["complete_first_pair"] = a is not None and b is not None
+                info["first_pair_tie"] = a.simplicity == b.simplicity if info["complete_first_pair"] else None
             continue
         key = summary["audit_hash"]
         name, suite = suites[key]
@@ -43,11 +59,7 @@ def judge_audit():
                 raise ValueError(f"Judge prompt/stimulus mismatch: {path.name}")
             if digest(messages[0]["content"]) != raw["prompt_hash"]:
                 raise ValueError("Frozen judge prompt hash differs")
-            text = re.sub(r"<\|(?:im_end|endoftext|end)\|>|<end_of_turn>|<turn\|>", "", out["trace"]).strip()
-            try:
-                judgment = Judgment.model_validate_json(text)
-            except ValidationError:
-                judgment = None
+            judgment = parse_judgment(out["trace"])
             if (judgment.model_dump() if judgment else None) != old:
                 raise ValueError(f"Raw generation disagrees with qualification row: {path.name}")
             validated.append(judgment)
@@ -107,6 +119,12 @@ def calculate(analysis):
     pilot = pilot_evidence()
     data.update(scorer=VERSION, scorer_hash=scoring_identity(), qualifications=trials, pilot=pilot,
                 preparation=prepare_history(), inventory=inventory(), hypotheses=analysis["hypotheses"])
+    data["decision_evidence"] = {"frozen_test_sha256": data["files"]["test.jsonl"],
+        "version": VERSION, "scorer_sha256": data["scorer_hash"], "eligible_comparisons": analysis.get("evidence",{}),
+        "pilot_status": read_json(ROOT/"results/runtime/occam-pilot-thinking-status.json"),
+        "independent_qualification_present": (ROOT/"manifests/judge-gemma.json").is_file(),
+        "retained_training_status_files": [p.parent.name for p in sorted(runs_dir().glob("*/status.json"))
+                                          if not read_json(p).get("pilot", True)]}
     mb = data["mbpp"]
     done = [t for t in trials if t["complete"]]
     data["counts"] = dict(mbpp_tasks=len(mb), with_assert=sum(bool(r["assertions"]) for r in mb),
@@ -150,6 +168,10 @@ def write_audit(data):
         if r["complete"]:
             lines.append(f"| {r['suite']} | {r['valid_outputs']}/{r['outputs']} | {r['invalid']} | {r['valid_pairs']}/{r['pairs']} | "
                          f"{r['wins']} | {r['ties']} | {r['valid_omissions']}/{r['omissions']} | {r['rejected']} |")
+    for r in data["qualifications"]:
+        if not r["complete"]:
+            lines += ["",f"Interrupted `{r['log']}` recorded {r['prompts']} prompts and {r['outputs']} outputs "
+                      f"({r['valid_outputs']} valid, {r['invalid']} invalid). These attempts have no qualification verdict."]
     lines += ["",f"Math delimiters appear only in the preferred response on {n['formatting']} pairs. "
               "These are deliberately constructed examples. Comparing sets confounds changed stimuli, prompts and runtime. "
               "Both semantic recognition and reliance on surface cues require counterbalanced evidence. "

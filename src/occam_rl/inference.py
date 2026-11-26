@@ -1,7 +1,7 @@
 """Registered comparisons. Point estimates condition on eligible tasks and observed training seeds."""
 
 from .evidence import evaluation_issues
-from .io import digest, read_json, read_jsonl
+from .io import digest, file_hash, read_json, read_jsonl
 from .protocol import evaluation_protocol
 from .schema import DOMAINS, PROMPT_ARMS
 from .scoring import analysis_family
@@ -29,14 +29,14 @@ def analyze(cfg, root, runs, estimate):
     """Analyze each available contrast independently; retain the joint primary success criterion."""
     slots = ["token", "formal", "accuracy", *PROMPT_ARMS]
     h1 = {"status": "untested", "comparisons": {arm: {"status": "untested"} for arm in slots[:2]}}
-    h2 = {"status": "untested", "domains": {}}
+    h2 = {"status": "untested", "domains": {d: {"status": "untested"} for d in ("all", *DOMAINS)}}
     h3 = {"status": "untested", "comparisons": {arm: {"status": "untested"} for arm in PROMPT_ARMS}}
     result = {"status": "pending", "comparisons": {}, "hypotheses": {"H1": h1, "H2": h2, "H3": h3}}
     paths = sorted(runs.glob("*-seed*/eval-test/results.jsonl"))
     if not paths:
         return result
     frozen = read_json(root / "manifests/data.json")
-    arms, invalid = {}, []
+    arms, invalid, evidence = {}, [], {}
     for path in paths:
         manifest, rows = read_json(path.parent / "manifest.json"), read_jsonl(path)
         arm, seed = manifest.get("arm"), manifest.get("seed")
@@ -61,7 +61,12 @@ def analyze(cfg, root, runs, estimate):
         if issues:
             invalid.append({"run": path.parent.parent.name, "issues": issues})
             continue
-        arms.setdefault(arm, {})[seed] = (actual, [r | {"family": analysis_family(r["task_id"], r["family"])} for r in rows])
+        arms.setdefault(arm, {})[seed] = (actual, rows)
+        name = path.parent.parent.name
+        evidence[name] = {"protocol": actual, "frozen_split": manifest["data"],
+                          "evaluation_commit": manifest["git_commit"], "result_sha256": file_hash(path),
+                          "manifest_sha256": file_hash(path.parent / "manifest.json")}
+    result["evidence"] = evidence
     if invalid:
         return result | {"status": "blocked_invalid_evidence", "invalid": invalid}
     target = set(cfg["seeds"])
@@ -84,6 +89,13 @@ def analyze(cfg, root, runs, estimate):
             right.extend(r for r in rrows if domain is None or r["domain"] == domain)
         effect = estimate(left, right, metric, **kwargs)
         effect["seed_sensitivity"] = estimate(left, right, metric, **kwargs, resample_seeds=True)
+        # Preserve the frozen family labels for the registered analysis. Shared
+        # public question templates define a prospective dependence sensitivity.
+        if any(analysis_family(r["task_id"],r["family"]) != r["family"] for r in left):
+            def regroup(rows):
+                return [r | {"family": analysis_family(r["task_id"],r["family"])} for r in rows]
+            effect["template_cluster_sensitivity"] = estimate(regroup(left),regroup(right),metric,**kwargs)
+        effect["evidence"] = {str(s): [f"occam-seed{s}",f"{arm}-seed{s}"] for s in seeds}
         effect.update(seeds=seeds, waiver=waived, exploratory=bool(waived or set(seeds) != target))
         effect["interval_decision"] = interval_decision(effect["ci95"], -.02 if metric == "correct" else 0)
         effect["status"] = "exploratory" if effect["exploratory"] else effect["interval_decision"]
@@ -98,7 +110,7 @@ def analyze(cfg, root, runs, estimate):
             else:
                 for e, p in zip(primary.values(), holm([v["p_one_sided"] for v in primary.values()]), strict=True):
                     e["p_holm"] = p
-                    if e["status"] == "supported" and p >= .05:
+                    if e["status"] == "supported" and p > .05:
                         e["status"] = "inconclusive"
                 h1["status"] = "exploratory" if any(e["exploratory"] for e in primary.values()) else joint([e["status"] for e in primary.values()])
         elif any("ci95" in e for e in primary.values()):

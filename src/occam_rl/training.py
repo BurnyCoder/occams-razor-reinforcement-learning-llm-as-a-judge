@@ -197,7 +197,8 @@ def train(cfg: dict, log, commit: str, arm: str, seed: int, *, pilot=False, resu
         changed = sum(not torch.equal(trainable_before[n], p.detach().cpu()) for n,p in model.named_parameters() if p.requires_grad)
         status = {"name": name, "arm": arm, "seed": seed, "pilot": pilot, "steps": trainer.state.global_step,
                   "judge_qualified": judge_audit["passed"],
-                  "exploratory_judge_override": cfg.get("allow_unqualified_training_judge", False),
+                  "waiver_permitted": cfg.get("allow_unqualified_training_judge", False),
+                  "exploratory_judge_override": not judge_audit["passed"],
                   "target_steps": steps, "complete": trainer.state.global_step >= steps,
                   "seconds": time.monotonic()-start, "changed_parameter_tensors": changed,
                   "git_commit": commit, "fingerprint": digest(fingerprint)}

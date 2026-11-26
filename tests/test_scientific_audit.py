@@ -104,3 +104,21 @@ def test_upstream_alternate_pyramid_height():
     task=frozen_task("Mbpp/581")
     code="def surface_Area(b,h): return round(b*b + 2*b*((b/2)**2+h*h)**0.5)"
     assert verify(task,f"<code>{code}</code>").correct
+
+
+def test_equal_seed_weight_and_scope_of_dispersion():
+    from occam_rl.statistics import paired_effect
+    rows = [dict(task_id="q",domain="math",family="one",quality=c,seed=s) for s,c in ((17,0),(29,1))]
+    result = paired_effect(rows,[r | {"quality":0} for r in rows],"quality",replicates=25)
+    assert result["effect"] == .5
+    assert result["between_seed_sample_sd"] == pytest.approx(2**-.5)
+    assert result["ci95"] == [.5,.5] and result["degenerate_bootstrap"]
+
+
+def test_frozen_physics_has_full_review_and_records_empty_original_units():
+    from occam_rl.scoring import UG,physics_review
+    tasks = [Task.model_validate(t) for t in read_jsonl(data_dir() / "test.jsonl") if t["source"]==UG]
+    assert {t.id for t in tasks} == physics_review().keys()
+    assert all(r["review"] and float(r["rounding_increment"])>=0 for r in physics_review().values())
+    task = next(t for t in tasks if t.id.endswith("Electromagnetism/298"))
+    assert not task.unit and physics_review()[task.id]["unit"]=="J"

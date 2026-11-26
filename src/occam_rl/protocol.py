@@ -37,10 +37,15 @@ def evaluation_protocol(cfg, arm, seed, root, runs):
             or digest(fingerprint) != status["fingerprint"] or status["fingerprint"] != run["fingerprint"]
             or run["revisions"]["revisions"][run["config"]["policy"]] != protocol["base"]
             or run["data"] != read_json(manifest / "data.json")["files"]["train.jsonl"]
-            or run["judge"]["passed"] != status["judge_qualified"]):
+            or run["judge"]["role"] != "qwen" or run["judge"]["model"] != run["config"]["judge"]
+            or run["judge"]["revision"] != run["revisions"]["revisions"][run["config"]["judge"]]
+            or run["judge"]["prompt_hash"] != digest(JUDGE)
+            or run["judge"]["audit_hash"] != digest(read_json(root/run["config"].get("qwen_audit","configs/judge-audit.json")))
+            or recount_audit(run["judge"])["passed"] != status["judge_qualified"]):
         raise ValueError("Training identity is incomplete or inconsistent")
     model_digest = file_hash(directory / "adapter/adapter_model.safetensors")
     protocol.update(adapter=model_digest, training=digest([run, status]),
                     waiver=bool(status["exploratory_judge_override"] or not status["judge_qualified"]),
-                    matched_training=digest({k: fingerprint[k] for k in ("config", "data", "revisions", "judge")}))
+                    matched_training=digest([{k: fingerprint[k] for k in ("config", "data", "revisions", "judge")},
+                                             status["target_steps"]]))
     return protocol
