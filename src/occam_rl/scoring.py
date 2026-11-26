@@ -1,6 +1,7 @@
 """Versioned reference decisions for future scoring. Historical task bodies stay immutable."""
 
 import csv
+import subprocess
 from functools import lru_cache
 
 from .io import ROOT, digest, file_hash
@@ -45,6 +46,18 @@ def scoring_identity():
 
 
 @lru_cache(maxsize=1)
+def verified_eval_image():
+    """Resolve the tag once; bind both the installed comparator and runner to the scoring source."""
+    image = subprocess.check_output(["docker","image","inspect","--format","{{.Id}}",EVAL_IMAGE],text=True).strip()
+    probe = "import hashlib,importlib.metadata as m;print(m.version('evalplus'),hashlib.file_digest(open('/opt/evalplus_runner.py','rb'),'sha256').hexdigest())"
+    actual = subprocess.check_output(["docker","run","--rm","--network","none","--read-only","--cap-drop","ALL",
+                                      image,"python","-I","-c",probe],text=True).split()
+    if actual != ["0.3.1",file_hash(ROOT/"docker/evalplus_runner.py")]:
+        raise RuntimeError("Rebuild the CPU EvalPlus image from the published scorer")
+    return image
+
+
+@lru_cache(maxsize=1)
 def mbpp_release():
     """Use EvalPlus' native input deserialization for precisely the frozen release."""
     from evalplus.data import get_mbpp_plus
@@ -60,5 +73,5 @@ def mbpp_spec(task):
         raise RuntimeError(f"MBPP+ reference mismatch for {task.id}")
     if task.question != row["prompt"] or task.inputs != inputs:
         raise RuntimeError(f"MBPP+ frozen inputs or prompt mismatch for {task.id}")
-    return {"base_count": len(row["base_input"]), "atol": row["atol"], "reference": task.reference,
+    return {"base_count": len(row["base_input"]), "atol": row["atol"], "reference": row["prompt"] + reference,
             "expected": task.expected}

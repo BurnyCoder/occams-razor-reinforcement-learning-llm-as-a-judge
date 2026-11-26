@@ -183,7 +183,9 @@ def write_audit(data):
               "Occurrences can repeat. The parser compares literal arguments and preserves an explicit unparsed list. "
               "The original MBPP+ training/test ID exclusion still holds. Visible worked examples are part of the public task design.",
               "", "The prospective scorer runs the pinned EvalPlus comparator on native candidate and reference values in a CPU container. "
-              "This includes ordering equivalence, float tolerances and alternative pyramid-height interpretation. The project still uses its own "
+              "Mbpp/111 permits set-equivalent reordering, Mbpp/257 requires the returned tuple, and Mbpp/581 accepts an alternative pyramid-height interpretation. "
+              "A public example's tolerance can differ from the benchmark comparator. Mbpp/82 illustrates this distinction. "
+              "The project still uses its own "
               "frozen subset, prompts, resource limits and three-domain aggregation. [Upstream evaluator](https://github.com/evalplus/evalplus/blob/v0.3.1/evalplus/eval/__init__.py)",
               "", f"The physics review covers all {n['physics']} public targets; {n['missing_original_unit']} had empty unit fields. "
               "Each row links the frozen target to the original question and worked solution. Some empty units designate ratios. "

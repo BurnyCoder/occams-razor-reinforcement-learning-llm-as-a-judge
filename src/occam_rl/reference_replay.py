@@ -6,7 +6,7 @@ import subprocess
 from .io import ROOT, digest, read_json
 from .prompts import policy_messages
 from .schema import PROMPT_ARMS
-from .scoring import EVAL_IMAGE, mbpp_spec
+from .scoring import mbpp_spec, verified_eval_image
 
 
 def code_replay(tasks):
@@ -27,9 +27,9 @@ for p in json.load(sys.stdin):
         rule = 'special: ' + entry
     else:
         rule = 'generic exact or native float comparison'
-    rows[p['id']] = {'canonical_pass': evaluate(p), 'comparison': rule}
+    rows[p['id']] = evaluate(p,diagnostics=True) | {'comparison': rule}
 print(json.dumps(rows))"""
-    image = subprocess.check_output(["docker","image","inspect","--format","{{.Id}}",EVAL_IMAGE],text=True).strip()
+    image = verified_eval_image()
     cmd = ["docker","run","--rm","--network","none","--read-only","--cap-drop","ALL","--security-opt",
            "no-new-privileges","--pids-limit","32","--memory","256m","--memory-swap","256m","--cpus","1",
            "--user","65534:65534","--tmpfs","/tmp:rw,noexec,nosuid,size=8m","-i",image,"python","-I","-c",script]

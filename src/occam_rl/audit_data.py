@@ -36,7 +36,7 @@ def example_coverage(task):
             unparsed.append(line)
     hits = [digest(args) in visible for args in task.inputs]
     split = spec["base_count"]
-    return dict(id=task.id, assertions=len(assertions), unparsed=unparsed, visible_distinct_inputs=len(visible),
+    return dict(id=task.id, assertions=len(assertions), visible_assertions=assertions, unparsed=unparsed, visible_distinct_inputs=len(visible),
                 base_inputs=split, plus_inputs=len(hits)-split, base_matches=sum(hits[:split]),
                 plus_matches=sum(hits[split:]), additional_inputs=len(hits)-sum(hits),
                 release_atol=spec["atol"], entrypoint=task.entrypoint,

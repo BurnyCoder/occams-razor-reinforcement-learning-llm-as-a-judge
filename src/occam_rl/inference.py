@@ -82,7 +82,7 @@ def analyze(cfg, root, runs, estimate):
             fields = ["scorer", "evaluator", "base", "decoding"]
             if arm not in PROMPT_ARMS:
                 fields += ["matched_training", "instruction"]
-            if any(a[key] != b[key] for key in fields):
+            if any(a[key] != b[key] for key in fields) or a.get("evalplus_image") != b.get("evalplus_image"):
                 raise ValueError(f"Incompatible treatment provenance: {arm}/{seed}")
             waived |= a["waiver"] or b["waiver"]
             left.extend(r for r in lrows if domain is None or r["domain"] == domain)

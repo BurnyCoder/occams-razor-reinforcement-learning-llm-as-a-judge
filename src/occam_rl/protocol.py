@@ -4,7 +4,7 @@ from .io import digest, file_hash, read_json
 from .prompts import JUDGE, policy_messages
 from .readiness import recount_audit
 from .schema import PROMPT_ARMS, Task
-from .scoring import scoring_identity
+from .scoring import scoring_identity, verified_eval_image
 
 
 def evaluation_protocol(cfg, arm, seed, root, runs):
@@ -22,7 +22,7 @@ def evaluation_protocol(cfg, arm, seed, root, runs):
             or [r["id"] for r in judge["rows"]] != expected_cases or not recount_audit(judge)["passed"]):
         raise ValueError("Independent evaluator qualification is missing or inconsistent")
     task = Task(id="identity", domain="math", family="identity", split="dev", question="", reference="")
-    protocol = dict(scorer=scoring_identity(), evaluator=digest(judge), base=revisions[cfg["policy"]],
+    protocol = dict(scorer=scoring_identity(), evalplus_image=verified_eval_image(), evaluator=digest(judge), base=revisions[cfg["policy"]],
                     instruction=digest(policy_messages(task, arm)[0]), adapter=None, training=None,
                     waiver=False, decoding=digest({k: cfg[k] for k in ("temperature", "top_p", "top_k",
                     "max_prompt_tokens", "max_completion_tokens")} | {"thinking": True, "min_p": 0,

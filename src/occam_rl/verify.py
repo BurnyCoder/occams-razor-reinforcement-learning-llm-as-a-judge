@@ -20,7 +20,7 @@ import pint
 
 from .rewards import regions
 from .schema import Task, Verification
-from .scoring import EVAL_IMAGE, MBPP, UG, mbpp_spec, physics_review, unresolved
+from .scoring import MBPP, UG, mbpp_spec, physics_review, unresolved, verified_eval_image
 
 UNITS = pint.UnitRegistry()
 NUMBER = r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?"
@@ -121,7 +121,7 @@ def verify(task: Task, trace: str, image: str = "occam-verifier:1") -> Verificat
             extracted = blocks[0]
             if task.source == MBPP:
                 accepted = run_code(extracted, entrypoint=task.entrypoint, inputs=task.inputs,
-                                    mbpp=mbpp_spec(task), image=EVAL_IMAGE, timeout=150)
+                                    mbpp=mbpp_spec(task), image=verified_eval_image(), timeout=150)
                 return Verification(correct=accepted, reason="tests_passed" if accepted else "hidden_case_failed",
                                     extracted=extracted)
             result = run_code(extracted, entrypoint=task.entrypoint, inputs=task.inputs, tests=task.tests,

@@ -106,6 +106,17 @@ def test_upstream_alternate_pyramid_height():
     assert verify(task,f"<code>{code}</code>").correct
 
 
+@pytest.mark.sandbox
+def test_native_tuple_and_floating_comparison_on_frozen_programs():
+    swap = frozen_task("Mbpp/257")
+    assert verify(swap,"<code>def swap_numbers(a,b): return b,a</code>").correct
+    assert not verify(swap,"<code>def swap_numbers(a,b): return [b,a]</code>").correct
+    sphere = frozen_task("Mbpp/82")
+    within_tolerance = sphere.reference.replace("(r**3)","(r**3) + 1e-9")
+    assert within_tolerance != sphere.reference
+    assert verify(sphere,f"<code>{within_tolerance}</code>").correct
+
+
 def test_equal_seed_weight_and_scope_of_dispersion():
     from occam_rl.statistics import paired_effect
     rows = [dict(task_id="q",domain="math",family="one",quality=c,seed=s) for s,c in ((17,0),(29,1))]
